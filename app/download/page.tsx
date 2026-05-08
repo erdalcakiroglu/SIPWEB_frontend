@@ -94,7 +94,7 @@ export default async function DownloadPage() {
 
           <div className="mt-8 flex flex-wrap gap-4">
             <Link
-              href="/downloads/SQL%20Performance%20Intelligence.msi"
+              href="https://downloads.sqlperformance.ai/SQL-Performance-Intelligence.msi"
               className="inline-flex items-center gap-2 px-8 py-4 bg-cta text-white font-bold rounded-xl shadow-cta hover:bg-cta-hover hover:shadow-cta-hover hover:-translate-y-0.5 transition-all"
             >
               Download SQL Performance Intelligence.msi

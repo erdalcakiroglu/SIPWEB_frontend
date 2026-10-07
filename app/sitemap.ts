@@ -47,9 +47,10 @@ const lastModified: Record<string, string> = {
   '/cookie-policy': '2026-06-01',
   '/analytics-disclosure': '2026-06-01',
   // 2026-09-28: all docs pages rewritten for the v1.1.0 desktop UI.
-  '/docs/overview': '2026-09-28',
-  '/docs/installation': '2026-09-28',
-  '/docs/quickstart': '2026-10-04',
+  // 2026-10-07: Getting Started pages (overview, installation, quickstart) re-verified against v1.1.0.
+  '/docs/overview': '2026-10-07',
+  '/docs/installation': '2026-10-07',
+  '/docs/quickstart': '2026-10-07',
   '/docs/settings': '2026-09-28',
   // 2026-10-07: Dashboard page rewritten against the v1.1.0 Overview screen (28 metrics, refresh
   // model, panel badges, Run Audit flow) with the new screenshot set and a sanitized sample report.

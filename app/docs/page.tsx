@@ -109,8 +109,8 @@ export default function DocsPage() {
                     enablement, and the initial Database plus AI / LLM setup.
                   </p>
                   <pre className="rounded-xl bg-slate-900 text-slate-100 text-xs p-4 overflow-x-auto">
-{`# Example silent install
-msiexec /i "SQL Performance Intelligence.msi" /quiet /norestart`}
+{`# Example silent install (elevated prompt; use your installer's file name)
+msiexec /i "path\\to\\installer.msi" /quiet /norestart`}
                   </pre>
                   <div className="rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-900">
                     <div className="text-xs font-semibold uppercase tracking-wide mb-1">Note</div>

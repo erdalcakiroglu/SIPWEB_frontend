@@ -5,7 +5,7 @@ const quickstartFlow = [
   'Complete the first-run onboarding and let the 30-day full trial start automatically.',
   'Add one saved SQL Server connection in Settings > Database.',
   'Test the connection, save it, then click Connect in the connection list.',
-  'Open Dashboard (shown as Overview in the sidebar) to confirm the instance is reachable and metrics are loading. It works with the connection alone.',
+  'Open Overview in the sidebar to confirm the instance is reachable and the panels are filled. It works with the connection alone.',
   'Add one AI / LLM provider in Settings > AI / LLM and test it before you use AI-assisted analysis. The first provider becomes the default.',
   'Move to Query Statistics or Object Explorer for your first deeper analysis.',
 ]
@@ -40,7 +40,7 @@ const connectionSteps = [
   'Choose the Environment (DEV, TEST, UAT, PROD, or OTHER) so the profile shows the right badge.',
   'Choose the Default Database you want the profile to open first.',
   'Select SQL Server Authentication or Windows Authentication.',
-  'If you chose SQL authentication, enter Username and Password.',
+  'If you chose SQL Server Authentication, enter Username and Password, and Domain only if your login needs the DOMAIN\\user form.',
   'Leave ODBC Driver on auto-select unless your DBA requires a specific driver.',
   'Keep Encrypt Connection enabled unless you have a documented reason not to.',
   'Enable Trust Server Certificate only when your environment explicitly requires it.',
@@ -98,13 +98,27 @@ export default function QuickstartTemplate() {
           In this product, <span className="font-semibold">Add Connection</span> means add a saved connection profile.
           It does not create a new SQL database on the server.
         </p>
-        <div className="mt-4">
+        <div className="mt-4 grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start">
+          <div className="space-y-3 text-sm leading-7 text-gray-700">
+            <p>A filled Add Connection dialog for the WideWorldImporters demo database, with the server name and username blurred.</p>
+            <ul className="list-disc space-y-1 pl-5">
+              <li>
+                <strong>Environment:</strong> PROD - Production, shown with a red PROD badge.
+              </li>
+              <li>
+                <strong>Sign-in:</strong> SQL Server Authentication with a masked password.
+              </li>
+              <li>
+                <strong>Options:</strong> ODBC Driver on Auto-select best available, Encrypt Connection and Trust
+                Server Certificate checked.
+              </li>
+            </ul>
+          </div>
           <LightboxImage
-            src="/docs/installation/database-connection-settings.png"
-            alt="Add Connection dialog in Settings Database for configuring the first SQL Server connection profile"
-            width={1128}
-            height={1564}
-            imageClassName="mx-auto h-auto max-h-[760px] w-auto transition-transform duration-300 group-hover:scale-[1.01]"
+            src="/docs/installation/001.png"
+            alt="Add Connection dialog with connection name, blurred server instance, PROD environment badge, default database, SQL Server Authentication, blurred username, masked password, ODBC driver auto-select and encryption options"
+            width={564}
+            height={782}
           />
         </div>
         <ol className="mt-4 list-decimal pl-5 text-sm text-gray-700 space-y-1">
@@ -115,8 +129,8 @@ export default function QuickstartTemplate() {
         <div className="mt-4 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-900">
           <div className="text-xs font-semibold uppercase tracking-wide mb-1">Tip</div>
           If you use Windows Authentication, run the app with the Windows account that already has the required SQL
-          permissions. The Username and Password fields are disabled for Windows Authentication because the current
-          Windows session is used.
+          permissions. The Username, Domain, and Password fields are disabled for Windows Authentication because the
+          current Windows session is used.
         </div>
       </div>
 
@@ -147,12 +161,27 @@ ollama pull codellama`}
           Choose this path if your team already uses a managed provider or if you want a centralized model backend.
           The exact fields vary by provider, but the workflow stays almost the same.
         </p>
-        <div className="mt-4">
+        <div className="mt-4 grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start">
+          <div className="space-y-3 text-sm leading-7 text-gray-700">
+            <p>The Add AI Model dialog after a successful Test with a DeepSeek API key.</p>
+            <ul className="list-disc space-y-1 pl-5">
+              <li>
+                <strong>Fields:</strong> Provider DeepSeek, Name DeepSeek API, Model deepseek-v4-pro, and a masked API
+                Key with a Show checkbox.
+              </li>
+              <li>
+                <strong>Result:</strong> &quot;DeepSeek API key valid.&quot; with the available models.
+              </li>
+              <li>
+                <strong>Buttons:</strong> Test, Cancel, and Add.
+              </li>
+            </ul>
+          </div>
           <LightboxImage
-            src="/docs/installation/ai-model-provider-settings.png"
-            alt="Add AI Model dialog in Settings AI / LLM used to test and add a cloud LLM provider"
-            width={1300}
-            height={978}
+            src="/docs/installation/002.png"
+            alt="Add AI Model dialog with provider DeepSeek, model deepseek-v4-pro, masked API key and a successful key validation result"
+            width={650}
+            height={585}
           />
         </div>
         <ol className="mt-4 list-decimal pl-5 text-sm text-gray-700 space-y-1">
@@ -219,10 +248,20 @@ ollama pull codellama`}
           Your First Real Check
         </div>
         <ol className="list-decimal pl-5 text-sm text-gray-700 space-y-1">
-          <li>After you connect, open Dashboard first. The Server, Database, and LLM selectors in the top bar show the active context and let you switch it.</li>
-          <li>Confirm that CPU, memory, IO, and TempDB metrics are populated.</li>
-          <li>Then open Query Statistics for query-level evidence.</li>
-          <li>If you want to inspect one procedure, function, or table, open Object Explorer.</li>
+          <li>
+            After &quot;Successfully connected to &lt;name&gt;&quot;, open Overview first. The Server and Database
+            selectors in the top bar show the active context and let you switch it.
+          </li>
+          <li>
+            Overview reads one sample when it opens. Confirm that Server Health, Memory Health, Workload, Storage &amp;
+            I/O, and TempDB are filled, and click ▶ Start if you want automatic refresh.
+          </li>
+          <li>
+            Then open Query Statistics for query-level evidence. It loads when it opens, as do Wait Statistics, the
+            Object Explorer list, Index Advisor, Blocking, and Jobs.
+          </li>
+          <li>If you want to inspect one procedure, function, view, or table, open Object Explorer.</li>
+          <li>Configuration Audit and the Security audit run only when you click Run Audit.</li>
         </ol>
         <p className="mt-4 text-sm text-gray-700">
           If you want the product-level explanation for why this module order works, read the{' '}
@@ -257,8 +296,7 @@ ollama pull codellama`}
             <ul className="list-disc pl-5 space-y-1">
               <li>Check whether Query Store is enabled for the target database.</li>
               <li>Ask the DBA to enable Query Store with READ_WRITE and QUERY_CAPTURE_MODE = AUTO if it is off.</li>
-              <li>Remember that DMV fallback has less historical depth.</li>
-              <li>Ask the DBA to enable Query Store if the database is new to the platform.</li>
+              <li>Remember that the DMV fallback has less historical depth.</li>
             </ul>
           </div>
           <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">

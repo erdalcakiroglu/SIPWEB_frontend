@@ -28,7 +28,7 @@ export const gettingStartedPages: DocsPage[] = [
     slug: 'overview',
     title: 'Overview',
     summary:
-      'A high-level look at what SQLPerformance AI does, what it avoids, and why its read-only approach is safe for production.',
+      'A high-level look at what SQLPerformance AI does, what it needs from SQL Server, where AI is used, and what leaves your machine.',
   },
   {
     slug: 'installation',
@@ -55,7 +55,7 @@ export const modulePages: DocsPage[] = [
     slug: 'dashboard',
     title: 'Dashboard',
     summary:
-      'Refresh an on-demand snapshot of server health, memory, storage I/O, TempDB, and workload pressure for the active connection, and run a read-only configuration best-practice audit.',
+      'Watch server health, memory, workload, storage I/O, and TempDB for the active connection with manual or automatic refresh, and run a read-only configuration best-practice audit.',
   },
   {
     slug: 'query-statistics',

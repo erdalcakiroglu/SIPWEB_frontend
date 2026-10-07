@@ -1,6 +1,6 @@
 /**
  * Computes SHA-256 of the installer MSI and updates app/download/release.json.
- * Run after placing "SQL Performance Intelligence.msi" in public/downloads/.
+ * Run after placing "SQLPerformance AI-<version>.msi" in public/downloads/.
  *
  * Usage:
  *   node scripts/compute-sha256.js
@@ -29,20 +29,10 @@ function parseArgs() {
 }
 
 const projectRoot = path.resolve(__dirname, '..')
-const installerPath = path.join(projectRoot, 'public', 'downloads', 'SQL Performance Intelligence.msi')
 const releaseJsonPath = path.join(projectRoot, 'app', 'download', 'release.json')
 
 const cli = parseArgs()
 const defaults = { version: '2.4.2', released: '2026-03-08', sha256: '' }
-
-if (!fs.existsSync(installerPath)) {
-  console.error('Installer not found:', installerPath)
-  console.error('Place "SQL Performance Intelligence.msi" in public/downloads/ then run this script.')
-  process.exit(1)
-}
-
-const buffer = fs.readFileSync(installerPath)
-const hash = crypto.createHash('sha256').update(buffer).digest('hex')
 
 let release = { ...defaults }
 if (fs.existsSync(releaseJsonPath)) {
@@ -50,9 +40,21 @@ if (fs.existsSync(releaseJsonPath)) {
     release = { ...release, ...JSON.parse(fs.readFileSync(releaseJsonPath, 'utf8')) }
   } catch (_) {}
 }
-release.sha256 = hash
 if (cli.version) release.version = cli.version
 if (cli.released) release.released = cli.released
+
+const installerName = `SQLPerformance AI-${release.version}.msi`
+const installerPath = path.join(projectRoot, 'public', 'downloads', installerName)
+
+if (!fs.existsSync(installerPath)) {
+  console.error('Installer not found:', installerPath)
+  console.error(`Place "${installerName}" in public/downloads/ then run this script.`)
+  process.exit(1)
+}
+
+const buffer = fs.readFileSync(installerPath)
+const hash = crypto.createHash('sha256').update(buffer).digest('hex')
+release.sha256 = hash
 
 fs.writeFileSync(releaseJsonPath, JSON.stringify(release, null, 2) + '\n', 'utf8')
 console.log('Version:', release.version, '| Released:', release.released)

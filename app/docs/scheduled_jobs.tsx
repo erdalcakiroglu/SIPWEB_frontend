@@ -252,7 +252,7 @@ export default function ScheduledJobsTemplate() {
           <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
             <div className="font-semibold mb-1">Permissions and Partial Data</div>
             <ul className="list-disc pl-5 space-y-1">
-              <li>If the job tables cannot be read, the error reads SQL Agent jobs could not be read: followed by the reason and a hint. For a permission failure the hint is Grant the monitoring login SELECT on the msdb objects the Jobs setup script lists, then refresh.</li>
+              <li>If the job tables cannot be read, the error reads SQL Agent jobs could not be read: followed by the reason and a hint. For a permission failure the hint asks you to grant the monitoring login SELECT on the msdb tables and refresh. The tables are listed in the example script on the Installation page.</li>
               <li>If SELECT on <span className="font-mono">msdb.dbo.sysjobactivity</span> is denied, the jobs still load without the live running state, and the status line explains that the running state and SQL Agent&apos;s own next run times are unavailable because access to that table was denied.</li>
               <li>If a secondary read fails (for example the failure groups), the status line shows Partial data and names what is missing, such as failures unavailable.</li>
               <li>If individual job history, steps, or schedules cannot be read, Job Detail shows the evidence that was available with the warning Some job evidence could not be read. Check msdb permissions.</li>

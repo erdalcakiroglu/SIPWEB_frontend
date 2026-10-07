@@ -31,6 +31,9 @@ function readDownloadRelease(payload: unknown): DownloadRelease | null {
 
 export default function DownloadReleaseDetails({ initialRelease }: Props) {
   const [release, setRelease] = useState(initialRelease)
+  // Saved file name of the download, e.g. "SQLPerformance AI-1.1.0.msi".
+  const installerFileName = `SQLPerformance AI-${release.version}.msi`
+  const hashCommand = `certUtil -hashfile "${installerFileName}" SHA256`
 
   useEffect(() => {
     let isCancelled = false
@@ -109,19 +112,17 @@ export default function DownloadReleaseDetails({ initialRelease }: Props) {
             </li>
             <li>
               Run:{' '}
-              <code className="bg-gray-100 px-1 rounded">
-                certUtil -hashfile &quot;SQL-Performance-Intelligence.msi&quot; SHA256
-              </code>
+              <code className="bg-gray-100 px-1 rounded">{hashCommand}</code>
               .
             </li>
             <li>The output hash must match the SHA-256 value shown above exactly.</li>
           </ol>
           <div className="mt-3 flex flex-wrap items-center gap-2">
             <code className="flex-1 min-w-0 rounded border border-gray-200 bg-gray-50 px-3 py-2 text-xs">
-              certUtil -hashfile &quot;SQL-Performance-Intelligence.msi&quot; SHA256
+              {hashCommand}
             </code>
             <CopyButton
-              text='certUtil -hashfile "SQL-Performance-Intelligence.msi" SHA256'
+              text={hashCommand}
               label="Copy command"
             />
           </div>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Menu, X } from 'lucide-react'
@@ -8,6 +8,8 @@ import { Menu, X } from 'lucide-react'
 export default function Header() {
   const [scrolled, setScrolled] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const menuButtonRef = useRef<HTMLButtonElement>(null)
+  const mobileMenuRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -17,12 +19,34 @@ export default function Header() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  useEffect(() => {
+    if (!mobileMenuOpen) return
+
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    mobileMenuRef.current?.querySelector<HTMLAnchorElement>('a')?.focus()
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setMobileMenuOpen(false)
+        menuButtonRef.current?.focus()
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.body.style.overflow = previousOverflow
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [mobileMenuOpen])
+
   const navLinks = [
     { label: 'Features', href: '/features' },
     { label: 'Security', href: '/security' },
-    { label: 'Pricing', href: '/#pricing' },
+    { label: 'Pricing', href: '/pricing' },
     { label: 'Download', href: '/download' },
     { label: 'Docs', href: '/docs' },
+    { label: 'Use Cases', href: '/use-cases' },
   ]
 
   return (
@@ -36,23 +60,23 @@ export default function Header() {
         <Link href="/" className="flex items-center gap-3">
           <Image 
             src="/logo.png" 
-            alt="SQL Performance Intelligence" 
+            alt="SQLPerformance AI" 
             width={42} 
             height={42}
             className="w-10 h-10"
           />
-          <div className="flex flex-col leading-tight">
-            <span className="font-extrabold text-base tracking-tight text-gray-900">
-              SQL Performance
-            </span>
-            <span className="text-xs font-semibold tracking-wide text-gray-500 self-end">
-              Intelligence™
-            </span>
-          </div>
+          <span className="font-extrabold text-lg leading-tight tracking-tight text-gray-900">
+            SQLPerformance <span className="text-primary">AI</span>
+          </span>
         </Link>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-8">
+        {/* Desktop Navigation.
+            Breakpoint is lg, not md. The six links plus the wordmark and the CTA
+            need about 1000px; at md (768px, an iPad in portrait) they were still
+            shown and "Use Cases" and "Start Trial" each wrapped onto two lines and
+            ran into each other. Below lg the hamburger below carries the same links,
+            so nothing is lost — keep the three lg: breakpoints in this file in step. */}
+        <nav className="hidden lg:flex items-center gap-8">
           {navLinks.map((link) => (
             <Link 
               key={link.href}
@@ -75,9 +99,12 @@ export default function Header() {
 
           {/* Mobile Menu Toggle */}
           <button
+            ref={menuButtonRef}
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
-            aria-label="Toggle mobile menu"
+            className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+            aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-navigation"
           >
             {mobileMenuOpen ? (
               <X className="w-6 h-6 text-gray-900" />
@@ -90,7 +117,12 @@ export default function Header() {
 
       {/* Mobile Navigation Menu */}
       {mobileMenuOpen && (
-        <nav className="md:hidden bg-white border-t border-gray-200 px-6 py-4 space-y-3">
+        <nav
+          ref={mobileMenuRef}
+          id="mobile-navigation"
+          aria-label="Mobile navigation"
+          className="lg:hidden max-h-[calc(100vh-76px)] overflow-y-auto bg-white border-t border-gray-200 px-6 py-4 space-y-3"
+        >
           {navLinks.map((link) => (
             <Link
               key={link.href}

@@ -1,48 +1,39 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import {
-  ArrowRight,
-  Check,
-} from 'lucide-react'
+import { Check } from 'lucide-react'
 import Header from '@/components/Header'
+import PageHero from '@/components/PageHero'
 import Footer from '@/components/Footer'
-import DataBoundaryPanel from './DataBoundaryPanel'
 
 export const metadata: Metadata = {
-  title: 'Trust & Security - SQL Performance Intelligence',
+  title: 'Trust & Security - SQLPerformance AI',
   description:
-    'Security posture, data handling, access controls, and audit readiness for SQL Performance Intelligence.',
+    'How SQLPerformance AI handles data: what it reads from SQL Server, what stays on your machine, what leaves it when you choose a cloud AI model, and what it contacts for licensing.',
+  alternates: {
+    canonical: '/security',
+  },
 }
 
-const defaultConfiguration = [
-  'Default mode: Local (Offline)',
-  'Cloud: Disabled',
-  'Send Policy: L0',
-  'Redaction: On (cloud mode)',
+// Every line here has been checked against the shipping application. Keep it that way:
+// if a claim cannot be traced to code, it does not belong on this page. Items that were
+// removed because the app does not do them: Send Policy levels, PII masking, payload
+// preview, a user audit log, Active Directory / Entra sign-in, "SELECT-only".
+const securityControls = [
+  'Does not change your user data, schema, jobs or server settings',
+  'Generated scripts are never executed by the application',
+  'Nothing is installed on your SQL Server hosts',
+  'No usage telemetry',
+  'Local AI by default; cloud AI is optional and your choice',
+  'Saved SQL passwords and AI API keys go to Windows Credential Manager',
+  'Scratch data only in session-scoped tempdb tables',
+  'Signed offline license files (.lic) are supported',
 ]
 
-const systemPrinciples = [
-  'No outbound telemetry',
-  'No background agents',
-  'No automatic schema changes',
-  'No automatic updates',
-  'Offline by default',
-]
-
-const securityPosture = [
-  'Read-only diagnostics (SELECT-only)',
-  'No schema changes',
-  'No agents / no background services',
-  'Recommendations only (no auto-apply)',
-  'Least privilege access',
-  'Offline by default',
-]
-
-const reviewSupport = [
-  'Security questionnaire support',
-  'Architecture documentation available',
-  'On-prem deployment supported',
-  'Air-gapped environments supported',
+const evidencePoints = [
+  'A 77-entry Security Audit control catalog, each entry with a Control ID',
+  'Security Audit findings as HTML, Access Matrix as XLSX',
+  'CIS, ISO 27001 and NIST 800-53 references',
+  'A local-AI option for strict data policies',
 ]
 
 export default function SecurityPage() {
@@ -50,211 +41,119 @@ export default function SecurityPage() {
     <main className="bg-white">
       <Header />
 
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary-gradientFrom via-primary to-primary-gradientTo px-6 py-16 pt-32 lg:px-10">
-        <div className="absolute inset-0 bg-grid-pattern opacity-60 pointer-events-none" />
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute left-[12%] top-1/4 h-80 w-80 rounded-full bg-white/10 blur-3xl" />
-          <div className="absolute bottom-0 right-[10%] h-72 w-72 rounded-full bg-white/10 blur-3xl" />
-        </div>
+      <PageHero
+        title="Security & Data Handling by Design"
+        description="Plain answers to common security-review questions for SQL Server environments: what the application reads, what it writes, what stays on your machine, and what can leave it if you choose a cloud AI model."
+      />
 
-        <div className="relative z-10 mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[minmax(0,1.1fr)_minmax(360px,0.9fr)]">
-          <div className="text-white">
-            <h1 className="mb-6 text-3xl font-extrabold leading-tight tracking-tight md:text-5xl">
-              Security &amp; Compliance by Design for Regulated SQL Server Environments
-            </h1>
-            <p className="mb-10 max-w-2xl text-lg leading-relaxed text-white/85 md:text-xl">
-              This page answers common security review questions with auditable details. Offline-first by default,
-              read-only diagnostics, and user-controlled optional cloud LLM.
-            </p>
-
-            <div className="mb-10 flex flex-wrap gap-4">
-              <Link
-                href="/sample-report"
-                className="inline-flex items-center rounded-xl bg-cta px-8 py-4 font-bold text-white shadow-cta transition-all hover:-translate-y-0.5 hover:bg-cta-hover hover:shadow-cta-hover focus:outline-none focus-visible:ring-4 focus-visible:ring-cta/35"
-              >
-                View Sample Security Report
-              </Link>
-              <Link
-                href="/download"
-                className="inline-flex items-center gap-2 rounded-xl border-2 border-white/30 bg-white/10 px-8 py-4 font-semibold text-white backdrop-blur-sm transition-all hover:border-white/50 hover:bg-white/20 hover:shadow-lg hover:shadow-white/10"
-              >
-                Start Free Trial
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </div>
-
-            <div className="flex flex-wrap gap-3">
-              {securityPosture.slice(0, 4).map((item) => (
-                <div
-                  key={item}
-                  className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium text-white/90 backdrop-blur-sm"
-                >
-                  <Check className="h-4 w-4 text-white" />
-                  <span>{item}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="rounded-[30px] border border-white/15 bg-white/10 p-6 shadow-2xl backdrop-blur-xl">
-            <div className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-white/70">
-              Default Security Configuration
-            </div>
-            <ul className="space-y-3 text-sm text-white/85">
-              {defaultConfiguration.map((item) => (
-                <li key={item} className="flex items-center gap-3">
-                  <Check className="h-4 w-4 flex-shrink-0 text-emerald-300" />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-
-            <div className="mt-5 grid gap-3 sm:grid-cols-2">
-              <div className="rounded-2xl border border-white/15 bg-white/10 p-5">
-                <div className="mb-2 text-sm font-bold text-white">Offline-first default</div>
-                <p className="text-sm leading-relaxed text-white/75">
-                  Local LLM keeps prompts and tuning context inside your environment.
-                </p>
-              </div>
-              <div className="rounded-2xl border border-white/15 bg-white/10 p-5">
-                <div className="mb-2 text-sm font-bold text-white">No telemetry or agents</div>
-                <p className="text-sm leading-relaxed text-white/75">
-                  No background collectors, no outbound telemetry, and no hidden services.
-                </p>
-              </div>
-            </div>
-
-            <div className="mt-5 rounded-2xl border border-emerald-300/30 bg-emerald-500/10 p-5 text-sm leading-relaxed text-white/90">
-              <div className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-100">
-                Critical message
-              </div>
-              Local LLM keeps all tuning context inside your environment. Cloud LLM is optional, and if enabled only
-              selected context is transmitted under Send Policy and Redaction controls.
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-gray-50 px-6 pb-24 pt-8 lg:px-10">
-        <div className="mx-auto max-w-7xl">
-          <div className="mx-auto mb-14 max-w-6xl text-center">
-            <span className="mb-5 inline-block rounded-full bg-primary-light px-4 py-2 text-sm font-semibold uppercase tracking-wide text-primary">
-              Security Summary
-            </span>
-            <h2 className="mb-5 text-3xl font-extrabold tracking-tight text-gray-900 md:text-4xl lg:whitespace-nowrap">
+      <section className="bg-gray-50 px-6 pb-4 pt-12 lg:px-10">
+        <div className="mx-auto max-w-6xl">
+          <div className="mx-auto mb-12 max-w-6xl text-center">
+            <h2 className="mb-5 text-3xl font-bold tracking-tight text-gray-900 md:text-4xl lg:whitespace-nowrap">
               Trust posture and data-handling model at a glance
             </h2>
-            <p className="text-lg leading-relaxed text-gray-600 lg:whitespace-nowrap">
-              Security content is now grouped into the same strong sections and card patterns used on the homepage.
+            <p className="text-lg leading-relaxed text-gray-600">
+              What the application reads, what it writes, and what can leave your machine.
             </p>
           </div>
 
-          <div className="grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
-            <div className="space-y-6">
-              <div className="rounded-3xl border border-slate-200/70 bg-gradient-to-br from-white to-slate-50/70 p-8 shadow-sm shadow-slate-200/60">
-                <h3 className="mb-5 text-2xl font-extrabold tracking-tight text-gray-900">How data moves</h3>
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="rounded-2xl border border-slate-200/70 bg-white p-5">
-                    <h4 className="mb-2 text-base font-bold text-gray-900">Offline (default)</h4>
-                    <ul className="space-y-2 text-sm leading-relaxed text-gray-600">
-                      <li>Runs locally with Local LLM.</li>
-                      <li>No prompts or tuning context leave your network.</li>
-                      <li>Recommended for regulated environments.</li>
-                    </ul>
-                  </div>
-                  <div className="rounded-2xl border border-slate-200/70 bg-white p-5">
-                    <h4 className="mb-2 text-base font-bold text-gray-900">Cloud (optional)</h4>
-                    <ul className="space-y-2 text-sm leading-relaxed text-gray-600">
-                      <li>Enabled only by you with a provider and API key.</li>
-                      <li>Controlled by Send Policy levels L0 to L3.</li>
-                      <li>Redaction can mask literals, comments, and PII patterns.</li>
-                    </ul>
-                  </div>
+          {/* min-w-0 on the cards: a grid item defaults to min-width:auto and will
+              not shrink below its content's intrinsic minimum. At 360px these cards
+              measured 363px against 312px of available width and pushed the whole
+              page into horizontal scroll. Zeroing the minimum lets them wrap; the
+              nested grids inside need no change (verified at 360 and 390). */}
+          <div className="grid items-stretch gap-6 md:grid-cols-2">
+            <div className="flex h-full min-w-0 flex-col rounded-2xl border border-gray-200/80 bg-white p-8 shadow-sm">
+              <h3 className="mb-5 text-xl font-bold tracking-tight text-gray-900">How data moves</h3>
+              <div className="grid flex-grow gap-4 sm:grid-cols-2">
+                <div className="rounded-xl border border-gray-200/80 bg-gray-50/60 p-5">
+                  <h4 className="mb-2 text-base font-bold text-gray-900">Local AI (default)</h4>
+                  <ul className="space-y-2 text-sm leading-relaxed text-gray-600">
+                    <li>The default provider is Ollama, running on a machine you control.</li>
+                    <li>With a local model, AI context stays on that machine or network.</li>
+                    <li>Ollama is installed separately; it is not bundled with the application.</li>
+                  </ul>
                 </div>
-              </div>
-
-              <div className="rounded-3xl border border-slate-200/70 bg-gradient-to-br from-white to-slate-50/70 p-8 shadow-sm shadow-slate-200/60">
-                <h3 className="mb-5 text-2xl font-extrabold tracking-tight text-gray-900">
-                  What we collect and what we do not collect
-                </h3>
-                <div className="grid gap-6 md:grid-cols-2">
-                  <div>
-                    <h4 className="mb-3 text-sm font-bold uppercase tracking-wide text-gray-500">We collect</h4>
-                    <ul className="space-y-2 text-sm leading-relaxed text-gray-600">
-                      <li>Procedure or query text when enabled for tuning.</li>
-                      <li>Plans, Query Store metrics, and metadata.</li>
-                      <li>Signals such as IO, CPU, waits, and memory grants.</li>
-                    </ul>
-                  </div>
-                  <div>
-                    <h4 className="mb-3 text-sm font-bold uppercase tracking-wide text-gray-500">We do not collect</h4>
-                    <ul className="space-y-2 text-sm leading-relaxed text-gray-600">
-                      <li>Table or row contents as part of collection.</li>
-                      <li>Credentials or secrets intentionally.</li>
-                      <li>Background-harvested database contents.</li>
-                    </ul>
-                  </div>
-                </div>
-                <div className="mt-5 rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-900">
-                  The application does not collect, transmit, or persist table data. If cloud LLM mode is enabled,
-                  selected context may be transmitted under user-controlled Send Policy.
+                <div className="rounded-xl border border-gray-200/80 bg-gray-50/60 p-5">
+                  <h4 className="mb-2 text-base font-bold text-gray-900">Cloud AI (optional)</h4>
+                  <ul className="space-y-2 text-sm leading-relaxed text-gray-600">
+                    <li>Off until you pick a provider and enter your own API key.</li>
+                    <li>Providers: OpenAI, Anthropic, Azure OpenAI and DeepSeek.</li>
+                    <li>
+                      Depending on the module, the context can include query or procedure text, execution plans,
+                      parameter values and object names.
+                    </li>
+                  </ul>
                 </div>
               </div>
             </div>
 
-            <div className="space-y-6">
-              <div className="rounded-3xl border border-slate-200/70 bg-gradient-to-br from-white to-slate-50/70 p-8 shadow-sm shadow-slate-200/60">
-                <div className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">
-                  System Design Principles
+            <div className="flex h-full min-w-0 flex-col rounded-2xl border border-gray-200/80 bg-white p-8 shadow-sm">
+              <h3 className="mb-5 text-xl font-bold tracking-tight text-gray-900">
+                What it reads and what it keeps
+              </h3>
+              <div className="grid flex-grow gap-6 sm:grid-cols-2">
+                <div>
+                  <h4 className="mb-3 text-sm font-bold uppercase tracking-wide text-gray-500">Reads from SQL Server</h4>
+                  <ul className="space-y-2 text-sm leading-relaxed text-gray-600">
+                    <li>Query text, execution plans and Query Store metrics.</li>
+                    <li>Server and database metadata, jobs, and security configuration.</li>
+                    <li>Signals such as waits, IO, CPU, memory grants and blocking.</li>
+                  </ul>
                 </div>
-                <div className="grid gap-3 sm:grid-cols-2">
-                  {systemPrinciples.map((item) => (
-                    <div
-                      key={item}
-                      className="rounded-2xl border border-slate-200/70 bg-white px-4 py-3 text-sm font-semibold text-gray-700"
-                    >
-                      {item}
-                    </div>
-                  ))}
+                <div>
+                  <h4 className="mb-3 text-sm font-bold uppercase tracking-wide text-gray-500">Keeps on your machine</h4>
+                  <ul className="space-y-2 text-sm leading-relaxed text-gray-600">
+                    <li>Connection profiles; passwords and API keys in Windows Credential Manager.</li>
+                    <li>Log files and AI request and response files, in plain text.</li>
+                    <li>Reports and exports that you create.</li>
+                  </ul>
                 </div>
               </div>
+              <div className="mt-5 rounded-xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-900">
+                The collectors query system views, Query Store and metadata, not your tables. Values can still appear
+                inside query text, plan XML and parameter values, and those can reach a cloud provider if you choose
+                one.
+              </div>
+            </div>
 
-              <div className="rounded-3xl border border-slate-200/70 bg-gradient-to-br from-white to-slate-50/70 p-8 shadow-sm shadow-slate-200/60">
-                <div className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">
-                  Security Posture
-                </div>
-                <div className="flex flex-wrap gap-3">
-                  {securityPosture.map((item) => (
-                    <span
-                      key={item}
-                      className="inline-flex items-center justify-center rounded-full border border-slate-200/70 bg-white px-4 py-2 text-sm font-semibold text-gray-700"
-                    >
-                      {item}
-                    </span>
-                  ))}
-                </div>
+            <div className="min-w-0 rounded-2xl border border-gray-200/80 bg-white p-8 shadow-sm md:col-span-2">
+              <div className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">
+                Security Posture &amp; Design Principles
               </div>
+              <table className="w-full border-collapse text-sm">
+                <tbody>
+                  {Array.from({ length: Math.ceil(securityControls.length / 2) }).map((_, row) => (
+                    <tr key={row} className="border-t border-gray-100 first:border-t-0">
+                      {securityControls.slice(row * 2, row * 2 + 2).map((item) => (
+                        <td key={item} className="w-1/2 py-3 pr-6 align-middle">
+                          <span className="inline-flex items-center gap-2.5 text-gray-700">
+                            <Check className="h-4 w-4 flex-shrink-0 text-primary" />
+                            {item}
+                          </span>
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="bg-white px-6 pb-8 pt-8 lg:px-10">
-        <div className="mx-auto max-w-7xl">
+      <section className="bg-gray-50 px-6 pb-4 pt-4 lg:px-10">
+        <div className="mx-auto max-w-6xl">
           <div className="mx-auto mb-12 max-w-3xl text-center">
-            <span className="mb-5 inline-block rounded-full bg-primary-light px-4 py-2 text-sm font-semibold uppercase tracking-wide text-primary">
-              Review Details
-            </span>
-            <h2 className="mb-5 text-3xl font-extrabold tracking-tight text-gray-900 md:text-4xl">
+            <h2 className="mb-5 text-3xl font-bold tracking-tight text-gray-900 md:text-4xl">
               Deep-dive controls for security reviews and procurement checks
             </h2>
             <p className="text-lg leading-relaxed text-gray-600">
-              Detailed answers remain in expandable sections, but now sit inside the same polished card system used
-              across the homepage.
+              The questions that usually come up in a security review, answered in detail.
             </p>
           </div>
 
-          <div className="rounded-3xl border border-slate-200/70 bg-gradient-to-br from-white to-slate-50/70 p-4 shadow-xl shadow-slate-200/40 md:p-6">
+          <div className="rounded-2xl border border-gray-200/80 bg-white p-4 shadow-sm md:p-6">
             <div className="divide-y divide-slate-200/80">
               <details open className="group py-5">
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-6 text-base font-semibold text-gray-900 md:text-lg">
@@ -266,25 +165,25 @@ export default function SecurityPage() {
                     <thead>
                       <tr className="border-b border-slate-200 bg-slate-50">
                         <th className="px-4 py-3 text-left font-semibold text-gray-900">Feature</th>
-                        <th className="px-4 py-3 text-left font-semibold text-gray-900">Local LLM</th>
+                        <th className="px-4 py-3 text-left font-semibold text-gray-900">Local LLM (Ollama)</th>
                         <th className="px-4 py-3 text-left font-semibold text-gray-900">Cloud LLM</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-200">
                       <tr>
-                        <td className="px-4 py-3 font-semibold text-gray-900">Internet Required</td>
+                        <td className="px-4 py-3 font-semibold text-gray-900">Internet needed for AI analysis</td>
                         <td className="px-4 py-3 text-gray-700">No</td>
                         <td className="px-4 py-3 text-gray-700">Yes</td>
                       </tr>
                       <tr className="bg-slate-50/70">
-                        <td className="px-4 py-3 font-semibold text-gray-900">Data Leaves Environment</td>
-                        <td className="px-4 py-3 text-gray-700">No</td>
-                        <td className="px-4 py-3 text-gray-700">Yes, to the selected provider</td>
+                        <td className="px-4 py-3 font-semibold text-gray-900">Where AI context goes</td>
+                        <td className="px-4 py-3 text-gray-700">To the machine or network running Ollama</td>
+                        <td className="px-4 py-3 text-gray-700">To the provider you selected</td>
                       </tr>
                       <tr>
-                        <td className="px-4 py-3 font-semibold text-gray-900">Regulated Suitable</td>
-                        <td className="px-4 py-3 text-gray-700">Yes</td>
-                        <td className="px-4 py-3 text-gray-700">Depends on policy</td>
+                        <td className="px-4 py-3 font-semibold text-gray-900">Fit for strict data policies</td>
+                        <td className="px-4 py-3 text-gray-700">AI context stays inside your environment</td>
+                        <td className="px-4 py-3 text-gray-700">Depends on your policy and the provider&apos;s terms</td>
                       </tr>
                     </tbody>
                   </table>
@@ -296,8 +195,42 @@ export default function SecurityPage() {
                   <span>Controls</span>
                   <span className="text-gray-400 transition-transform group-open:rotate-180">▾</span>
                 </summary>
-                <div className="mt-5">
-                  <DataBoundaryPanel />
+                <div className="mt-5 space-y-4">
+                  <p className="text-sm leading-relaxed text-gray-600">
+                    Redaction and approval before cloud AI are not uniform across the application. This is what each
+                    module does today.
+                  </p>
+                  <div className="grid gap-4 md:grid-cols-3">
+                    <div className="rounded-2xl border border-slate-200/70 bg-white p-5">
+                      <h3 className="mb-2 text-sm font-bold text-gray-900">Query Statistics</h3>
+                      <p className="text-sm leading-relaxed text-gray-600">
+                        Literal values in query text and plans are redacted by default, and showing sensitive data is
+                        off by default. If you turn it on while a cloud provider is active, the application asks for
+                        your approval for that session before sending unredacted text. The redacted context goes to
+                        the cloud provider without a separate prompt.
+                      </p>
+                    </div>
+                    <div className="rounded-2xl border border-slate-200/70 bg-white p-5">
+                      <h3 className="mb-2 text-sm font-bold text-gray-900">Object Explorer</h3>
+                      <p className="text-sm leading-relaxed text-gray-600">
+                        The only option is removing SQL comments. Source code, plan XML and parameter values (clipped
+                        to 80 characters) can be part of the context, with no literal masking and no approval step.
+                      </p>
+                    </div>
+                    <div className="rounded-2xl border border-slate-200/70 bg-white p-5">
+                      <h3 className="mb-2 text-sm font-bold text-gray-900">Index Advisor</h3>
+                      <p className="text-sm leading-relaxed text-gray-600">
+                        No redaction and no approval step. Table and index names go as they are, together with
+                        up to five dependent Query Store statement excerpts (up to 400 characters each, which can
+                        contain literal values). Execution plan XML is not sent. Use a local model if names or
+                        statement text should not leave your environment.
+                      </p>
+                    </div>
+                  </div>
+                  <p className="text-sm leading-relaxed text-gray-600">
+                    There is no automatic PII masking and no payload preview. If your data policy does not allow a
+                    third party to see query text or object names, choose the local model.
+                  </p>
                 </div>
               </details>
 
@@ -310,20 +243,41 @@ export default function SecurityPage() {
                   <div className="rounded-2xl border border-slate-200/70 bg-white p-5">
                     <h3 className="mb-2 text-sm font-bold text-gray-900">Encryption</h3>
                     <p className="text-sm leading-relaxed text-gray-600">
-                      In cloud mode, transmitted context is sent over encrypted HTTPS and TLS connections.
+                      Requests to cloud AI providers and to the license server use HTTPS. SQL Server connection
+                      encryption follows the connection profile (Encrypt on, Trust server certificate off by default)
+                      and your server&apos;s configuration. With ODBC Driver 18 the client requests encryption as
+                      &ldquo;optional&rdquo;, so enable Force Encryption on the server if you need it guaranteed.
                     </p>
                   </div>
                   <div className="rounded-2xl border border-slate-200/70 bg-white p-5">
                     <h3 className="mb-2 text-sm font-bold text-gray-900">Network Requirements</h3>
-                    <p className="text-sm leading-relaxed text-gray-600">
-                      Offline mode needs no internet. Cloud mode requires outbound access only to explicitly approved
-                      endpoints.
+                    <p className="mb-2 text-sm leading-relaxed text-gray-600">
+                      Analysis with a local model needs no internet. The application does contact:
                     </p>
+                    <ul className="list-disc space-y-1 pl-5 text-sm leading-relaxed text-gray-600">
+                      <li>
+                        The license server (license.sqlperformance.ai): trial registration with your email address and
+                        a device identifier, then validation about every 24 hours.
+                      </li>
+                      <li>Microsoft Learn (learn.microsoft.com) for SQL Server build information, cached for 24 hours.</li>
+                      <li>Your cloud AI provider, only if you enable one.</li>
+                      <li>
+                        A webhook URL, only if you configure one for blocking alerts. The message carries alert titles,
+                        counts and thresholds, not query text or login names.
+                      </li>
+                    </ul>
                   </div>
                   <div className="rounded-2xl border border-slate-200/70 bg-white p-5">
                     <h3 className="mb-2 text-sm font-bold text-gray-900">Deployment Model</h3>
                     <p className="text-sm leading-relaxed text-gray-600">
-                      Windows desktop deployment, offline installer options, and no background license agents.
+                      A Windows desktop application. Nothing is installed on your SQL Server hosts. A signed offline
+                      license file (.lic) lets it run without contacting the license server. The 30-day trial normally
+                      registers online (email address and a device identifier); if the license server cannot be
+                      reached, the trial starts locally and is registered when a connection is available. See the{' '}
+                      <Link href="/download" className="font-semibold text-primary hover:underline">
+                        download page
+                      </Link>{' '}
+                      for the installer checksum and signing status.
                     </p>
                   </div>
                 </div>
@@ -331,26 +285,37 @@ export default function SecurityPage() {
 
               <details className="group py-5">
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-6 text-base font-semibold text-gray-900 md:text-lg">
-                  <span>Access, Logging, and Audit Readiness</span>
+                  <span>Access, Permissions, and Logs</span>
                   <span className="text-gray-400 transition-transform group-open:rotate-180">▾</span>
                 </summary>
                 <div className="mt-5 grid gap-4 md:grid-cols-3">
                   <div className="rounded-2xl border border-slate-200/70 bg-white p-5">
                     <h3 className="mb-2 text-sm font-bold text-gray-900">Minimum permissions</h3>
                     <p className="text-sm leading-relaxed text-gray-600">
-                      Read-only metadata and performance views, plus optional Query Store access when enabled.
+                      <span className="font-mono">VIEW SERVER STATE</span> covers core diagnostics. Security Audit also
+                      needs <span className="font-mono">VIEW ANY DEFINITION</span> and msdb access. Reading the SQL
+                      Server error log works for logins with <span className="font-mono">VIEW SERVER STATE</span> or
+                      securityadmin membership, with permission to run <span className="font-mono">sp_readerrorlog</span>.
+                      Missing permissions can leave a module&apos;s results incomplete.
                     </p>
                   </div>
                   <div className="rounded-2xl border border-slate-200/70 bg-white p-5">
                     <h3 className="mb-2 text-sm font-bold text-gray-900">Supported authentication</h3>
                     <p className="text-sm leading-relaxed text-gray-600">
-                      Windows Authentication, SQL Login, and Active Directory where configured.
+                      Windows Authentication (integrated) and SQL Server login. Microsoft Entra ID sign-in and MFA are
+                      not supported.
                     </p>
                   </div>
                   <div className="rounded-2xl border border-slate-200/70 bg-white p-5">
-                    <h3 className="mb-2 text-sm font-bold text-gray-900">Audit logging</h3>
+                    <h3 className="mb-2 text-sm font-bold text-gray-900">Logs on your machine</h3>
                     <p className="text-sm leading-relaxed text-gray-600">
-                      Logins, analysis runs, report generation, configuration changes, and exports.
+                      The application writes ordinary log files and keeps no user-activity audit trail. AI request and
+                      response files are stored in plain text under the logs folder and are not cleaned up
+                      automatically. They can contain query text, plan XML and parameter values. Blocking Analysis also
+                      keeps a local history of blocking snapshots in the same folder (
+                      <span className="font-mono">blocking_history.jsonl</span>, kept for 30 days and at most 50,000
+                      rows per server), which includes the login, host and program names of head blockers. Protect
+                      that folder accordingly.
                     </p>
                   </div>
                 </div>
@@ -360,21 +325,19 @@ export default function SecurityPage() {
         </div>
       </section>
 
-      <section className="bg-gradient-to-b from-white to-gray-50 px-6 pb-24 pt-2 lg:px-10">
+      <section className="bg-gray-50 px-6 pb-24 pt-4 lg:px-10">
         <div className="mx-auto max-w-4xl text-center">
-          <span className="mb-5 inline-block rounded-full bg-primary-light px-4 py-2 text-sm font-semibold uppercase tracking-wide text-primary">
-            Security Review Support
-          </span>
-          <h2 className="mb-5 text-3xl font-extrabold tracking-tight text-gray-900 md:text-4xl">
-            Accelerate procurement and security approvals without reworking the narrative every time
+          <h2 className="mb-5 text-3xl font-bold tracking-tight text-gray-900 md:text-4xl">
+            Evidence you can attach to your own security review
           </h2>
           <p className="mb-10 text-lg leading-relaxed text-gray-600">
-            Audit-ready reports and evidence-backed analysis are designed to shorten enterprise security reviews while
-            preserving operational control.
+            Reports export as HTML, Markdown, CSV, XLSX or JSON, depending on the module. Security Audit findings carry
+            framework references for orientation; they are not a certification, and the application is not represented
+            as a certified compliance system.
           </p>
 
           <div className="mb-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {reviewSupport.map((item) => (
+            {evidencePoints.map((item) => (
               <div
                 key={item}
                 className="rounded-2xl border border-slate-200/70 bg-white px-4 py-4 text-sm font-semibold text-gray-800 shadow-sm shadow-slate-200/50"
@@ -384,6 +347,13 @@ export default function SecurityPage() {
             ))}
           </div>
 
+          <p className="text-sm text-gray-600">
+            Have a security question this page does not answer?{' '}
+            <Link href="/contact" className="font-semibold text-primary hover:underline">
+              Contact us
+            </Link>
+            .
+          </p>
         </div>
       </section>
 

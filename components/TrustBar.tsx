@@ -3,8 +3,8 @@ import { Cpu, CloudOff, ShieldCheck, Ban } from 'lucide-react'
 const badges = [
   {
     icon: Cpu,
-    text: 'Offline-capable',
-    description: 'Local LLM mode, no Internet required',
+    text: 'Local AI by default',
+    description: 'Ollama, running locally by default',
   },
   {
     icon: CloudOff,
@@ -14,12 +14,12 @@ const badges = [
   {
     icon: ShieldCheck,
     text: 'Read-only by design',
-    description: 'SELECT-only, zero write risk',
+    description: 'No changes to your databases, jobs or settings',
   },
   {
     icon: Ban,
     text: 'No schema changes',
-    description: 'Safe for production environments',
+    description: 'Generated scripts are never executed',
   },
   {
     icon: Ban,

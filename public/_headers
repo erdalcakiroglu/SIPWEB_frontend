@@ -1,0 +1,67 @@
+# https://developers.cloudflare.com/workers/static-assets/headers
+# https://opennext.js.org/cloudflare/caching#static-assets-caching
+/_next/static/*
+  Cache-Control: public,max-age=31536000,immutable
+
+# Sample reports exported from the desktop app, published under /docs so the
+# module pages can link to a real artifact. They are thin, auto-generated and
+# duplicated across formats, so they stay out of the index.
+#
+# These rules match by FILENAME PREFIX, not by extension, and that is the whole
+# point. Cloudflare's asset router serves an .html file at its extension-less
+# path and 307s the .html URL to it, so an `/docs/*/*.html` rule only ever
+# tagged the redirect — the 200 that Google actually indexes came back with no
+# X-Robots-Tag at all. Verified live on August 15, 2026. The prefixes below
+# cover both the .html and the extension-less form, and the .md export too.
+#
+# Screenshots in these same directories are named 001.png, 002.png and so on, so
+# they do not match any prefix here and stay indexable in Google Images.
+/docs/blocking-analysis/blocking_report_*
+  X-Robots-Tag: noindex, nofollow, noarchive
+
+/docs/index-advisor/AI_Analysis_*
+  X-Robots-Tag: noindex, nofollow, noarchive
+
+/docs/object-explorer/AI_Report_*
+  X-Robots-Tag: noindex, nofollow, noarchive
+
+/docs/querystatistics/AI_Report_*
+  X-Robots-Tag: noindex, nofollow, noarchive
+
+/docs/security-audit/security_audit_*
+  X-Robots-Tag: noindex, nofollow, noarchive
+
+/docs/wait-statistics/wait_stats_export_*
+  X-Robots-Tag: noindex, nofollow, noarchive
+
+# Kept as a backstop for any future export dropped under /docs with one of these
+# extensions and a filename the prefixes above do not cover.
+/docs/*.html
+  X-Robots-Tag: noindex, nofollow, noarchive
+
+/docs/*/*.html
+  X-Robots-Tag: noindex, nofollow, noarchive
+
+/docs/*.md
+  X-Robots-Tag: noindex, nofollow, noarchive
+
+/docs/*/*.md
+  X-Robots-Tag: noindex, nofollow, noarchive
+
+/docs/*.csv
+  X-Robots-Tag: noindex, nofollow, noarchive
+
+/docs/*/*.csv
+  X-Robots-Tag: noindex, nofollow, noarchive
+
+/docs/*.json
+  X-Robots-Tag: noindex, nofollow, noarchive
+
+/docs/*/*.json
+  X-Robots-Tag: noindex, nofollow, noarchive
+
+/docs/*.txt
+  X-Robots-Tag: noindex, nofollow, noarchive
+
+/docs/*/*.txt
+  X-Robots-Tag: noindex, nofollow, noarchive

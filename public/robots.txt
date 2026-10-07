@@ -1,17 +1,11 @@
-# Allow all bots to crawl the site
+# AI crawler'lar (GPTBot, ClaudeBot, Google-Extended) 15 Agustos 2026'da
+# bilerek serbest birakildi: urun AI odakli ve AI asistanlarinin cevaplarinda
+# gorunurluk dagitim stratejisinin parcasi. Tekrar bloklamadan once bunu dikkate al.
+
 User-agent: *
 Allow: /
 Disallow: /.next/
 Disallow: /api/
 Disallow: /admin/
 
-# Specific rules for Googlebot
-User-agent: Googlebot
-Allow: /
-Crawl-delay: 0
-
-# Sitemap location
-Sitemap: https://www.sqlperformance.ai/sitemap.xml
-
-# Cache control
-Cache-Control: max-age=86400
+Sitemap: https://sqlperformance.ai/sitemap.xml

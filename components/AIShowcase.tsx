@@ -1,5 +1,6 @@
 import Link from 'next/link'
-import { Check, FileText, Zap } from 'lucide-react'
+import Image from 'next/image'
+import { Check } from 'lucide-react'
 
 const aiFeatures = [
   { title: 'Executive summary for fast production decisions', description: 'Clear overview of impact' },
@@ -10,106 +11,58 @@ const aiFeatures = [
 
 export default function AIShowcase() {
   return (
-    <section className="relative px-6 py-16 lg:px-10">
-      <div className="max-w-7xl mx-auto flex justify-center mb-16">
-        <span className="inline-block px-4 py-2 bg-white/15 text-white text-sm font-semibold rounded-full uppercase tracking-wide">
-          AI Analysis
-        </span>
-      </div>
-      <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+    <section className="bg-white px-6 py-24 lg:px-10">
+      <div className="mx-auto grid max-w-6xl items-center gap-14 lg:grid-cols-2 lg:gap-20">
         {/* Content */}
-        <div className="text-white">
-          <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-5">
-            Deterministic, Evidence-Backed SQL Recommendations
+        <div>
+          <span className="text-xs font-semibold uppercase tracking-[0.14em] text-primary">
+            AI Analysis
+          </span>
+          <h2 className="mt-3 text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
+            Deterministic, evidence-backed SQL recommendations
           </h2>
-          
-          <p className="text-lg text-white/75 leading-relaxed mb-8">
-            We analyze execution plans, Query Store, and wait signals to generate AI-assisted, audit-ready tuning recommendations.
+          <p className="mt-4 text-base leading-relaxed text-gray-600">
+            We analyze execution plans, Query Store, and wait signals to generate AI-assisted, audit-ready tuning
+            recommendations.
           </p>
 
-          {/* Feature list */}
-          <ul className="space-y-4 mb-10">
+          <ul className="mt-8 space-y-4">
             {aiFeatures.map((feature, index) => (
-              <li key={index} className="flex items-start gap-4 py-4">
-                <span className="w-6 h-6 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />
+              <li key={index} className="flex items-start gap-3">
+                <span className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-primary-light">
+                  <Check className="h-3 w-3 text-primary" strokeWidth={3} />
                 </span>
-                <span className="text-white/80">
-                  <strong className="font-semibold">{feature.title}</strong> — {feature.description}
+                <span className="text-sm leading-relaxed text-gray-700">
+                  <strong className="font-semibold text-gray-900">{feature.title}</strong> — {feature.description}
                 </span>
               </li>
             ))}
           </ul>
 
-          <Link 
-            href="/download" 
-            className="inline-flex px-8 py-4 bg-cta text-white font-bold rounded-xl shadow-cta hover:bg-cta-hover hover:shadow-cta-hover hover:-translate-y-0.5 focus:outline-none focus-visible:ring-4 focus-visible:ring-cta/35 transition-all"
+          <Link
+            href="/download"
+            className="mt-9 inline-flex items-center rounded-full bg-cta px-6 py-3 text-sm font-semibold text-white shadow-cta transition-all hover:-translate-y-0.5 hover:bg-cta-hover hover:shadow-cta-hover focus:outline-none focus-visible:ring-4 focus-visible:ring-cta/30"
           >
             Start 30-Day Free Trial
           </Link>
         </div>
 
-        {/* Report Preview */}
-        <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl overflow-hidden border border-white/10">
-          {/* Report header */}
-          <div className="bg-gradient-to-r from-primary-dark to-primary p-6 text-white">
-            <div className="flex items-center gap-3 mb-2">
-              <FileText className="w-5 h-5" />
-              <span className="font-bold">AI Performance Analysis Report</span>
-            </div>
-            <span className="text-sm opacity-85">dbo.usp_OrderSearch • SalesDB</span>
+        {/* Real AI report screenshot — refined frame */}
+        <div className="overflow-hidden rounded-xl border border-gray-200/80 bg-white shadow-[0_24px_60px_-20px_rgba(15,23,42,0.2)] ring-1 ring-black/[0.02]">
+          <div className="flex items-center gap-1.5 border-b border-gray-100 bg-gray-50/80 px-4 py-2.5">
+            <span className="h-2.5 w-2.5 rounded-full bg-gray-300" />
+            <span className="h-2.5 w-2.5 rounded-full bg-gray-300" />
+            <span className="h-2.5 w-2.5 rounded-full bg-gray-300" />
+            <span className="ml-2 text-[11px] font-medium text-gray-400">AI Performance Analysis Report</span>
           </div>
-
-          {/* Report body */}
-          <div className="p-6 space-y-6">
-            {/* Issues */}
-            <div>
-              <h4 className="text-sm font-bold mb-3 flex items-center gap-2">
-                🧨 Identified Issues
-              </h4>
-              <div className="space-y-3">
-                <div className="bg-rose-50 border-l-[3px] border-rose-400 p-4 rounded-r-lg">
-                  <div className="flex items-center gap-2 text-sm font-semibold text-rose-700 mb-1">
-                    <span>P1: Cursor-based RBAR pattern</span>
-                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-rose-100 text-rose-700">
-                      Impact: High
-                    </span>
-                  </div>
-                  <div className="text-xs text-gray-600">Row-by-row processing detected (high IO).</div>
-                  <div className="text-[11px] text-gray-500">Causing repeated table scans with 14,950 logical reads per execution.</div>
-                </div>
-                <div className="bg-rose-50 border-l-[3px] border-rose-400 p-4 rounded-r-lg">
-                  <div className="flex items-center gap-2 text-sm font-semibold text-rose-700 mb-1">
-                    <span>P1: Parameter sniffing risk</span>
-                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-rose-100 text-rose-700">
-                      Impact: High
-                    </span>
-                  </div>
-                  <div className="text-xs text-gray-600">High variance detected (CV &gt;165%)</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Recommendation */}
-            <div>
-              <h4 className="text-sm font-bold mb-3 flex items-center gap-2">
-                💡 Top Recommendation
-              </h4>
-              <div className="bg-green-50 border-l-[3px] border-green-500 p-4 rounded-r-lg">
-                <div className="text-sm font-semibold text-green-800 mb-1">Eliminate Cursor with Set-Based Rewrite</div>
-                <div className="text-xs text-gray-600">Estimated: up to 90% fewer logical reads, 85% lower CPU time</div>
-              </div>
-            </div>
-
-            {/* Confidence */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-full">
-              <Check className="w-4 h-4 text-green-600" />
-              <span className="text-sm font-semibold text-green-600">Confidence: 81% (High)</span>
-            </div>
-            <div className="text-sm text-gray-700 font-medium mt-2">
-              Based on execution plan + Query Store + wait stats.
-            </div>
-          </div>
+          <Image
+            src="/main/0006a-AI_Report-01.png"
+            alt="AI performance analysis report highlighting the primary query-design problem with diagnosis confidence"
+            width={1538}
+            height={736}
+            sizes="(min-width: 1024px) 520px, 100vw"
+            className="w-full"
+          />
         </div>
       </div>
     </section>

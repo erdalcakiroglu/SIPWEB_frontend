@@ -1,118 +1,133 @@
 import { Metadata } from 'next'
-import Header from '@/components/Header'
-import Footer from '@/components/Footer'
+import Link from 'next/link'
+import type { ReactNode } from 'react'
+import PolicyPageShell from '@/components/PolicyPageShell'
 
 export const metadata: Metadata = {
-  title: 'Terms of Service — SQL Performance Intelligence™',
-  description: 'Terms of Service for SQL Performance Intelligence software.',
+  title: 'Terms of Service — SQLPerformance AI',
+  description:
+    'Terms of Service covering use of SQLPerformance AI software, trial access, license restrictions, and liability terms.',
+  alternates: {
+    canonical: '/terms',
+  },
 }
+
+const restrictions = [
+  'Reverse engineer, decompile, or disassemble the software',
+  'Sublicense, rent, lease, or redistribute the software except where a separate written agreement permits it',
+  'Bypass license enforcement or access controls',
+  'Use the software to build a directly competing product from proprietary materials',
+  'Remove copyright, trademark, or other proprietary notices',
+]
 
 export default function TermsPage() {
   return (
-    <main>
-      <Header />
+    <PolicyPageShell
+      eyebrow="Legal"
+      title="Terms of Service"
+      description="Core commercial and operational terms for trial, licensed, and ongoing use of SQLPerformance AI."
+      lastUpdated="June 2026"
+      summaryTitle="Terms Scope"
+      summaryItems={[
+        'License and permitted use',
+        'Trial and subscription framing',
+        'Read-only analysis expectations',
+        'Warranty and liability limits',
+      ]}
+      relatedLinks={[
+        { href: '/privacy', label: 'Privacy Policy' },
+        { href: '/contact', label: 'Contact' },
+      ]}
+    >
+      <Section
+        title="1. Acceptance"
+        body="By downloading, installing, subscribing to, or using SQLPerformance AI, you agree to these Terms of Service. If you do not agree, do not use the software or related services."
+      />
 
-      {/* Hero */}
-      <section className="pt-32 pb-12 px-6 lg:px-10 bg-white">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight mb-6">
-            Terms of Service
-          </h1>
-          <p className="text-gray-600">
-            Last updated: February 2026
-          </p>
-        </div>
-      </section>
+      <Section
+        title="2. License Grant"
+        body="Subject to payment of applicable fees or the terms of an active trial, you receive a limited, non-exclusive, non-transferable, and non-sublicensable license to install and use the software for internal business evaluation or operational analysis."
+      />
 
-      {/* Content */}
-      <section className="py-16 px-6 lg:px-10 bg-gray-50">
-        <div className="max-w-4xl mx-auto">
-          <div className="bg-white rounded-xl p-8 space-y-8">
-            <div>
-              <h2 className="text-2xl font-bold mb-4">1. Acceptance of Terms</h2>
-              <p className="text-gray-700 leading-relaxed">
-                By downloading, installing, and using SQL Performance Intelligence™, you agree to be bound by these Terms of Service. If you do not agree to these terms, do not use the software.
-              </p>
-            </div>
+      <Section
+        title="3. Trials, Subscriptions, And Renewals"
+        body="Trial access may be time-limited and may end automatically unless converted to a paid plan. Paid access may be offered on recurring billing terms. Continued access to licensed features depends on an active entitlement unless a separate written commercial agreement states otherwise."
+      />
 
-            <div>
-              <h2 className="text-2xl font-bold mb-4">2. License Grant</h2>
-              <p className="text-gray-700 leading-relaxed">
-                We grant you a limited, non-exclusive, non-transferable license to use SQL Performance Intelligence for analysis and reporting of Microsoft SQL Server performance data.
-              </p>
-            </div>
+      <Section title="4. Restrictions">
+        <ul className="space-y-2 text-sm text-gray-700">
+          {restrictions.map((item) => (
+            <li key={item}>{item}</li>
+          ))}
+        </ul>
+      </Section>
 
-            <div>
-              <h2 className="text-2xl font-bold mb-4">3. Restrictions</h2>
-              <p className="text-gray-700 mb-4 leading-relaxed">You may not:</p>
-              <ul className="list-disc list-inside space-y-2 text-gray-700 ml-4">
-                <li>Reverse engineer, decompile, or disassemble the software</li>
-                <li>Sublicense, rent, lease, or lend the software</li>
-                <li>Use the software for competitive analysis or benchmarking</li>
-                <li>Modify or create derivative works</li>
-                <li>Remove proprietary notices or labels</li>
-              </ul>
-            </div>
+      <Section
+        title="5. Product Boundary"
+        body="The software is positioned as a read-only SQL Server diagnostics tool. It can surface findings, recommendations, scripts, and reports, but it does not auto-apply schema or data changes to target systems."
+      />
 
-            <div>
-              <h2 className="text-2xl font-bold mb-4">4. Intellectual Property</h2>
-              <p className="text-gray-700 leading-relaxed">
-                All content, features, and functionality of SQL Performance Intelligence are owned by us, our licensors, or other providers of such material and are protected by copyright, trademark, and other intellectual property laws.
-              </p>
-            </div>
+      <Section
+        title="6. AI-Assisted Output"
+        body="AI-assisted findings and recommendations are advisory. You are responsible for validating any suggestion before using it in a production, pre-production, or regulated environment."
+      />
 
-            <div>
-              <h2 className="text-2xl font-bold mb-4">5. Disclaimer of Warranties</h2>
-              <p className="text-gray-700 leading-relaxed">
-                THE SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND. WE DISCLAIM ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
-              </p>
-            </div>
+      <Section
+        title="7. Customer Responsibilities"
+        body="You are responsible for database credentials, access control, change management, infrastructure security, and review of any scripts or recommendations produced by the software."
+      />
 
-            <div>
-              <h2 className="text-2xl font-bold mb-4">6. Limitation of Liability</h2>
-              <p className="text-gray-700 leading-relaxed">
-                IN NO EVENT SHALL WE BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
-              </p>
-            </div>
+      <Section
+        title="8. Intellectual Property"
+        body="All rights, title, and interest in the software, website materials, trademarks, and documentation remain with the owner and licensors except for the limited rights expressly granted in these terms."
+      />
 
-            <div>
-              <h2 className="text-2xl font-bold mb-4">7. Database Access and Security</h2>
-              <p className="text-gray-700 leading-relaxed">
-                You are responsible for controlling access to your database credentials and ensuring authorized use of SQL Performance Intelligence. The software operates with read-only access to databases.
-              </p>
-            </div>
+      <Section
+        title="9. Warranty Disclaimer"
+        body='The software is provided "as is" and "as available" without warranties of any kind, whether express, implied, or statutory, including implied warranties of merchantability, fitness for a particular purpose, and non-infringement, to the maximum extent permitted by law.'
+      />
 
-            <div>
-              <h2 className="text-2xl font-bold mb-4">8. User Content</h2>
-              <p className="text-gray-700 leading-relaxed">
-                You retain all rights to any data, reports, or analysis you create using SQL Performance Intelligence. You grant us the right to use feedback or reports for product improvement.
-              </p>
-            </div>
+      <Section
+        title="10. Limitation Of Liability"
+        body="To the maximum extent permitted by law, the provider is not liable for indirect, incidental, special, consequential, punitive, or lost-profit damages arising from or related to use of the software, website, or generated outputs."
+      />
 
-            <div>
-              <h2 className="text-2xl font-bold mb-4">9. Termination</h2>
-              <p className="text-gray-700 leading-relaxed">
-                We may terminate your license if you violate these terms. Upon termination, your rights cease immediately.
-              </p>
-            </div>
+      <Section
+        title="11. Termination"
+        body="Rights granted under these terms may be suspended or terminated if you materially violate them. Upon termination, your right to use the software ends immediately unless otherwise required by law or a separate written agreement."
+      />
 
-            <div>
-              <h2 className="text-2xl font-bold mb-4">10. Governing Law</h2>
-              <p className="text-gray-700 leading-relaxed">
-                These Terms are governed by and construed in accordance with applicable law, and you irrevocably submit to the exclusive jurisdiction of the courts.
-              </p>
-            </div>
+      <Section
+        title="12. Governing Law"
+        body="These terms are governed by applicable law and subject to the jurisdiction identified in the controlling commercial relationship or the competent courts otherwise required by law."
+      />
 
-            <div className="border-t pt-8">
-              <p className="text-sm text-gray-600">
-                For questions about these terms, please contact us through our Contact page.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+      <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+        <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">Questions</div>
+        <p className="text-sm leading-relaxed text-gray-700">
+          For questions about licensing, trials, or legal terms, use the{' '}
+          <Link href="/contact" className="font-semibold text-primary hover:text-primary-dark">
+            contact page
+          </Link>
+          .
+        </p>
+      </div>
+    </PolicyPageShell>
+  )
+}
 
-      <Footer />
-    </main>
+type SectionProps = {
+  title: string
+  body?: string
+  children?: ReactNode
+}
+
+function Section({ title, body, children }: SectionProps) {
+  return (
+    <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+      <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">{title}</div>
+      {body ? <p className="text-sm leading-relaxed text-gray-700">{body}</p> : null}
+      {children}
+    </div>
   )
 }

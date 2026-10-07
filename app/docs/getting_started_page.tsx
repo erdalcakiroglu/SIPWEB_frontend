@@ -1,10 +1,15 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import Header from '@/components/Header'
+import PageHero from '@/components/PageHero'
 import Footer from '@/components/Footer'
+import BreadcrumbSchema from '@/components/BreadcrumbSchema'
+import TechArticleSchema from '@/components/TechArticleSchema'
 import { gettingStartedPages } from './data'
 import { gettingStartedTemplates } from './templates'
+import DocsMobileMenu from './mobile-menu'
 import DocsRightMenu from './right_menu'
+import DocsNextStep from './next_step'
 
 export type GettingStartedPageProps = {
   slug: string
@@ -16,13 +21,19 @@ export function getGettingStartedMetadata(slug: string) {
 
   if (!page) {
     return {
-      title: 'Docs — SQL Performance Intelligence™',
+      title: 'Docs — SQLPerformance AI',
+      alternates: {
+        canonical: '/docs',
+      },
     }
   }
 
   return {
-    title: `${page.title} — Docs — SQL Performance Intelligence™`,
+    title: `${page.title} — Docs — SQLPerformance AI`,
     description: page.summary,
+    alternates: {
+      canonical: `/docs/${page.slug}`,
+    },
   }
 }
 
@@ -38,35 +49,53 @@ export default function GettingStartedPage({ slug }: GettingStartedPageProps) {
 
   return (
     <main>
+      <BreadcrumbSchema
+        items={[
+          { name: 'Docs', path: '/docs' },
+          { name: page.title },
+        ]}
+      />
+      <TechArticleSchema
+        headline={page.title}
+        description={page.summary}
+        path={`/docs/${page.slug}`}
+      />
       <Header />
 
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary-gradientFrom via-primary to-primary-gradientTo px-6 py-12 pt-32 lg:px-10">
-        <div className="absolute inset-0 bg-grid-pattern opacity-60 pointer-events-none" />
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/4 left-1/5 h-96 w-96 rounded-full bg-white/10 blur-3xl" />
-          <div className="absolute bottom-1/4 right-1/5 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
-        </div>
-
-        <div className="relative z-10 mx-auto max-w-6xl">
-          <div className="mb-4 flex flex-wrap items-center gap-2 text-sm text-white/75">
+      <PageHero
+        breadcrumb={
+          <>
             <Link href="/docs" className="hover:text-white">
               Docs
             </Link>
             <span>/</span>
             <span className="font-semibold text-white">{page.title}</span>
-          </div>
-          <h1 className="mb-4 text-3xl font-extrabold tracking-tight text-white md:text-5xl">{page.title}</h1>
-          <p className="max-w-3xl text-lg leading-relaxed text-white/85">{page.summary}</p>
-        </div>
-      </section>
+          </>
+        }
+        title={page.title}
+        description={page.summary}
+      />
 
       <section className="py-10 px-6 lg:px-10 bg-gray-50">
         <div className="max-w-6xl mx-auto">
-          <div className="grid lg:grid-cols-[240px_minmax(0,1fr)] gap-8">
+          <DocsMobileMenu />
+
+          {/* md step added to match app/docs/page.tsx — see the note in
+              app/docs/modules/module_page.tsx. Without it an iPad in portrait
+              rendered the sidebar as a full-width card above the article. */}
+          <div className="grid md:grid-cols-[200px_minmax(0,1fr)] lg:grid-cols-[240px_minmax(0,1fr)] gap-8">
             <DocsRightMenu />
 
-            <div className="space-y-10">
+            {/* min-w-0 is load-bearing — see the note in app/docs/page.tsx. A grid
+                item defaults to min-width:auto and will not shrink below its
+                content's intrinsic minimum, so one <pre> with a long command line
+                widened this column past the phone viewport and gave the whole page
+                a horizontal scrollbar. break-words handles long bare identifiers
+                like sys.query_store_runtime_stats_interval and inherits down. */}
+            <div className="min-w-0 break-words space-y-10">
               <Template />
+
+              <DocsNextStep slug={page.slug} />
 
               <div className="flex items-center justify-between text-sm text-gray-500">
                 <Link href="/docs" className="hover:text-gray-900">

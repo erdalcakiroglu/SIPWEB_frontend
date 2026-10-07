@@ -80,9 +80,9 @@ export default function ContactForm() {
   }
 
   return (
-    <div className="bg-white border border-gray-200/70 rounded-xl p-5">
-      <div className="text-sm font-semibold text-gray-900 mb-1">{copy.title}</div>
-      <div className="text-xs text-gray-500 mb-4">{copy.helper}</div>
+    <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+      <div className="mb-1 text-sm font-semibold text-gray-900">{copy.title}</div>
+      <div className="mb-4 text-xs text-gray-500">{copy.helper}</div>
 
       {submissionState ? (
         <div
@@ -97,17 +97,17 @@ export default function ContactForm() {
         </div>
       ) : null}
 
-      <form onSubmit={handleSubmit} className="space-y-4" aria-busy={isSubmitting}>
+      <form onSubmit={handleSubmit} className="space-y-5" aria-busy={isSubmitting}>
         <div>
           <label className="block text-xs font-semibold text-gray-600 mb-2">Contact reason</label>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <button
               type="button"
               onClick={() => setReason('sales')}
               disabled={isSubmitting}
               className={`px-3 py-2 text-xs font-semibold rounded-lg border transition-colors ${
                 reason === 'sales'
-                  ? 'border-emerald-300 bg-emerald-50 text-emerald-900'
+                  ? 'border-primary/25 bg-primary-light text-primary'
                   : 'border-gray-200 text-gray-600 hover:border-gray-300'
               }`}
             >
@@ -119,7 +119,7 @@ export default function ContactForm() {
               disabled={isSubmitting}
               className={`px-3 py-2 text-xs font-semibold rounded-lg border transition-colors ${
                 reason === 'technical'
-                  ? 'border-emerald-300 bg-emerald-50 text-emerald-900'
+                  ? 'border-primary/25 bg-primary-light text-primary'
                   : 'border-gray-200 text-gray-600 hover:border-gray-300'
               }`}
             >
@@ -206,7 +206,7 @@ export default function ContactForm() {
           <input type="text" name="website" tabIndex={-1} autoComplete="off" disabled={isSubmitting} />
         </div>
 
-        <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+        <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
           Do not include passwords, API keys, or sensitive production data. Redact before sending.
         </div>
 
@@ -214,7 +214,7 @@ export default function ContactForm() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="inline-flex items-center justify-center px-6 py-3 rounded-xl font-semibold text-white bg-cta shadow-cta hover:bg-cta-hover hover:shadow-cta-hover hover:-translate-y-0.5 focus:outline-none focus-visible:ring-4 focus-visible:ring-cta/35 transition-all"
+            className="inline-flex items-center justify-center rounded-xl bg-cta px-6 py-3 font-semibold text-white shadow-cta transition-all hover:-translate-y-0.5 hover:bg-cta-hover hover:shadow-cta-hover focus:outline-none focus-visible:ring-4 focus-visible:ring-cta/35 disabled:cursor-not-allowed disabled:opacity-70"
           >
             {isSubmitting ? 'Sending...' : 'Send message'}
           </button>

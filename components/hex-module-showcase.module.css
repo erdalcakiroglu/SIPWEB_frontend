@@ -1,0 +1,239 @@
+.hexSection {
+  padding: 80px 24px;
+  background:
+    radial-gradient(circle at top left, rgba(66, 153, 225, 0.16), transparent 32%),
+    linear-gradient(180deg, #07111f 0%, #0b1220 100%);
+  color: #fff;
+  overflow: hidden;
+  min-height: 100vh;
+}
+
+.hexHeader {
+  max-width: 860px;
+  margin: 0 auto 48px;
+  text-align: center;
+}
+
+.eyebrow {
+  display: inline-block;
+  margin-bottom: 12px;
+  color: #7dd3fc;
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.hexHeader h2 {
+  font-size: clamp(32px, 5vw, 56px);
+  margin: 0 0 16px;
+}
+
+.hexHeader p {
+  color: #a8b3c7;
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+.hexLayout {
+  max-width: 1180px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1.15fr;
+  gap: 48px;
+  align-items: center;
+}
+
+.hexGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 150px);
+  gap: 18px;
+  justify-content: center;
+}
+
+.hexCard {
+  width: 150px;
+  height: 132px;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  background: transparent;
+  clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeUp 0.35s ease forwards;
+}
+
+.hexCard:nth-child(4),
+.hexCard:nth-child(5),
+.hexCard:nth-child(6) {
+  transform: translateX(84px);
+  animation-name: fadeShift;
+}
+
+.hexInner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #101a2d;
+  border: 1px solid rgba(125, 211, 252, 0.25);
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hexInner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(0.85) brightness(0.72);
+}
+
+.hexCard:hover .hexInner {
+  transform: scale(1.05);
+}
+
+.hexOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: end;
+  justify-content: center;
+  padding: 18px 12px;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.72));
+  text-align: center;
+}
+
+.hexOverlay strong {
+  font-size: 13px;
+  line-height: 1.2;
+}
+
+.active .hexInner {
+  box-shadow:
+    0 0 0 2px rgba(125, 211, 252, 0.7),
+    0 0 34px rgba(56, 189, 248, 0.42);
+}
+
+.moduleDetail {
+  background: rgba(15, 23, 42, 0.86);
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+}
+
+.detailImage {
+  height: 280px;
+  background: #111827;
+}
+
+.detailImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.detailContent {
+  padding: 32px;
+}
+
+.detailLabel {
+  color: #7dd3fc;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.detailContent h3 {
+  margin: 12px 0;
+  font-size: 34px;
+}
+
+.detailContent p {
+  color: #b8c2d6;
+  line-height: 1.7;
+}
+
+.shortText {
+  color: #fff !important;
+  font-size: 18px;
+}
+
+.detailActions {
+  display: flex;
+  gap: 14px;
+  margin-top: 28px;
+}
+
+.detailActions button {
+  border: 0;
+  border-radius: 999px;
+  padding: 13px 20px;
+  background: #38bdf8;
+  color: #06111f;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.secondary {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #fff !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeShift {
+  from {
+    opacity: 0;
+    transform: translateX(84px) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(84px) translateY(0);
+  }
+}
+
+@media (max-width: 980px) {
+  .hexLayout {
+    grid-template-columns: 1fr;
+  }
+
+  .hexGrid {
+    grid-template-columns: repeat(2, 150px);
+  }
+
+  .hexCard:nth-child(4),
+  .hexCard:nth-child(5),
+  .hexCard:nth-child(6) {
+    transform: none;
+    animation-name: fadeUp;
+  }
+}
+
+@media (max-width: 520px) {
+  .hexGrid {
+    grid-template-columns: repeat(2, 130px);
+  }
+
+  .hexCard {
+    width: 130px;
+    height: 115px;
+  }
+
+  .detailImage {
+    height: 200px;
+  }
+
+  .detailContent h3 {
+    font-size: 26px;
+  }
+}

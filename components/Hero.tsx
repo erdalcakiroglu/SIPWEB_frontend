@@ -1,134 +1,85 @@
-'use client'
-
 import Link from 'next/link'
-import { Server, FileText } from 'lucide-react'
+import Image from 'next/image'
+import { ArrowRight, Check, PlayCircle } from 'lucide-react'
 
 export default function Hero() {
   return (
-    <section className="relative pt-32 pb-24 px-6 lg:px-10 bg-gradient-to-br from-primary-gradientFrom via-primary to-primary-gradientTo overflow-hidden">
-      {/* Background patterns */}
-      <div className="absolute inset-0 bg-grid-pattern opacity-60 pointer-events-none" />
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/4 left-1/5 w-96 h-96 bg-white/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/5 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
+    <section className="relative overflow-hidden bg-gradient-to-br from-primary-gradientFrom via-primary to-primary-gradientTo px-6 pb-16 pt-32 lg:px-10 lg:pb-20">
+      <div className="pointer-events-none absolute inset-0 bg-grid-pattern opacity-60" />
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute left-[8%] top-20 h-80 w-80 rounded-full bg-white/10 blur-3xl" />
+        <div className="absolute -bottom-32 right-[8%] h-96 w-96 rounded-full bg-cyan-200/10 blur-3xl" />
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-        {/* Content */}
-        <div className="text-white">
-          <h1 className="text-4xl md:text-5xl lg:text-[52px] font-extrabold leading-[1.1] tracking-tight mb-6">
-            AI-Powered SQL Server Performance Intelligence.
+      <div className="relative z-10 mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-14">
+        <div>
+          <div className="mb-6 inline-flex items-center rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-white/90 backdrop-blur-sm">
+            Local-first · Read-only · Interactive
+          </div>
+
+          {/* The h1 once read "Find the root cause without sending production
+              evidence to the cloud." — a good promise that named neither the product
+              nor the problem. It was later reworded to keep "SQL Server" and
+              "performance" in the line. On 2026-10-04 the cloud promise was dropped:
+              AI analysis can run on a local Ollama model, but the user may also pick
+              OpenAI, Anthropic, Azure OpenAI or DeepSeek, so "never sends evidence to
+              the cloud" is not something the app guarantees. Keep "SQL Server" and
+              "performance" in this line. */}
+          <h1 className="max-w-2xl text-4xl font-extrabold leading-[1.08] tracking-tight text-white sm:text-5xl lg:text-[3.5rem]">
+            Tune SQL Server performance with read-only, local-first analysis.
           </h1>
-          
-          <p className="text-lg md:text-xl text-white/85 leading-relaxed mb-8 max-w-lg">
-            Analyze stored procedures, detect bottlenecks, and generate audit-ready tuning reports — fully read-only.
+
+          <p className="mt-6 max-w-xl text-lg leading-relaxed text-white/85">
+            A read-only SQL Server performance tuning workbench for Windows. AI analysis runs on a local model by default; cloud AI providers are optional and chosen by you.
           </p>
 
-          {/* CTA Buttons */}
-          <div className="flex flex-wrap gap-4 mb-12 items-start">
-            <Link 
-              href="/download" 
-              className="group inline-flex flex-col items-center text-center px-8 py-3.5 bg-cta text-white font-bold rounded-xl shadow-cta hover:bg-cta-hover hover:shadow-cta-hover hover:-translate-y-0.5 focus:outline-none focus-visible:ring-4 focus-visible:ring-cta/35 transition-all"
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Link
+              href="/download"
+              className="group inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-semibold text-primary-dark shadow-lg transition-all hover:-translate-y-0.5 hover:bg-cyan-50 focus:outline-none focus-visible:ring-4 focus-visible:ring-white/40"
             >
-              <span>Start 30-Day Free Trial</span>
-              <span className="mt-1 text-[11px] leading-none text-white/80 font-medium">
-                No credit card required.
-              </span>
+              Start 30-Day Free Trial
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
             </Link>
-            <Link 
-              href="/features" 
-              className="px-8 py-4 bg-white/10 border-2 border-white/30 text-white font-semibold rounded-xl backdrop-blur-sm hover:bg-white/20 hover:border-white/50 hover:shadow-lg hover:shadow-white/10 transition-all flex items-center gap-2"
+            <Link
+              href="/features"
+              className="inline-flex items-center gap-2 rounded-xl border border-white/30 bg-white/10 px-5 py-3 text-sm font-semibold text-white backdrop-blur-sm transition-colors hover:bg-white/20"
             >
-              <FileText className="w-4 h-4" />
-              Explore Features
+              <PlayCircle className="h-4 w-4" />
+              Explore the modules
             </Link>
           </div>
 
+          <ul className="mt-7 flex flex-wrap gap-x-6 gap-y-2 text-sm text-white/80">
+            {['No credit card', 'No agents', 'No automatic changes'].map((item) => (
+              <li key={item} className="flex items-center gap-2">
+                <Check className="h-4 w-4 text-cyan-200" strokeWidth={2.5} />
+                {item}
+              </li>
+            ))}
+          </ul>
         </div>
 
-        {/* Visual mockup */}
         <div className="relative">
-          <div className="bg-white rounded-2xl shadow-2xl overflow-hidden transform perspective-1000 rotate-y-[-5deg] hover:rotate-y-[-2deg] transition-transform duration-500">
-            {/* Window header */}
-            <div className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
-              <span className="w-3 h-3 rounded-full bg-red-500" />
-              <span className="w-3 h-3 rounded-full bg-yellow-500" />
-              <span className="w-3 h-3 rounded-full bg-green-500" />
-            </div>
-            
-            {/* App preview */}
-            <div className="p-3 bg-gray-100 min-h-[380px] font-mono text-sm border border-gray-300">
-              {/* Window title bar - Windows 11 style */}
-              <div className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-slate-700 to-slate-800 text-white text-xs mb-2 rounded-t">
-                <div className="w-3 h-3 rounded-full bg-red-500" />
-                <span className="ml-1 font-semibold">Query Performance Analysis - SQL Server</span>
+          <div className="absolute -inset-5 rounded-[2rem] bg-white/10 blur-2xl" />
+          <div className="relative overflow-hidden rounded-2xl border border-white/25 bg-white p-2 shadow-[0_28px_70px_-22px_rgba(2,40,46,0.65)]">
+            <div className="flex items-center justify-between border-b border-gray-100 px-3 py-2">
+              <div className="flex gap-1.5">
+                <span className="h-2.5 w-2.5 rounded-full bg-gray-300" />
+                <span className="h-2.5 w-2.5 rounded-full bg-gray-300" />
+                <span className="h-2.5 w-2.5 rounded-full bg-gray-300" />
               </div>
-
-              {/* SQL Server UI Grid */}
-              <div className="bg-white border border-gray-300 p-2 space-y-2">
-                {/* Query metrics table */}
-                <div className="bg-white border border-gray-200 text-xs">
-                  <div className="flex bg-gray-200 border-b border-gray-300 font-bold">
-                    <div className="flex-1 px-2 py-1 border-r border-gray-300">Metric</div>
-                    <div className="w-20 px-2 py-1 border-r border-gray-300 text-right">Current</div>
-                    <div className="w-20 px-2 py-1 text-right">Recommended</div>
-                  </div>
-                  <div className="flex border-b border-gray-200 hover:bg-blue-50">
-                    <div className="flex-1 px-2 py-1 border-r border-gray-200">Logical Reads</div>
-                    <div className="w-20 px-2 py-1 border-r border-gray-200 text-right font-semibold">8,547,120</div>
-                    <div className="w-20 px-2 py-1 text-right text-green-700 font-bold">1,254,890</div>
-                  </div>
-                  <div className="flex border-b border-gray-200 hover:bg-blue-50">
-                    <div className="flex-1 px-2 py-1 border-r border-gray-200">Physical Reads</div>
-                    <div className="w-20 px-2 py-1 border-r border-gray-200 text-right font-semibold">142,890</div>
-                    <div className="w-20 px-2 py-1 text-right text-green-700 font-bold">12,450</div>
-                  </div>
-                  <div className="flex border-b border-gray-200 hover:bg-blue-50">
-                    <div className="flex-1 px-2 py-1 border-r border-gray-200">CPU Time (ms)</div>
-                    <div className="w-20 px-2 py-1 border-r border-gray-200 text-right font-semibold">4,521</div>
-                    <div className="w-20 px-2 py-1 text-right text-green-700 font-bold">487</div>
-                  </div>
-                  <div className="flex hover:bg-blue-50">
-                    <div className="flex-1 px-2 py-1 border-r border-gray-200">Elapsed Time (ms)</div>
-                    <div className="w-20 px-2 py-1 border-r border-gray-200 text-right font-semibold">6,834</div>
-                    <div className="w-20 px-2 py-1 text-right text-green-700 font-bold">812</div>
-                  </div>
-                </div>
-
-                {/* Execution Plan + AI Recommendation */}
-                <div className="bg-blue-50 border-l-4 border-blue-600 p-2">
-                  <div className="text-[11px] font-bold text-blue-900 mb-1">📋 Execution Plan Analysis (Query Store)</div>
-                  <div className="text-[10px] text-gray-700 leading-tight mb-2 font-mono bg-white px-1.5 py-1 border border-gray-300 rounded">
-                    Wait Type: <span className="font-bold text-orange-700">CXPACKET</span> (58%) | Missing Index: <span className="font-bold">IDX_Customer_ID</span>
-                  </div>
-                  <div className="text-[10px] font-semibold text-green-700">✓ AI Recommendation:</div>
-                  <div className="text-[10px] text-gray-600 leading-tight">Add missing index on columns <code className="bg-gray-200 px-1 rounded">[CustomerID, OrderDate]</code> — Est. improvement: <span className="font-bold">-90% CPU</span>, <span className="font-bold">-85% Reads</span></div>
-                </div>
-
-                {/* Confidence Score Badge */}
-                <div className="flex items-center gap-2 bg-green-50 border border-green-200 p-2 rounded">
-                  <div className="text-2xl">✓</div>
-                  <div className="text-[10px]">
-                    <div className="font-bold text-green-800">Confidence: 94%</div>
-                    <div className="text-gray-600">Based on Execution Plan + Query Store metrics + Wait Statistics</div>
-                  </div>
-                </div>
-
-                {/* Footer note */}
-                <div className="text-[10px] text-gray-500 text-center border-t border-gray-200 pt-2 mt-2">
-                  ✓ No agents required • Read-only analysis
-                </div>
-              </div>
+              <span className="text-[11px] font-medium text-gray-400">Dashboard · Live server health</span>
             </div>
-          </div>
-
-          <div className="mt-6 flex justify-center">
-            <div className="flex items-center gap-2 inline-flex px-4 py-2 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm">
-              <Server className="w-4 h-4 text-white/80" />
-              <span className="text-sm text-white/90 font-medium">
-                Supports SQL Server <span className="font-bold">2016–2022</span> (Enterprise & Standard)
-              </span>
-            </div>
+            <Image
+              src="/docs/dashboard/001.png"
+              alt="SQLPerformance AI Dashboard showing live server, memory and workload health for a SQL Server instance"
+              width={1483}
+              height={741}
+              priority
+              sizes="(min-width: 1024px) 620px, 100vw"
+              className="w-full rounded-b-xl"
+            />
           </div>
         </div>
       </div>

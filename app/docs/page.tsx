@@ -1,12 +1,16 @@
 import Link from 'next/link'
 import Header from '@/components/Header'
+import PageHero from '@/components/PageHero'
 import Footer from '@/components/Footer'
 import DocsRightMenu from './right_menu'
 import DocsMobileMenu from './mobile-menu'
 
 export const metadata = {
-  title: 'Docs — SQL Performance Intelligence™',
-  description: 'Install, connect, and run your first analysis with SQL Performance Intelligence™.',
+  title: 'Docs — SQLPerformance AI',
+  description: 'Install, connect, and run your first analysis with SQLPerformance AI.',
+  alternates: {
+    canonical: '/docs',
+  },
 }
 
 export default function DocsPage() {
@@ -14,8 +18,13 @@ export default function DocsPage() {
     <main>
       <Header />
 
+      <PageHero
+        title="Documentation"
+        description="Practical setup and module usage guide for SQLPerformance AI — install, connect, and run your first evidence-backed analysis."
+      />
+
       {/* Docs Layout */}
-      <section className="pt-32 pb-12 px-6 lg:px-10 bg-gray-50">
+      <section className="py-12 px-6 lg:px-10 bg-gray-50">
         <div className="max-w-6xl mx-auto">
           {/* Mobile Menu */}
           <DocsMobileMenu />
@@ -23,30 +32,49 @@ export default function DocsPage() {
           <div className="grid md:grid-cols-[200px_minmax(0,1fr)] lg:grid-cols-[240px_minmax(0,1fr)] gap-8">
             <DocsRightMenu />
 
-            <article className="space-y-12">
+            {/* min-w-0 is load-bearing. A grid item defaults to min-width:auto, so
+                it refuses to shrink below its content's intrinsic minimum — one
+                <pre> with a long unwrappable command line was widening this column
+                past the viewport and giving the whole page a horizontal scrollbar
+                on phones (473px of content in a 390px window). Zeroing the minimum
+                lets the column stay at the viewport width and hands the overflow
+                back to the <pre>, which already has overflow-x-auto and scrolls on
+                its own. break-words does the same job for long bare identifiers
+                like sys.query_store_runtime_stats_interval; it inherits, so it
+                covers the whole subtree. */}
+            <article className="min-w-0 break-words space-y-12">
               {/* Getting Started */}
               <section id="getting-started" className="space-y-6">
-                <div>
-                  <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-2">Documentation</h1>
-                  <p className="text-sm text-gray-600">
-                    Practical setup and module usage guide for SQL Performance Intelligence.
-                  </p>
-                </div>
-
                 <div id="before-you-begin" className="rounded-xl border border-gray-200 bg-white p-5">
                   <h2 className="text-2xl font-bold mb-3">Before You Begin</h2>
-                  <ol className="list-decimal pl-5 space-y-2 text-sm text-gray-700">
-                    <li>Add at least one SQL Server connection in <span className="font-semibold">Settings &gt; Database</span>.</li>
-                    <li>Activate the connection with <span className="font-semibold">Connect</span>.</li>
-                    <li>
-                      From the Info Bar, select active <span className="font-semibold">Server</span>,{' '}
-                      <span className="font-semibold">Database</span>, and (if needed) <span className="font-semibold">AI Model</span>.
-                    </li>
-                  </ol>
+                  <p className="text-sm text-gray-700">
+                    Use this page as the navigation hub. For the best user and SEO structure, each guide below has a
+                    distinct job:{' '}
+                    <Link className="font-semibold text-primary hover:text-primary-dark" href="/docs/overview">
+                      Overview
+                    </Link>{' '}
+                    explains the product,{' '}
+                    <Link className="font-semibold text-primary hover:text-primary-dark" href="/docs/installation">
+                      Installation
+                    </Link>{' '}
+                    covers setup and prerequisites, and{' '}
+                    <Link className="font-semibold text-primary hover:text-primary-dark" href="/docs/quickstart">
+                      Quickstart
+                    </Link>{' '}
+                    walks through the first working analysis, while{' '}
+                    <Link className="font-semibold text-primary hover:text-primary-dark" href="/docs/settings">
+                      Settings
+                    </Link>{' '}
+                    documents the configuration surface that controls SQL, AI, license, and appearance behavior.
+                  </p>
                 </div>
 
                 <div id="overview" className="space-y-3">
                   <h3 className="text-xl font-semibold">Overview</h3>
+                  <p className="text-sm text-gray-700">
+                    Read this first if you want to understand what the product does, why Query Store matters, which AI
+                    path to choose, and which modules to open first.
+                  </p>
                   <div className="grid md:grid-cols-2 gap-4 text-sm text-gray-700">
                     <div className="rounded-xl border border-gray-200 bg-white p-4">
                       <div className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">
@@ -64,7 +92,7 @@ export default function DocsPage() {
                       </div>
                       <ul className="space-y-2">
                         <li>No automatic schema changes or auto-apply actions.</li>
-                        <li>No background agents or persistent collectors.</li>
+                        <li>No agents or collectors on your SQL Server hosts. The app polls only while it is open and connected.</li>
                         <li>No table/row data extraction as a collection step.</li>
                       </ul>
                     </div>
@@ -77,8 +105,8 @@ export default function DocsPage() {
                 <div id="installation" className="space-y-3">
                   <h3 className="text-xl font-semibold">Installation</h3>
                   <p className="text-sm text-gray-700">
-                    Use the standard Windows installer for desktop environments. Offline installer is available for
-                    controlled networks.
+                    Use this guide for Windows installation, first-run onboarding, SQL login preparation, Query Store
+                    enablement, and the initial Database plus AI / LLM setup.
                   </p>
                   <pre className="rounded-xl bg-slate-900 text-slate-100 text-xs p-4 overflow-x-auto">
 {`# Example silent install
@@ -86,7 +114,7 @@ msiexec /i "SQL Performance Intelligence.msi" /quiet /norestart`}
                   </pre>
                   <div className="rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-900">
                     <div className="text-xs font-semibold uppercase tracking-wide mb-1">Note</div>
-                    Signed binaries are provided for enterprise change-control workflows.
+                    The installer is not code-signed. Compare its SHA-256 hash with the value on the Download page before you install.
                   </div>
                   <Link
                     className="text-sm font-semibold text-primary hover:text-primary-dark"
@@ -100,7 +128,11 @@ msiexec /i "SQL Performance Intelligence.msi" /quiet /norestart`}
                   <h3 className="text-xl font-semibold">Database User Permissions</h3>
                   <p className="text-sm text-gray-700">
                     The application operates in <span className="font-semibold">read-only</span> mode. Minimum required
-                    permissions may vary by environment; these are recommended for initial setup.
+                    permissions may vary by environment; for the exact setup sequence and DBA examples, use the{' '}
+                    <Link className="font-semibold text-primary hover:text-primary-dark" href="/docs/installation">
+                      installation guide
+                    </Link>
+                    .
                   </p>
                   <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
                     <div className="text-xs font-semibold uppercase tracking-wide mb-1">Note</div>
@@ -117,19 +149,32 @@ msiexec /i "SQL Performance Intelligence.msi" /quiet /norestart`}
 
                 <div id="quickstart" className="space-y-3">
                   <h3 className="text-xl font-semibold">Quickstart</h3>
-                  <ol className="space-y-2 text-sm text-gray-700 list-decimal pl-4">
-                    <li>Open the target module (Dashboard, Object Explorer, Query Statistics, or another module).</li>
-                    <li>Set filters and scope (time range, object type, search, or severity).</li>
-                    <li>Run analysis or refresh data.</li>
-                    <li>Review findings and supporting evidence.</li>
-                    <li>Export report/script output when needed.</li>
-                  </ol>
+                  <p className="text-sm text-gray-700">
+                    Use Quickstart after installation when you want the shortest path to a working SQL connection, a
+                    first Dashboard check, and a tested AI provider for AI-assisted analysis.
+                  </p>
                   <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900">
                     <div className="text-xs font-semibold uppercase tracking-wide mb-1">Tip</div>
                     Start with Local mode (default). No prompts or context leave your network.
                   </div>
                   <Link className="text-sm font-semibold text-primary hover:text-primary-dark" href="/docs/quickstart">
                     Open the quickstart guide
+                  </Link>
+                </div>
+
+                <div id="settings" className="space-y-3">
+                  <h3 className="text-xl font-semibold">Settings</h3>
+                  <p className="text-sm text-gray-700">
+                    Use this guide when you need a full explanation of the Settings screen, including SQL connections,
+                    AI providers, prompt rules, licensing, local app lock, analysis thresholds, and appearance preferences.
+                  </p>
+                  <div className="rounded-lg border border-violet-200 bg-violet-50 px-4 py-3 text-sm text-violet-900">
+                    <div className="text-xs font-semibold uppercase tracking-wide mb-1">Best Use</div>
+                    Read this after installation if you want to understand what each tab changes before editing
+                    advanced options.
+                  </div>
+                  <Link className="text-sm font-semibold text-primary hover:text-primary-dark" href="/docs/settings">
+                    Open the settings guide
                   </Link>
                 </div>
               </section>
@@ -146,7 +191,7 @@ msiexec /i "SQL Performance Intelligence.msi" /quiet /norestart`}
                     className="rounded-lg border border-gray-200 bg-white p-4 hover:border-primary hover:shadow-md transition-all"
                   >
                     <div className="font-semibold mb-1">Dashboard</div>
-                    <p>Monitor server health, memory, IO, TempDB, and workload trends in real time.</p>
+                    <p>Refresh a current snapshot of server health, memory, storage I/O, TempDB, and workload pressure, and audit server configuration against best practices.</p>
                   </Link>
                   <Link
                     href="/docs/modules/query-statistics"
@@ -167,7 +212,7 @@ msiexec /i "SQL Performance Intelligence.msi" /quiet /norestart`}
                     className="rounded-lg border border-gray-200 bg-white p-4 hover:border-primary hover:shadow-md transition-all"
                   >
                     <div className="font-semibold mb-1">Blocking Analysis</div>
-                    <p>Visualize blocking chains, identify head blockers, and export audit snapshots.</p>
+                    <p>Visualize blocking chains, identify head blockers, get background blocking alerts, and export incident evidence.</p>
                   </Link>
                   <Link
                     href="/docs/modules/wait-statistics"
@@ -181,7 +226,7 @@ msiexec /i "SQL Performance Intelligence.msi" /quiet /norestart`}
                     className="rounded-lg border border-gray-200 bg-white p-4 hover:border-primary hover:shadow-md transition-all"
                   >
                     <div className="font-semibold mb-1">Security Audit</div>
-                    <p>Run read-only security checks and export HTML audit outputs.</p>
+                    <p>Run read-only security checks, review logins and direct permissions, and export HTML and Excel outputs.</p>
                   </Link>
                   <Link
                     href="/docs/modules/scheduled-jobs"
@@ -195,12 +240,15 @@ msiexec /i "SQL Performance Intelligence.msi" /quiet /norestart`}
                     className="rounded-lg border border-gray-200 bg-white p-4 hover:border-primary hover:shadow-md transition-all"
                   >
                     <div className="font-semibold mb-1">Object Explorer</div>
-                    <p>Browse procedures/views/functions, inspect source, and run AI Tune per object.</p>
+                    <p>Browse procedures, views, functions, and tables, follow PK/FK and dependency diagrams, and run AI Tune per object or as a batch.</p>
                   </Link>
-                  <div className="rounded-lg border border-gray-200 bg-white p-4">
-                    <div className="font-semibold mb-1">Settings &amp; Info Bar</div>
-                    <p>Manage DB/AI/license settings and switch active server, database, and model quickly.</p>
-                  </div>
+                  <Link
+                    href="/docs/settings"
+                    className="rounded-lg border border-gray-200 bg-white p-4 hover:border-primary hover:shadow-md transition-all"
+                  >
+                    <div className="font-semibold mb-1">Settings &amp; Top Bar</div>
+                    <p>Manage database, AI / LLM, and license settings, and switch the active server, database, and LLM from the top bar.</p>
+                  </Link>
                 </div>
               </section>
 
@@ -208,7 +256,7 @@ msiexec /i "SQL Performance Intelligence.msi" /quiet /norestart`}
                 <h2 className="text-2xl font-bold">Standard Analysis Workflow</h2>
                 <div className="rounded-xl border border-gray-200 bg-white p-5">
                   <ol className="list-decimal pl-5 space-y-2 text-sm text-gray-700">
-                    <li>Connect and verify active context from the Info Bar.</li>
+                    <li>Connect and verify the active server, database, and LLM in the top bar.</li>
                     <li>Run module-specific analysis (query, index, blocking, waits, or security).</li>
                     <li>Validate evidence and confidence before applying changes.</li>
                     <li>Export report/script outputs for review and audit traceability.</li>

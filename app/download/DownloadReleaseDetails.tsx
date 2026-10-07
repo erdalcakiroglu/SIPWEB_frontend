@@ -1,9 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Check } from 'lucide-react'
+import { Info } from 'lucide-react'
 import CopyButton from './CopyButton'
-import { getClientApiBaseUrl } from '@/lib/serverApiBaseUrl'
+import { getClientApiBaseUrl, productionDownloadsBaseUrl } from '@/lib/serverApiBaseUrl'
 
 type DownloadRelease = {
   version: string
@@ -13,7 +13,6 @@ type DownloadRelease = {
 
 type Props = {
   initialRelease: DownloadRelease
-  initialSource: 'api' | 'fallback'
 }
 
 function readDownloadRelease(payload: unknown): DownloadRelease | null {
@@ -30,17 +29,15 @@ function readDownloadRelease(payload: unknown): DownloadRelease | null {
   }
 }
 
-export default function DownloadReleaseDetails({ initialRelease, initialSource }: Props) {
+export default function DownloadReleaseDetails({ initialRelease }: Props) {
   const [release, setRelease] = useState(initialRelease)
-  const [source, setSource] = useState<'api' | 'fallback'>(initialSource)
-  const [liveFetchFailed, setLiveFetchFailed] = useState(false)
 
   useEffect(() => {
     let isCancelled = false
 
     async function loadLiveRelease() {
       try {
-        const response = await fetch(`${getClientApiBaseUrl()}/api/download/release`, {
+        const response = await fetch(`${getClientApiBaseUrl(productionDownloadsBaseUrl)}/api/download/release`, {
           cache: 'no-store',
         })
 
@@ -60,14 +57,11 @@ export default function DownloadReleaseDetails({ initialRelease, initialSource }
         }
 
         setRelease(liveRelease)
-        setSource('api')
-        setLiveFetchFailed(false)
       } catch (error) {
-        console.error('Live download release fetch failed.', error)
-
-        if (!isCancelled) {
-          setLiveFetchFailed(true)
-        }
+        // Expected when the download API is unreachable (e.g. local dev without the
+        // backend running). We keep the server-provided release, so this is a
+        // warning rather than a hard error.
+        console.warn('Live download release fetch failed; keeping initial release.', error)
       }
     }
 
@@ -80,30 +74,6 @@ export default function DownloadReleaseDetails({ initialRelease, initialSource }
 
   return (
     <>
-      {source === 'fallback' && liveFetchFailed ? (
-        <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-          Live release metadata is temporarily unavailable. The values below may be stale.
-        </div>
-      ) : null}
-
-      <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
-        <h3 className="text-lg font-bold text-gray-900 mb-4">Latest Release</h3>
-        <div className="grid md:grid-cols-2 gap-6">
-          <div>
-            <div className="text-sm text-gray-600 mb-1">Version</div>
-            <div className="text-2xl font-bold text-gray-900">{release.version}</div>
-            <div className="text-sm text-gray-500 mt-1">Released: {release.released}</div>
-          </div>
-          <div>
-            <div className="text-sm text-gray-600 mb-1">System Requirements</div>
-            <ul className="space-y-1 text-sm text-gray-700">
-              <li>✓ Windows 10 (Build 1909+) or Windows 11</li>
-              <li>✓ 4GB RAM minimum, 8GB recommended</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
       <div className="bg-gray-50 border border-gray-200 rounded-xl p-6">
         <h3 className="text-lg font-bold text-gray-900 mb-4">SHA-256 Verification</h3>
         {release.sha256 ? (
@@ -140,7 +110,7 @@ export default function DownloadReleaseDetails({ initialRelease, initialSource }
             <li>
               Run:{' '}
               <code className="bg-gray-100 px-1 rounded">
-                certUtil -hashfile &quot;SQL Performance Intelligence.msi&quot; SHA256
+                certUtil -hashfile &quot;SQL-Performance-Intelligence.msi&quot; SHA256
               </code>
               .
             </li>
@@ -148,18 +118,25 @@ export default function DownloadReleaseDetails({ initialRelease, initialSource }
           </ol>
           <div className="mt-3 flex flex-wrap items-center gap-2">
             <code className="flex-1 min-w-0 rounded border border-gray-200 bg-gray-50 px-3 py-2 text-xs">
-              certUtil -hashfile &quot;SQL Performance Intelligence.msi&quot; SHA256
+              certUtil -hashfile &quot;SQL-Performance-Intelligence.msi&quot; SHA256
             </code>
             <CopyButton
-              text='certUtil -hashfile "SQL Performance Intelligence.msi" SHA256'
+              text='certUtil -hashfile "SQL-Performance-Intelligence.msi" SHA256'
               label="Copy command"
             />
           </div>
         </div>
 
-        <div className="flex items-center gap-2 mt-4 text-sm text-gray-700">
-          <Check className="w-5 h-5 text-emerald-600 shrink-0" />
-          Installer is digitally signed.
+        {/* "Installer is digitally signed." stood here until 2026-10-04. Both MSIs
+            are Authenticode "NotSigned" (verified with Get-AuthenticodeSignature),
+            so the claim was false and Windows SmartScreen shows an unknown-publisher
+            prompt. Do not restore it unless the installer is actually signed. */}
+        <div className="flex items-start gap-2 mt-4 text-sm text-gray-700">
+          <Info className="w-5 h-5 text-gray-500 shrink-0" />
+          <span>
+            The installer is not code-signed, so Windows SmartScreen may show an &quot;unknown publisher&quot; prompt.
+            Compare the SHA-256 hash above with your download before you run it.
+          </span>
         </div>
       </div>
     </>

@@ -3,35 +3,32 @@ import { ArrowUpRight } from 'lucide-react'
 
 export default function CTA() {
   return (
-    <section className="py-16 px-6 lg:px-10 bg-gradient-to-b from-white to-gray-50">
-      <div className="max-w-3xl mx-auto text-center">
-        <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-5 text-gray-900">
-          Optimize SQL Server — Without Risk.
-        </h2>
-        
-        <p className="text-lg text-gray-600 mb-10">
-          Full features. No credit card required. Cancel anytime.
+    <section className="border-t border-gray-200 bg-gray-50 px-6 py-16 lg:px-10">
+      <div className="mx-auto max-w-6xl rounded-3xl bg-slate-900 px-6 py-12 text-center text-white shadow-xl sm:px-10 lg:py-14">
+        <p className="mb-3 text-sm font-semibold uppercase tracking-[0.16em] text-cyan-300">Start with your own workload</p>
+        <h2 className="mx-auto max-w-3xl text-3xl font-bold tracking-tight md:text-4xl">Investigate SQL Server performance without handing over control.</h2>
+
+        <p className="mx-auto mb-9 mt-4 max-w-2xl text-base leading-relaxed text-slate-300">
+          Full features for 30 days. No credit card required. You review every recommendation and decide what happens next.
         </p>
 
         <div className="flex flex-wrap justify-center gap-4">
-          <Link 
-            href="/download" 
-            className="px-8 py-4 bg-cta text-white font-bold rounded-xl shadow-cta hover:bg-cta-hover hover:shadow-cta-hover hover:-translate-y-0.5 focus:outline-none focus-visible:ring-4 focus-visible:ring-cta/35 transition-all"
+          <Link
+            href="/download"
+            className="rounded-xl bg-white px-7 py-3.5 font-semibold text-slate-900 transition-all hover:-translate-y-0.5 hover:bg-cyan-50 focus:outline-none focus-visible:ring-4 focus-visible:ring-white/30"
           >
-            Start Free Trial
+            Start 30-Day Free Trial
           </Link>
-          <Link 
-            href="/download" 
-            className="inline-flex items-center gap-2 px-8 py-4 bg-white border-2 border-teal-200 text-teal-900 font-semibold rounded-xl hover:bg-teal-50/80 hover:border-teal-300 transition-all"
+          <Link
+            href="/features"
+            className="inline-flex items-center gap-2 rounded-xl border border-slate-600 px-7 py-3.5 font-semibold text-white transition-colors hover:border-slate-400 hover:bg-slate-800"
           >
-            Download Now
+            Explore the modules
             <ArrowUpRight className="w-4 h-4" />
           </Link>
         </div>
 
-        <p className="mt-6 max-w-2xl mx-auto text-sm text-gray-600 leading-relaxed">
-          Recommendations are guidance only. You control all changes. Performance improvements are estimates and may vary by workload. Offline mode keeps data local. Cloud LLM is optional and user-enabled.
-        </p>
+        <p className="mx-auto mt-6 max-w-2xl text-xs leading-relaxed text-slate-400">Recommendations are guidance only. Performance outcomes vary by workload. With the default local Ollama setup, AI analysis stays on your machine; cloud AI is optional and only used if you choose a provider.</p>
       </div>
     </section>
   )

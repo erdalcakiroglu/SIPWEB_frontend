@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState, useSyncExternalStore } from 'react'
 import Link from 'next/link'
 import { GA_MEASUREMENT_ID } from '@/lib/analytics'
 
@@ -25,36 +25,40 @@ function updateConsent(analyticsStorage: 'granted' | 'denied', adStorage: 'grant
   window.gtag('config', GA_MEASUREMENT_ID)
 }
 
+function getStoredConsent(): ConsentStatus {
+  if (typeof window === 'undefined') return null
+  const stored = localStorage.getItem(STORAGE_KEY)
+  return stored === 'granted' || stored === 'denied' ? stored : null
+}
+
+function subscribeHydration() {
+  return () => {}
+}
+
 export default function CookieConsent() {
-  const [status, setStatus] = useState<ConsentStatus>(null)
-  const [mounted, setMounted] = useState(false)
+  const hydrated = useSyncExternalStore(subscribeHydration, () => true, () => false)
+  const [statusOverride, setStatusOverride] = useState<ConsentStatus>(null)
+  const status = statusOverride ?? (hydrated ? getStoredConsent() : null)
 
   useEffect(() => {
-    setMounted(true)
-    const stored = localStorage.getItem(STORAGE_KEY) as ConsentStatus | null
-    if (stored === 'granted' || stored === 'denied') {
-      setStatus(stored)
-      if (stored === 'granted') {
-        updateConsent('granted', 'granted')
-      }
-    } else {
-      setStatus(null)
+    if (status === 'granted') {
+      updateConsent('granted', 'granted')
     }
-  }, [])
+  }, [status])
 
   const accept = () => {
     localStorage.setItem(STORAGE_KEY, 'granted')
-    setStatus('granted')
+    setStatusOverride('granted')
     updateConsent('granted', 'granted')
   }
 
   const reject = () => {
     localStorage.setItem(STORAGE_KEY, 'denied')
-    setStatus('denied')
+    setStatusOverride('denied')
     updateConsent('denied', 'denied')
   }
 
-  if (!mounted || status !== null) return null
+  if (!hydrated || status !== null) return null
 
   return (
     <div

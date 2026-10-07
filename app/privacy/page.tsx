@@ -1,158 +1,115 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
-import Header from '@/components/Header'
-import Footer from '@/components/Footer'
+import PolicyPageShell from '@/components/PolicyPageShell'
 
 export const metadata: Metadata = {
-  title: 'Terms of Service — SQL Performance Intelligence™',
-  description: 'Terms of Service governing the use of SQL Performance Intelligence software and subscription services.',
+  title: 'Privacy Policy — SQLPerformance AI',
+  description:
+    'Privacy Policy describing how SQLPerformance AI handles website data, optional analytics consent, and product data boundaries.',
+  alternates: {
+    canonical: '/privacy',
+  },
 }
 
-export default function TermsPage() {
+const overviewItems = [
+  'Local-first AI by default',
+  'Optional and consent-based website analytics',
+  'Read-only SQL diagnostics model',
+  'User-controlled cloud AI usage',
+]
+
+export default function PrivacyPage() {
   return (
-    <main>
-      <Header />
+    <PolicyPageShell
+      eyebrow="Privacy"
+      title="Privacy Policy"
+      description="How website data, product behavior, and optional cloud-connected actions are handled across SQLPerformance AI."
+      lastUpdated="October 2026"
+      summaryTitle="At A Glance"
+      summaryItems={overviewItems}
+      relatedLinks={[
+        { href: '/cookie-policy', label: 'Cookie Policy' },
+        { href: '/analytics-disclosure', label: 'Analytics Disclosure' },
+        { href: '/contact', label: 'Contact' },
+      ]}
+    >
+      <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+        <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">Overview</div>
+        <p className="text-sm leading-relaxed text-gray-700">
+          This policy covers the public website and the product posture described on the site. It does not expand your
+          rights beyond any separately agreed commercial terms, but it explains the operating model clearly: the product
+          is a read-only, local-first desktop application and is explicit about any optional cloud usage.
+        </p>
+      </div>
 
-      {/* Hero */}
-      <section className="pt-32 pb-12 px-6 lg:px-10 bg-white">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight mb-6">
-            Terms of Service
-          </h1>
-          <p className="text-gray-600">
-            Last updated: February 2026
-          </p>
-        </div>
-      </section>
+      <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+        <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">Website Data</div>
+        <p className="text-sm leading-relaxed text-gray-700">
+          When you browse the website, standard technical information such as request metadata, browser behavior, and
+          page views can be processed to serve the site and keep it available. Optional analytics are separate from
+          essential site delivery and are only enabled after consent through the cookie banner.
+        </p>
+      </div>
 
-      {/* Content */}
-      <section className="py-16 px-6 lg:px-10 bg-gray-50">
-        <div className="max-w-4xl mx-auto">
-          <div className="bg-white rounded-xl p-8 space-y-10">
+      <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+        <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">Product Data Boundary</div>
+        <p className="text-sm leading-relaxed text-gray-700">
+          SQLPerformance AI is a Windows desktop application for read-only SQL diagnostics. With the default local AI
+          model, the context used for AI analysis stays inside the customer environment. The application does not
+          change data or schema on target SQL Server systems and does not run the scripts it generates.
+        </p>
+      </div>
 
-            <div>
-              <h2 className="text-2xl font-bold mb-4">1. Acceptance of Terms</h2>
-              <p className="text-gray-700 leading-relaxed">
-                By downloading, installing, subscribing to, or using SQL Performance Intelligence™, 
-                you agree to be bound by these Terms of Service. If you do not agree, you must not use the software.
-              </p>
-            </div>
+      <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+        <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">Optional Cloud Features</div>
+        <p className="text-sm leading-relaxed text-gray-700">
+          Cloud AI is optional and user-controlled. If a user selects a cloud provider and enters an API key, the
+          context prepared for analysis, which can include query text, execution plans, parameter values and object
+          names, is sent to that provider. Redaction and approval before sending exist only in some modules, as
+          described on the{' '}
+          <Link href="/security" className="font-semibold text-primary hover:text-primary-dark">
+            Security page
+          </Link>
+          . No cloud transfer of this kind happens unless the user has chosen a provider.
+        </p>
+      </div>
 
-            <div>
-              <h2 className="text-2xl font-bold mb-4">2. License Grant</h2>
-              <p className="text-gray-700 leading-relaxed">
-                Subject to payment of applicable fees, we grant you a limited, non-exclusive, 
-                non-transferable, non-sublicensable license to install and use the software 
-                on a single machine per license for internal business purposes.
-              </p>
-            </div>
+      <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+        <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">Cookies And Analytics</div>
+        <p className="text-sm leading-relaxed text-gray-700">
+          Cookie consent choices are stored so the site can remember whether analytics were accepted or rejected.
+          Details about those categories are documented in the{' '}
+          <Link href="/cookie-policy" className="font-semibold text-primary hover:text-primary-dark">
+            Cookie Policy
+          </Link>{' '}
+          and the{' '}
+          <Link href="/analytics-disclosure" className="font-semibold text-primary hover:text-primary-dark">
+            Analytics Disclosure
+          </Link>
+          .
+        </p>
+      </div>
 
-            <div>
-              <h2 className="text-2xl font-bold mb-4">3. Subscription & Renewal</h2>
-              <p className="text-gray-700 leading-relaxed mb-4">
-                Subscriptions are billed on a recurring monthly or annual basis. 
-                You may cancel at any time. Access to features may be suspended 
-                upon expiration of your subscription, subject to any grace period described in our licensing policy.
-              </p>
-              <p className="text-gray-700 leading-relaxed">
-                Payment processing is handled securely by Stripe. We do not store full payment card details.
-              </p>
-            </div>
+      <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+        <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">Your Choices</div>
+        <ul className="space-y-2 text-sm text-gray-700">
+          <li>You can reject optional analytics cookies.</li>
+          <li>You can revisit cookie choices from the cookie preferences link.</li>
+          <li>You can avoid cloud AI usage by keeping analysis in the local path.</li>
+          <li>You can contact us regarding privacy questions or correction requests.</li>
+        </ul>
+      </div>
 
-            <div>
-              <h2 className="text-2xl font-bold mb-4">4. Trial License</h2>
-              <p className="text-gray-700 leading-relaxed">
-                Trial licenses may be provided for evaluation purposes. 
-                Trial periods are time-limited and automatically expire unless converted to a paid subscription.
-              </p>
-            </div>
-
-            <div>
-              <h2 className="text-2xl font-bold mb-4">5. Restrictions</h2>
-              <ul className="list-disc list-inside space-y-2 text-gray-700 ml-4">
-                <li>Reverse engineer, decompile, or disassemble the software</li>
-                <li>Sublicense, rent, lease, or distribute the software</li>
-                <li>Bypass license enforcement mechanisms</li>
-                <li>Use the software to build competing products</li>
-                <li>Remove proprietary notices</li>
-              </ul>
-            </div>
-
-            <div>
-              <h2 className="text-2xl font-bold mb-4">6. AI-Assisted Recommendations Disclaimer</h2>
-              <p className="text-gray-700 leading-relaxed">
-                SQL Performance Intelligence provides AI-assisted performance recommendations 
-                and diagnostic insights. These recommendations are advisory in nature only.
-                You are solely responsible for reviewing, validating, and applying any suggested changes.
-                The software does not automatically modify your database schema or data.
-              </p>
-            </div>
-
-            <div>
-              <h2 className="text-2xl font-bold mb-4">7. Database Access & Security</h2>
-              <p className="text-gray-700 leading-relaxed">
-                The software operates in read-only mode by design. 
-                You are responsible for managing database credentials, 
-                access controls, and ensuring compliance with your internal security policies.
-              </p>
-            </div>
-
-            <div>
-              <h2 className="text-2xl font-bold mb-4">8. Intellectual Property</h2>
-              <p className="text-gray-700 leading-relaxed">
-                All rights, title, and interest in the software, including trademarks, 
-                code, and documentation, remain our exclusive property.
-              </p>
-            </div>
-
-            <div>
-              <h2 className="text-2xl font-bold mb-4">9. Disclaimer of Warranties</h2>
-              <p className="text-gray-700 leading-relaxed">
-                THE SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTIES OF ANY KIND, 
-                EXPRESS OR IMPLIED, INCLUDING MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, 
-                AND NON-INFRINGEMENT.
-              </p>
-            </div>
-
-            <div>
-              <h2 className="text-2xl font-bold mb-4">10. Limitation of Liability</h2>
-              <p className="text-gray-700 leading-relaxed">
-                IN NO EVENT SHALL WE BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, 
-                CONSEQUENTIAL, OR PUNITIVE DAMAGES ARISING OUT OF OR RELATED TO 
-                THE USE OF THE SOFTWARE.
-              </p>
-            </div>
-
-            <div>
-              <h2 className="text-2xl font-bold mb-4">11. Termination</h2>
-              <p className="text-gray-700 leading-relaxed">
-                We may suspend or terminate your license if you violate these Terms. 
-                Upon termination, all rights granted to you cease immediately.
-              </p>
-            </div>
-
-            <div>
-              <h2 className="text-2xl font-bold mb-4">12. Governing Law</h2>
-              <p className="text-gray-700 leading-relaxed">
-                These Terms are governed by applicable law. 
-                You agree to submit to the exclusive jurisdiction of the competent courts.
-              </p>
-            </div>
-
-            <div className="border-t pt-8">
-              <p className="text-sm text-gray-600">
-                For questions regarding these Terms, please visit our{' '}
-                <Link href="/contact" className="text-primary font-semibold hover:text-primary-dark">
-                  Contact page
-                </Link>.
-              </p>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-      <Footer />
-    </main>
+      <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+        <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">Contact And Changes</div>
+        <p className="text-sm leading-relaxed text-gray-700">
+          For privacy-related questions, use the{' '}
+          <Link href="/contact" className="font-semibold text-primary hover:text-primary-dark">
+            contact page
+          </Link>
+          . If this policy changes materially, the revised version will be published here with an updated date.
+        </p>
+      </div>
+    </PolicyPageShell>
   )
 }

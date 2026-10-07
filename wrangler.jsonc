@@ -1,0 +1,46 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "main": ".open-next/worker.js",
+  "name": "dbperfstudio-website",
+  "account_id": "90a9c83c8cea60975aed732671ba1c61",
+  "compatibility_date": "2026-05-12",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "routes": [
+    {
+      "pattern": "sqlperformance.ai",
+      "custom_domain": true
+    },
+    {
+      "pattern": "www.sqlperformance.ai/*",
+      "zone_name": "sqlperformance.ai"
+    }
+  ],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "services": [
+    {
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "dbperfstudio-website"
+    },
+    {
+      "binding": "SQLPERFORMANCE_API",
+      "service": "sqlperformance-api"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "NEXT_INC_CACHE_R2_BUCKET",
+      "bucket_name": "dbperfstudio-website-opennext-cache"
+    }
+  ],
+  "images": {
+    "binding": "IMAGES"
+  },
+  "observability": {
+    "enabled": true
+  }
+}

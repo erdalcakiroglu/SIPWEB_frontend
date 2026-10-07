@@ -4,21 +4,23 @@ import ModulePage, { getModuleMetadata } from '../module_page'
 export const dynamicParams = true
 
 type PageProps = {
-  params: {
+  params: Promise<{
     slug: string
-  }
+  }>
 }
 
 export function generateStaticParams() {
   return modulePages.map((page) => ({ slug: page.slug }))
 }
 
-export function generateMetadata({ params }: PageProps) {
-  const rawSlug = typeof params?.slug === 'string' ? params.slug : ''
+export async function generateMetadata({ params }: PageProps) {
+  const resolvedParams = await params
+  const rawSlug = typeof resolvedParams?.slug === 'string' ? resolvedParams.slug : ''
   return getModuleMetadata(rawSlug)
 }
 
-export default function DocsModulePage({ params }: PageProps) {
-  const rawSlug = typeof params?.slug === 'string' ? params.slug : ''
+export default async function DocsModulePage({ params }: PageProps) {
+  const resolvedParams = await params
+  const rawSlug = typeof resolvedParams?.slug === 'string' ? resolvedParams.slug : ''
   return <ModulePage slug={rawSlug} />
 }

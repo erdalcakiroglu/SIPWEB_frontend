@@ -71,3 +71,31 @@ html {
 .gradient-text {
   @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent;
 }
+
+/* Long monospace identifiers wrap anywhere.
+   Docs pages quote things like sys.query_store_runtime_stats_interval, which is
+   one 293px unbreakable token. `overflow-wrap: break-word` (Tailwind's
+   break-words) is not enough here: it lets the word break onto a new line, but
+   it does NOT reduce the element's min-content width, so any grid or flex
+   ancestor sized by min-content still grows to fit the whole token and pushes
+   the page into horizontal scroll on phones. `anywhere` does reduce min-content,
+   which is the property we actually need. Scoped to .font-mono so ordinary prose
+   keeps breaking at word boundaries. */
+.font-mono {
+  overflow-wrap: anywhere;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

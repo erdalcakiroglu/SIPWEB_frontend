@@ -2,21 +2,39 @@ import { Metadata } from 'next'
 import Header from '@/components/Header'
 import Hero from '@/components/Hero'
 import TrustBar from '@/components/TrustBar'
-import Security from '@/components/Security'
-import AIShowcase from '@/components/AIShowcase'
-import Pricing from '@/components/Pricing'
+import HomeOverview from '@/components/HomeOverview'
 import CTA from '@/components/CTA'
 import Footer from '@/components/Footer'
+import { SITE_URL, SITE_NAME, OG_IMAGE } from '@/lib/site'
 
 export const metadata: Metadata = {
-  title: 'SQL Performance Intelligence - Database Optimization Platform',
-  description: 'Offline, read-only SQL Server performance analysis, index advisor, and query optimization tools for Windows.',
+  // Brand leads, because the homepage's job is to win the "sqlperformance" query
+  // (position 11.2, losing to sqlperformance.com). Title tokens are weighted by
+  // position, and the brand used to sit last behind a five-word phrase.
+  //
+  // "Analyzer" is deliberately left to /features. That page owns the
+  // "sql server performance analyzer" cluster (~400 impressions across ten
+  // queries); the homepage owns the brand plus the bare "sql performance" head
+  // term. The product was renamed from "SQL Performance Intelligence" on
+  // 2026-10-04: "SQLPerformance" is now one token, so the spaced head term
+  // "sql performance" is carried by the description and h1 instead of the brand.
+  // Splitting the clusters keeps the two pages from competing for the same term.
+  title: 'SQLPerformance AI — Read-Only SQL Server Analyzer',
+  description: 'Find the root cause of SQL Server performance problems with interactive, read-only diagnostics for Windows. Local-first analysis; cloud AI is optional.',
   keywords: 'SQL Server, MS SQL Server, Performance Analysis, Query Optimization, Database Tools, Windows',
+  alternates: {
+    canonical: '/',
+  },
+  // This replaces the root layout's openGraph outright (Next merges metadata
+  // shallowly), so siteName/url/images have to be repeated here.
   openGraph: {
-    title: 'SQL Performance Intelligence',
-    description: 'Offline, read-only SQL Server performance analysis and optimization platform for Windows 10 and 11.',
+    title: 'SQLPerformance AI',
+    description: 'Read-only SQL Server performance investigation for Windows. Local AI by default; cloud AI providers are optional and chosen by you.',
     type: 'website',
     locale: 'en_US',
+    siteName: SITE_NAME,
+    url: SITE_URL,
+    images: [OG_IMAGE],
   },
 }
 
@@ -26,19 +44,7 @@ export default function Home() {
       <Header />
       <Hero />
       <TrustBar />
-      <Security />
-      <div className="relative overflow-hidden bg-gradient-to-br from-primary-gradientFrom via-primary to-primary-gradientTo">
-        <div className="absolute inset-0 bg-grid-pattern opacity-60 pointer-events-none" />
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/4 left-1/5 w-96 h-96 bg-white/10 rounded-full blur-3xl" />
-          <div className="absolute bottom-1/4 right-1/5 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
-        </div>
-        <div className="relative z-10">
-          <AIShowcase />
-          <TrustBar variant="divider" />
-          <Pricing />
-        </div>
-      </div>
+      <HomeOverview />
       <CTA />
       <Footer />
     </main>

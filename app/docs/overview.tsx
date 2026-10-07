@@ -1,11 +1,4 @@
-const firstDaySteps = [
-  'Install the desktop app and complete license or trial activation.',
-  'Ask your DBA to prepare a read-only SQL login or approved Windows account.',
-  'Enable Query Store on the database you want to analyze.',
-  'Add one database connection profile in Settings > Database.',
-  'Add one AI provider in Settings > AI / LLM, either local Ollama or a cloud model.',
-  'Connect and start with Dashboard, then move into Query Statistics or Object Explorer.',
-]
+import Link from 'next/link'
 
 const queryStoreBenefits = [
   'Query Statistics can rank important queries with better historical evidence.',
@@ -39,7 +32,7 @@ export default function OverviewTemplate() {
       <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
         <div className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">What This Product Is</div>
         <p className="text-sm text-gray-700">
-          SQL Performance Intelligence is a read-only analysis application for SQL Server. It helps you inspect CPU,
+          SQLPerformance AI is a read-only analysis application for SQL Server. It helps you inspect CPU,
           waits, blocking, indexes, SQL Agent jobs, security posture, and object-level SQL details without applying
           automatic schema changes.
         </p>
@@ -57,23 +50,55 @@ export default function OverviewTemplate() {
             <ul className="list-disc pl-5 space-y-1">
               <li>It does not create or alter your application schema automatically.</li>
               <li>It does not need table-data read access to business rows for normal usage.</li>
-              <li>It does not start with a full setup by itself; first-run settings must be completed by the user.</li>
+              <li>
+                It does not configure itself; after the first-run license and access setup, you add the SQL Server
+                connection and AI provider in Settings.
+              </li>
             </ul>
           </div>
         </div>
       </div>
 
       <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-        <div className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">If This Is Your First Day</div>
+        <div className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">Start With The Right Page</div>
         <p className="text-sm text-gray-700">
-          Follow this order. It is the fastest way to reach a working first analysis without guessing which setting
-          matters first.
+          This page explains how the product works and what prerequisites matter. For the actual setup flow, go
+          directly to the installation and quickstart guides.
         </p>
-        <ol className="mt-4 list-decimal pl-5 text-sm text-gray-700 space-y-1">
-          {firstDaySteps.map((step) => (
-            <li key={step}>{step}</li>
-          ))}
-        </ol>
+        <p className="mt-3 text-sm text-gray-700">
+          On first launch the application walks you through the license agreement and a local access profile, then
+          starts a 30-day full trial and opens Settings &gt; Database. Until a license or trial is active, only Settings
+          is available. After setup, the top bar shows the active Server, Database, and LLM with quick-switch
+          selectors, a Refresh button for the current module, and a gear icon that opens{' '}
+          <Link href="/docs/settings" className="font-semibold text-primary hover:text-primary-dark">
+            Settings
+          </Link>
+          .
+        </p>
+        <div className="mt-4 grid gap-3 md:grid-cols-2">
+          <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
+            <div className="font-semibold mb-1 text-gray-900">Installation Guide</div>
+            <p className="text-sm text-gray-700">
+              Use the{' '}
+              <Link href="/docs/installation" className="font-semibold text-primary hover:text-primary-dark">
+                installation guide
+              </Link>{' '}
+              for first-run onboarding, SQL login preparation, Query Store setup, and the initial Database plus AI / LLM
+              configuration steps.
+            </p>
+          </div>
+          <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
+            <div className="font-semibold mb-1 text-gray-900">Quickstart Guide</div>
+            <p className="text-sm text-gray-700">
+              Use the{' '}
+              <Link href="/docs/quickstart" className="font-semibold text-primary hover:text-primary-dark">
+                quickstart guide
+              </Link>{' '}
+              after installation to make the first SQL connection, add an AI provider, and validate the first real
+              analysis workflow.
+            </p>
+          </div>
+        </div>
       </div>
 
       <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
@@ -82,7 +107,7 @@ export default function OverviewTemplate() {
           <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
             <div className="font-semibold mb-1">1. SQL Access</div>
             <p>
-              Ask your DBA for a read-only SQL login or a Windows account that has the minimum monitoring permissions.
+              Ask your DBA for a read-only SQL login or a Windows account with the minimum diagnostic permissions.
               For most first-time users, the important permissions are <span className="font-mono">VIEW SERVER STATE</span>,{' '}
               <span className="font-mono">VIEW DATABASE STATE</span>, and <span className="font-mono">VIEW DEFINITION</span>.
             </p>
@@ -111,7 +136,7 @@ export default function OverviewTemplate() {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+        <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
         <div className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">Why Query Store Matters</div>
         <p className="text-sm text-gray-700">
           Query Store is not required for every screen, but it is strongly recommended for real analysis. Without it,
@@ -127,6 +152,13 @@ export default function OverviewTemplate() {
           If Query Store is disabled, the application can still connect and some modules still work, but regression
           detection, plan history, and historical ranking are weaker.
         </div>
+        <p className="mt-4 text-sm text-gray-700">
+          If you need the DBA-facing SQL and the exact enablement sequence, continue with the{' '}
+          <Link href="/docs/installation" className="font-semibold text-primary hover:text-primary-dark">
+            installation guide
+          </Link>
+          .
+        </p>
       </div>
 
       <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
@@ -152,11 +184,21 @@ export default function OverviewTemplate() {
       <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
         <div className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">Recommended First Module Order</div>
         <ol className="list-decimal pl-5 text-sm text-gray-700 space-y-1">
-          <li>Open Dashboard to see whether CPU, memory, IO, or TempDB pressure is already obvious.</li>
+          <li>
+            Open Dashboard (shown as Overview in the sidebar) to see whether CPU, memory, IO, or TempDB pressure is
+            already obvious.
+          </li>
           <li>Open Query Statistics if the problem looks query-driven or workload-driven.</li>
           <li>Open Object Explorer when you need source code, object stats, dependencies, or AI Tune for one object.</li>
           <li>Open Wait Statistics or Blocking Analysis when contention is the main symptom.</li>
         </ol>
+        <p className="mt-4 text-sm text-gray-700">
+          When you are ready to move from concepts to execution, follow the{' '}
+          <Link href="/docs/quickstart" className="font-semibold text-primary hover:text-primary-dark">
+            quickstart workflow
+          </Link>
+          .
+        </p>
       </div>
     </div>
   )

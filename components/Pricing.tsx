@@ -15,8 +15,8 @@ const plans = [
       { text: '1 user license', included: true },
       { text: 'Connect to multiple SQL Servers per user license.', included: true, bold: true },
       { text: 'All core modules', included: true },
-      { text: 'Full AI reports with confidence scoring', included: true },
-      { text: 'Local LLM (offline)', included: true },
+      { text: 'Evidence reports with optional AI interpretation', included: true },
+      { text: 'Local AI via Ollama (no cloud needed)', included: true },
       { text: 'Optional cloud LLM (user-controlled)', included: true },
       { text: 'Cancel anytime', included: true },
       { text: 'No credit card required (trial)', included: true },
@@ -35,10 +35,10 @@ const plans = [
       { text: '5 user licenses', included: true, bold: true },
       { text: 'Connect to multiple SQL Servers per user license.', included: true, bold: true },
       { text: 'All core modules', included: true },
-      { text: 'Full AI reports with confidence scoring', included: true },
+      { text: 'Evidence reports with optional AI interpretation', included: true },
       { text: 'Priority email support', included: true },
       { text: 'License management portal', included: true },
-      { text: 'Local LLM (offline)', included: true },
+      { text: 'Local AI via Ollama (no cloud needed)', included: true },
       { text: 'Optional cloud LLM (user-controlled)', included: true },
     ],
     cta: 'Start 30-Day Free Trial',
@@ -53,11 +53,10 @@ const plans = [
       { text: 'Everything in Team', included: true },
       { text: 'Volume discounts', included: true },
       { text: 'Security review support (questionnaire + docs)', included: true },
-      { text: 'On-prem / air-gapped friendly deployment (optional)', included: true },
+      { text: 'Offline license files for air-gapped sites', included: true },
       { text: 'Dedicated onboarding', included: true },
       { text: 'Optional support SLA', included: true },
       { text: 'Invoice billing (NET 30)', included: true },
-      { text: 'Advanced High Availability Monitoring (coming soon)', included: true },
     ],
     cta: 'Contact Sales',
     popular: false,
@@ -70,22 +69,9 @@ export default function Pricing() {
   return (
     <section
       id="pricing"
-      className="relative scroll-mt-24 bg-gray-100 px-6 py-16 lg:px-10"
+      className="relative scroll-mt-24 bg-gray-50 px-6 pt-12 pb-16 lg:px-10"
     >
       <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="text-center max-w-2xl mx-auto mb-12">
-          <span className="inline-block px-4 py-2 bg-primary-light text-primary text-sm font-semibold rounded-full uppercase tracking-wide mb-5">
-            Pricing
-          </span>
-          <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-5 text-gray-900">
-            Simple per-user pricing. No server limits.
-          </h2>
-          <p className="text-lg text-gray-600 leading-relaxed">
-            One license per user. Connect to multiple SQL Servers per user license.
-          </p>
-        </div>
-
         {/* Billing Toggle */}
         <div className="flex items-center justify-center gap-4 mb-12">
           <span 
@@ -111,8 +97,10 @@ export default function Pricing() {
             Annual
           </span>
           
-          <span className="bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 text-xs font-bold px-3 py-1.5 rounded-full">
-            Save 20%
+          {/* Annual saves 14.1% on Developer ($402 vs $468) and 16.0% on Team ($1,199 vs
+              $1,428). The badge said 20% until 2026-10-04, which neither plan reaches. */}
+          <span className="rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-200/70">
+            Save up to 16%
           </span>
         </div>
 
@@ -121,15 +109,15 @@ export default function Pricing() {
           {plans.map((plan, index) => (
             <div 
               key={index}
-              className={`relative flex flex-col bg-white rounded-3xl p-6 lg:p-8 border-2 transition-all hover:-translate-y-1 hover:shadow-2xl ${
-                plan.popular 
-                  ? 'border-primary shadow-xl shadow-primary/10' 
-                  : 'border-gray-100'
+              className={`relative flex flex-col rounded-2xl bg-white p-6 lg:p-8 transition-all hover:-translate-y-0.5 hover:shadow-lg ${
+                plan.popular
+                  ? 'border border-primary shadow-md shadow-primary/10 ring-1 ring-primary/20'
+                  : 'border border-gray-200/80 shadow-sm'
               }`}
             >
               {/* Popular badge */}
               {plan.popular && (
-                <span className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-primary to-primary-dark text-white text-xs font-extrabold uppercase tracking-wide px-6 py-2 rounded-full shadow-xl shadow-primary/40 ring-2 ring-white/90">
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-5 py-1.5 text-xs font-semibold uppercase tracking-wide text-white shadow-sm ring-2 ring-white">
                   Best Value
                 </span>
               )}
@@ -149,12 +137,12 @@ export default function Pricing() {
               <div className="mb-2">
                 {plan.customPricing ? (
                   <>
-                    <span className="text-4xl font-extrabold tracking-tight">Custom</span>
+                    <span className="text-4xl font-bold tracking-tight">Custom</span>
                     <span className="text-gray-400 ml-2">volume pricing</span>
                   </>
                 ) : (
                   <>
-                    <span className="text-4xl font-extrabold tracking-tight">
+                    <span className="text-4xl font-bold tracking-tight">
                       ${isAnnual ? plan.annualPrice?.toLocaleString() : plan.monthlyPrice}
                     </span>
                     <span className="text-gray-400 ml-2">/ {isAnnual ? 'year' : 'month'}</span>
@@ -179,7 +167,7 @@ export default function Pricing() {
 
               {/* Savings badge */}
               {plan.savings && isAnnual && (
-                <div className="bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 text-sm font-semibold px-4 py-2 rounded-lg text-center mb-6">
+                <div className="mb-6 rounded-lg bg-emerald-50 px-4 py-2 text-center text-sm font-semibold text-emerald-700 ring-1 ring-emerald-200/70">
                   Save ${plan.savings}/year vs individual licenses
                 </div>
               )}
@@ -189,9 +177,9 @@ export default function Pricing() {
                 {plan.features.map((feature, fIndex) => (
                   <li key={fIndex} className="flex items-start gap-3 py-2 border-b border-gray-50 last:border-0">
                     {feature.included ? (
-                      <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                      <Check className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
                     ) : (
-                      <X className="w-5 h-5 text-gray-300 flex-shrink-0 mt-0.5" />
+                      <X className="w-4 h-4 text-gray-300 flex-shrink-0 mt-0.5" />
                     )}
                     <span className={`text-sm ${feature.included ? 'text-gray-700' : 'text-gray-400'} ${feature.bold ? 'font-semibold' : ''}`}>
                       {feature.text}
@@ -203,13 +191,13 @@ export default function Pricing() {
               {/* CTA */}
               <div className="mt-auto">
                 <Link 
-                  href={plan.name === 'Enterprise' ? 'mailto:sales@dbperfstudio.com' : '/download'}
-                  className={`block w-full py-3 px-6 rounded-xl font-semibold text-center transition-all ${
+                  href={plan.name === 'Enterprise' ? 'mailto:sales@sqlperformance.ai' : '/download'}
+                  className={`block w-full rounded-full px-6 py-3 text-center text-sm font-semibold transition-all ${
                     plan.popular
-                      ? 'bg-cta text-white shadow-cta hover:bg-cta-hover hover:shadow-cta-hover hover:-translate-y-0.5 focus:outline-none focus-visible:ring-4 focus-visible:ring-cta/35'
+                      ? 'bg-cta text-white shadow-cta hover:-translate-y-0.5 hover:bg-cta-hover hover:shadow-cta-hover focus:outline-none focus-visible:ring-4 focus-visible:ring-cta/30'
                       : plan.name === 'Developer'
-                        ? 'bg-white border-2 border-teal-300 text-teal-800 hover:bg-teal-50/80 hover:border-teal-400'
-                        : 'bg-white border-2 border-gray-200 text-gray-700 hover:border-primary hover:text-primary'
+                        ? 'border border-primary/30 bg-white text-primary hover:border-primary/50 hover:bg-primary-light/40'
+                        : 'border border-gray-200 bg-white text-gray-700 hover:border-primary hover:text-primary'
                   }`}
                 >
                   {plan.cta}

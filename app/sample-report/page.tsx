@@ -5,8 +5,11 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 
 export const metadata: Metadata = {
-  title: 'Sample Security Report — SQL Performance Intelligence™',
-  description: 'View a sample security audit report from SQL Performance Intelligence to understand the level of detail and insights provided.',
+  title: 'Sample Security Report — SQLPerformance AI',
+  description: 'View a sample security audit report from SQLPerformance AI to understand the level of detail and insights provided.',
+  alternates: {
+    canonical: '/sample-report',
+  },
 }
 
 export default function SampleReportPage() {
@@ -21,7 +24,7 @@ export default function SampleReportPage() {
             Sample Security Report
           </h1>
           <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-            Explore what kind of insights and recommendations SQL Performance Intelligence provides for database security audits and performance analysis.
+            Explore what kind of insights and recommendations SQLPerformance AI provides for database security audits and performance analysis.
           </p>
         </div>
       </section>
@@ -36,7 +39,7 @@ export default function SampleReportPage() {
                 <Shield className="w-10 h-10" />
                 <h2 className="text-2xl font-bold">Security Audit Report</h2>
               </div>
-              <p className="text-slate-300">SQL Performance Intelligence™ - Database: Production</p>
+              <p className="text-slate-300">SQLPerformance AI - Database: Production</p>
               <p className="text-slate-400 text-sm mt-2">Generated: February 28, 2026</p>
             </div>
 
@@ -117,7 +120,7 @@ export default function SampleReportPage() {
               {/* Footer Note */}
               <div className="border-t pt-6 text-gray-600 text-sm">
                 <p>
-                  <strong>Note:</strong> This is a sample report demonstrating the format and insights provided by SQL Performance Intelligence. Your actual reports will contain data specific to your database environment.
+                  <strong>Note:</strong> This is a sample report demonstrating the format and insights provided by SQLPerformance AI. Your actual reports will contain data specific to your database environment.
                 </p>
               </div>
             </div>
@@ -127,7 +130,7 @@ export default function SampleReportPage() {
           <div className="mt-12 text-center space-y-4">
             <h3 className="text-2xl font-bold text-gray-900">Get Your Database Report</h3>
             <p className="text-lg text-gray-600">
-              Download SQL Performance Intelligence and run security audits on your databases today.
+              Download SQLPerformance AI and run security audits on your databases today.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
@@ -152,7 +155,7 @@ export default function SampleReportPage() {
       {/* Features Grid */}
       <section className="py-16 px-6 lg:px-10 bg-white">
         <div className="max-w-4xl mx-auto">
-          <h3 className="text-2xl font-bold mb-8 text-center">What's Analyzed</h3>
+          <h3 className="text-2xl font-bold mb-8 text-center">What&apos;s Analyzed</h3>
           <div className="grid md:grid-cols-2 gap-6">
             {[
               { title: 'Authentication & Permissions', icon: '👤' },

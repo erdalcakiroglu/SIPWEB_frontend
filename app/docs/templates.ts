@@ -1,6 +1,7 @@
 import OverviewTemplate from './overview'
 import InstallationTemplate from './installation'
 import QuickstartTemplate from './quickstart'
+import SettingsTemplate from './settings'
 import DashboardTemplate from './dashboard'
 import QueryStatisticsTemplate from './query_statistics'
 import IndexAdvisorTemplate from './index_advisor'
@@ -16,6 +17,7 @@ export const gettingStartedTemplates: Record<string, DocsTemplateComponent> = {
   overview: OverviewTemplate,
   installation: InstallationTemplate,
   quickstart: QuickstartTemplate,
+  settings: SettingsTemplate,
 }
 
 export const moduleTemplates: Record<string, DocsTemplateComponent> = {

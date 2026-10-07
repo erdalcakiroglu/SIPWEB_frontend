@@ -19,7 +19,7 @@
 /docs/blocking-analysis/blocking_report_*
   X-Robots-Tag: noindex, nofollow, noarchive
 
-/docs/index-advisor/AI_Analysis_*
+/docs/index-advisor/index_advisor_ai_analysis_*
   X-Robots-Tag: noindex, nofollow, noarchive
 
 /docs/object-explorer/AI_Report_*

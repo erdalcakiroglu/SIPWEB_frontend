@@ -58,7 +58,9 @@ const lastModified: Record<string, string> = {
   // 2026-10-07: Security Audit page rewritten against the v1.1.0 audit engine (scoring caps,
   // measurability, patch status sources, access matrix reload behaviour).
   '/docs/modules/security-audit': '2026-10-07',
-  '/docs/modules/scheduled-jobs': '2026-09-28',
+  // 2026-10-07: Scheduled Jobs page rewritten against the v1.1.0 Jobs module (refresh model,
+  // status and next-run values, failure grouping, mail health) with the new screenshot set.
+  '/docs/modules/scheduled-jobs': '2026-10-07',
   '/docs/modules/object-explorer': '2026-10-04',
   // 2026-09-28: analysis steps corrected to match what the v1.1.0 app shows.
   '/use-cases/blocking-storm-head-blocker': '2026-09-28',

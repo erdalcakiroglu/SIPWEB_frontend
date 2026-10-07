@@ -213,8 +213,10 @@ export default function SecurityPage() {
                     <div className="rounded-2xl border border-slate-200/70 bg-white p-5">
                       <h3 className="mb-2 text-sm font-bold text-gray-900">Object Explorer</h3>
                       <p className="text-sm leading-relaxed text-gray-600">
-                        The only option is removing SQL comments. Source code, plan XML and parameter values (clipped
-                        to 80 characters) can be part of the context, with no literal masking and no approval step.
+                        Credential values in the source code, such as passwords, tokens and API keys, are masked, and
+                        definitions longer than 200,000 characters are cut. The rest of the source, object names, the
+                        execution plan and parameter values go as they are, with no approval step. The only option is
+                        removing SQL comments, which applies to stored procedures.
                       </p>
                     </div>
                     <div className="rounded-2xl border border-slate-200/70 bg-white p-5">

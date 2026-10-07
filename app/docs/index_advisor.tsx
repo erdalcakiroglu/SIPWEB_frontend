@@ -2,9 +2,10 @@ import Link from 'next/link'
 import LightboxImage from './LightboxImage'
 
 const mainAreas = [
-  'Status line and optional focus banner',
-  'Filter bar with Search, Show, Rows per Page, and risk-pool option',
-  'Paginated, sortable index table with the AI dock underneath',
+  'Status line, with a focus banner and Clear Focus when the page was opened from Query Statistics',
+  'Filter bar: Search, Show, Rows per Page, Include low-usage risk pool, Export Report, and the ⓘ Last Refresh button',
+  'Paginated, sortable index table with a selection counter and page controls',
+  'AI dock under the table: Analyze with AI, Mask names, Cancel, Open last report, Save LLM JSON, and Save HTML',
   'Index Details panel with Overview and Script tabs',
 ]
 
@@ -31,29 +32,40 @@ const dropSafetyStates = [
   {
     name: 'Safe Drop Candidate',
     detail:
-      'The index overlaps another one (duplicate, leftmost prefix, or subset) with an estimated impact of 5% or less, or it shows no reads and no dependent queries with an impact of 2% or less. The observation window must also be long enough: at least 7 days with reads in the 30-day trend, or a table at least 30 days old.',
+      'The index overlaps another one (duplicate, leftmost prefix, or subset) with an estimated impact of 5% or less, or it shows no reads and no dependent queries with an impact of 2% or less. The observation window must also be long enough: at least 7 days with reads in the 30-day trend, or an index proven to be at least 30 days old.',
   },
 ]
 
 const actionLabels = [
-  'Drop candidate',
-  'Rebuild needed',
-  'Reorganize needed',
-  'Update statistics',
-  'Maintenance review',
-  'Review',
-  'Keep (FK support)',
-  'Healthy',
+  { name: 'Drop candidate', detail: 'An Unnecessary index with none of the protections below.' },
+  {
+    name: 'Review (short window)',
+    detail: 'An Unnecessary index while the usage counters cover less than 90 days since the SQL Server start.',
+  },
+  {
+    name: 'Review (replica workload not visible)',
+    detail: 'An Unnecessary index on a database with more than one Always On replica, whose reads on other replicas are not visible.',
+  },
+  { name: 'Rebuild needed / Reorganize needed', detail: 'A rebuild or reorganize recommendation (thresholds below).' },
+  { name: 'Update statistics', detail: 'A statistics freshness advisory.' },
+  { name: 'Maintenance review', detail: 'Another maintenance advisory, or the Needs Maintenance class.' },
+  { name: 'Review', detail: 'A Weak index.' },
+  {
+    name: 'Keep (unique) / Keep (FK support)',
+    detail:
+      'An index that backs a unique constraint or primary key, or supports a foreign key, so low usage alone does not make it removable.',
+  },
+  { name: 'Healthy', detail: 'Effective or Effective Mandatory with no maintenance signal.' },
 ]
 
 const showOptions = [
-  { name: 'All', detail: 'Every analyzed index.' },
+  { name: 'All', detail: 'Every analyzed index (the default).' },
   {
     name: 'Needs Attention',
     detail:
-      'Unnecessary or Needs Maintenance classes, scores below 50, or rows with fragmentation, stale statistics, fill factor, or deltastore signals.',
+      'Unnecessary or Needs Maintenance classes, scores below 50, or rows with a maintenance flag, warning, or recommendation such as fragmentation or stale statistics.',
   },
-  { name: 'Drop Candidates', detail: 'Indexes classified as Unnecessary.' },
+  { name: 'Drop Candidates', detail: 'Rows whose Action badge is Drop candidate.' },
   { name: 'Maintenance', detail: 'Rows with a maintenance need or the Needs Maintenance class.' },
 ]
 
@@ -86,24 +98,36 @@ function ScreenshotCard({
   alt,
   width = 1600,
   height = 900,
+  maxWidthClass = 'max-w-6xl',
+  sizes,
 }: {
   eyebrow: string
   title: string
-  body: string
+  body: React.ReactNode
   image: string
   alt: string
   width?: number
   height?: number
+  maxWidthClass?: string
+  sizes?: string
 }) {
   return (
     <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
       <div className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">{eyebrow}</div>
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start">
+      <div className="space-y-6">
         <div className="space-y-3">
           <h2 className="text-2xl font-bold text-gray-900">{title}</h2>
-          <p className="text-sm leading-7 text-gray-700">{body}</p>
+          <div className="space-y-3 text-sm leading-7 text-gray-700">{body}</div>
         </div>
-        <LightboxImage src={image} alt={alt} width={width} height={height} />
+        <LightboxImage
+          src={image}
+          alt={alt}
+          width={width}
+          height={height}
+          sizes={sizes}
+          className={`mx-auto ${maxWidthClass}`}
+          imageClassName="h-auto w-full object-contain transition-transform duration-300 group-hover:scale-[1.01]"
+        />
       </div>
     </div>
   )
@@ -118,7 +142,8 @@ export default function IndexAdvisorTemplate() {
           Index Advisor is the SQL Server index review and maintenance planning module. It classifies the indexes of
           the active database with a deterministic scoring model, adds Query Store evidence such as a 30-day usage
           trend and dependent queries, and assesses drop safety before you consider removing an index. An optional AI
-          analysis can then explain the decision for a single index.
+          analysis can then explain the decision for a single index, with database, schema, table, and index names
+          masked by default.
         </p>
         <p className="mt-3 text-sm text-gray-700">
           In a typical SQL Server tuning workflow, this page is most valuable after{' '}
@@ -140,7 +165,7 @@ export default function IndexAdvisorTemplate() {
               <li>Classify indexes with a deterministic 0-100 score and a single recommended action.</li>
               <li>Find unused, write-heavy, duplicate, fragmented, or stale-statistics indexes.</li>
               <li>Check drop safety against Query Store dependent queries and constraint guardrails.</li>
-              <li>Generate maintenance scripts, export a Markdown report, and run AI analysis for one index.</li>
+              <li>Generate an action script for review, export a Markdown report, and run AI analysis for one index.</li>
             </ul>
           </div>
           <div>
@@ -157,11 +182,83 @@ export default function IndexAdvisorTemplate() {
       <ScreenshotCard
         eyebrow="Screen 1"
         title="Index Analysis Workspace"
-        body="The main screen puts a status line, the filter bar, the sortable index table, and the Index Details panel together. Each row has a checkbox, the table, the index, a color-coded recommended action, reads, and writes. Hovering a cell adds context, such as seeks, scans, lookups, and the read/write ratio on the reads cell. In this capture of the WideWorldImporters demo database, PK_Sales_Customers is selected: its Overview tab lists the score and band, classification, role, type, protection, maintenance need, last use, reads, writes, statistics health, fragmentation, size, data confidence, and key columns, and shows an infinity sign for the read/write ratio because the index has reads but no writes."
+        body={
+          <>
+            <p>The main screen after a refresh of the WideWorldImporters demo database, with no index selected yet.</p>
+            <ul className="list-disc space-y-1 pl-5">
+              <li>
+                <strong>Status line:</strong> how many indexes were analyzed, the load time, and the candidate pool
+                (usage-ranked here), then how many days the usage counters cover since the SQL Server start. This
+                capture shows 7.8 days, so the line adds the short-window warning that unused-index findings may be
+                incomplete.
+              </li>
+              <li>
+                <strong>Filter bar:</strong> Search table or index, Show (All), Rows per Page (10), Include low-usage
+                risk pool (off), Export Report, and the ⓘ Last Refresh button.
+              </li>
+              <li>
+                <strong>Index table:</strong> a checkbox, Table, Index, the color-coded Action badge (Update
+                statistics, Healthy, and Reorganize needed on this page), Reads, and Writes, with page 8 active in the
+                page controls.
+              </li>
+              <li>
+                <strong>AI dock:</strong> Analyze with AI, Mask names (checked, its default), Open last report, Save
+                LLM JSON, and Save HTML, with the status &quot;Select an index to analyze.&quot;
+              </li>
+              <li>
+                <strong>Index Details:</strong> empty until a row is clicked.
+              </li>
+            </ul>
+          </>
+        }
         image="/docs/index-advisor/001.png"
-        alt="Index Advisor main screen with the filter bar, a sortable index table with recommended action badges, and the Index Details Overview tab for PK_Sales_Customers"
-        width={1917}
-        height={981}
+        alt="Index Advisor main screen with the status line, the filter bar, a page of indexes with Update statistics, Healthy and Reorganize needed badges, the AI dock with Mask names checked, and an empty Index Details panel"
+        width={1632}
+        height={807}
+      />
+
+      <ScreenshotCard
+        eyebrow="Screen 2"
+        title="Index Details Overview"
+        body={
+          <>
+            <p>
+              Clicking a row opens it in Index Details. Here Sales.InvoiceLines.FK_Sales_InvoiceLines_InvoiceID is
+              selected and checked.
+            </p>
+            <ul className="list-disc space-y-1 pl-5">
+              <li>
+                <strong>Decision:</strong> Recommended Action Healthy, Score 91 [A], Classification EFFECTIVE with its
+                reason, and Index Role Foreign Key Support.
+              </li>
+              <li>
+                <strong>Protection:</strong> &quot;Review dependencies before removal; this index supports a foreign
+                key.&quot;
+              </li>
+              <li>
+                <strong>Usage and physical state:</strong> last use, 22,317 seeks with no scans or lookups, 7,439
+                writes, a read/write ratio of 3.00, statistics updated three days earlier with 13,581 modifications,
+                6.37% fragmentation over 3,420 pages, and 26.72 MB.
+              </li>
+              <li>
+                <strong>Data Confidence:</strong> Full, which means usage, statistics, and fragmentation metrics were
+                all available. Key column InvoiceID, no included columns.
+              </li>
+              <li>
+                <strong>Recommendations:</strong> &quot;Keep the index and continue monitoring workload usage.&quot;
+                Below it, the Query Store usage trend and dependent queries are still loading.
+              </li>
+              <li>
+                <strong>Selection:</strong> the table footer reads &quot;1 selected&quot; with a Clear selection
+                button.
+              </li>
+            </ul>
+          </>
+        }
+        image="/docs/index-advisor/002.png"
+        alt="Index Advisor with FK_Sales_InvoiceLines_InvoiceID checked and its Index Details Overview showing Healthy, score 91 [A], EFFECTIVE classification, foreign key support, usage, statistics, fragmentation and data confidence"
+        width={1613}
+        height={939}
       />
 
       <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
@@ -173,19 +270,37 @@ export default function IndexAdvisorTemplate() {
             <div className="font-semibold mb-1">Base Collection</div>
             <ul className="list-disc pl-5 space-y-1">
               <li>Collects index metadata, usage DMVs, fragmentation, size, and statistics freshness.</li>
-              <li>By default analyzes the top 200 usage-ranked indexes of the active database.</li>
               <li>
-                If the primary query fails, a compatibility query is used; under server memory pressure a lightweight
-                mode runs without fragmentation and page count data.
+                Analyzes up to 200 indexes of the active database, ranked by usage. The low-usage risk pool can add up
+                to 80 more (see Controls and Filters).
+              </li>
+              <li>
+                If the collection times out or the server is short of memory, a lightweight mode runs without
+                fragmentation and page count data. Other failures fall back to a compatibility query (without index
+                selectivity data) and then to lightweight mode. The status line names the mode that was used.
+              </li>
+              <li>
+                Each index gets a Data Confidence of Full, Partial, or Limited, depending on which of these metrics
+                were available.
               </li>
             </ul>
           </div>
           <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
-            <div className="font-semibold mb-1">Query Store Enrichment</div>
+            <div className="font-semibold mb-1">Usage Window and Query Store</div>
             <ul className="list-disc pl-5 space-y-1">
-              <li>Loads a 30-day usage trend for the selected index.</li>
-              <li>Lists up to five dependent queries whose plans referenced the index in the last 30 days.</li>
-              <li>Uses that evidence to estimate drop impact and drop safety.</li>
+              <li>
+                Usage counters reset when SQL Server restarts. The status line reports how many days they cover and
+                warns when that is under 90 days.
+              </li>
+              <li>
+                When Always On is detected with more than one replica, the status line says so, because reads on
+                other replicas are not visible here.
+              </li>
+              <li>Query Store adds a 30-day usage trend for the selected index.</li>
+              <li>
+                It also lists up to five dependent queries whose plans referenced the index in the last 30 days, and
+                uses that evidence to estimate drop impact and drop safety.
+              </li>
             </ul>
           </div>
           <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
@@ -199,9 +314,9 @@ export default function IndexAdvisorTemplate() {
               Scores map to bands A (90+), B (75+), C (50+), D (25+), and E. Primary key and unique constraint indexes
               are Effective Mandatory with a fixed score of 100. An index that supports a foreign key but has no
               seeks is Weak But Necessary FK, with a score of at least 50. Unnecessary covers exact or leftmost-prefix
-              duplicates, indexes with no reads over a counter window longer than 90 days, and write-heavy indexes
-              with almost no reads. Needs Maintenance applies when a maintenance signal is present or the score falls
-              between 25 and 49. Small non-clustered indexes (under 1,000 rows) lose 10 score points.
+              duplicates, indexes with no reads over a counter window longer than 90 days, write-heavy indexes with
+              almost no reads, and scores below 25. Needs Maintenance applies when a maintenance signal is present or
+              the score falls between 25 and 49. Small non-clustered indexes (under 1,000 rows) lose 10 score points.
             </p>
           </div>
           <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
@@ -219,9 +334,21 @@ export default function IndexAdvisorTemplate() {
         </div>
         <div className="mt-4 text-sm text-gray-700">
           <div className="font-semibold mb-1">Recommended action labels</div>
-          <p>
-            The Action column reduces classification and maintenance signals to one label, from most to least urgent:{' '}
-            {actionLabels.join(', ')}.
+          <p className="mb-2">
+            The Action column reduces classification and maintenance signals to one label. Sorted by Action, the most
+            urgent labels come first:
+          </p>
+          <ul className="list-disc pl-5 space-y-1">
+            {actionLabels.map((label) => (
+              <li key={label.name}>
+                <span className="font-semibold">{label.name}:</span> {label.detail}
+              </li>
+            ))}
+          </ul>
+          <p className="mt-2">
+            Rebuild needed and Reorganize needed follow the analyzer&apos;s recommendation. Without one, an index
+            needs at least 10% fragmentation on at least 1,000 pages: under 5,000 pages it gets Reorganize needed,
+            larger indexes get Rebuild needed from 30% fragmentation and Reorganize needed below that.
           </p>
         </div>
         <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
@@ -242,9 +369,9 @@ export default function IndexAdvisorTemplate() {
             <div className="font-semibold mb-1">Filter Bar</div>
             <ul className="list-disc pl-5 space-y-1">
               <li>Search matches table or index names.</li>
-              <li>Show selects which rows are listed (see below); the default is All.</li>
+              <li>Show selects which rows are listed (see below).</li>
               <li>Rows per Page sets 10, 20, 30, or 50 rows per page (default 10).</li>
-              <li>Include low-usage risk pool is off by default.</li>
+              <li>Include low-usage risk pool is off by default; your choice is kept when you leave and return to the screen while the app runs.</li>
             </ul>
           </div>
           <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
@@ -261,19 +388,39 @@ export default function IndexAdvisorTemplate() {
             <div className="font-semibold mb-1">Buttons</div>
             <ul className="list-disc pl-5 space-y-1">
               <li>The Refresh button in the top bar reloads the analysis; the module also loads when opened.</li>
-              <li>Export Report saves a Markdown (.md) report of the checked rows, or of every row in the current filtered list, not only the current page.</li>
-              <li>The info (ⓘ) button shows telemetry for the last refresh.</li>
+              <li>
+                Export Report saves a Markdown (.md) report of the checked rows, or of every row that matches the
+                current filter across all pages.
+              </li>
+              <li>
+                The ⓘ button opens the Last Refresh telemetry. It stays disabled until a refresh has completed.
+              </li>
               <li>Clear Focus appears when the page was opened from Query Statistics.</li>
             </ul>
           </div>
           <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
             <div className="font-semibold mb-1">Table and Selection</div>
             <ul className="list-disc pl-5 space-y-1">
-              <li>Click the Table, Index, Action, Reads, or Writes header to sort; click again to reverse.</li>
-              <li>Clicking a row opens it in Index Details and loads its Query Store activity.</li>
-              <li>Row checkboxes build a selection for Export Report, Generate Action Script, and AI analysis.</li>
-              <li>Hover a cell for a tooltip: key columns on the table, classification, operational posture, maintenance advisory, reason, and fragmentation on the action, seeks, scans, lookups, and read/write ratio on reads, and updates on writes.</li>
-              <li>Pagination shows the visible range and total result count.</li>
+              <li>
+                Click the Table, Index, Action, Reads, or Writes header to sort (▲/▼); click again to reverse.
+              </li>
+              <li>
+                Clicking a row, or pressing Enter or Space on it, opens it in Index Details and loads its Query Store
+                activity.
+              </li>
+              <li>
+                Row checkboxes build a selection for Export Report, Generate Action Script, and AI analysis. The header
+                checkbox selects the current page.
+              </li>
+              <li>
+                The footer shows the visible range (&quot;Showing 1–10 of N results&quot;), the selection count with
+                Clear selection, and page controls. Checked rows that the current filter hides stay selected and are
+                counted as hidden by filter.
+              </li>
+              <li>
+                Hover a cell for details: key columns on the table, the reasons behind the action, seeks, scans, and
+                lookups on reads, and user updates on writes.
+              </li>
             </ul>
           </div>
         </div>
@@ -283,7 +430,8 @@ export default function IndexAdvisorTemplate() {
             <p>
               Off, the analysis covers the top 200 usage-ranked indexes. On, it also adds up to 80 indexes from a
               risk pool that favors large indexes with little read activity and indexes with many updates but few
-              reads, so risky indexes are not hidden by the usage ranking. The change applies on the next refresh.
+              reads, so risky indexes are not hidden by the usage ranking. Toggling it updates the status line with a
+              reminder; the change applies on the next refresh.
             </p>
           </div>
           <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
@@ -296,6 +444,39 @@ export default function IndexAdvisorTemplate() {
         </div>
       </div>
 
+      <ScreenshotCard
+        eyebrow="Screen 3"
+        title="Narrowed List and Selection"
+        body={
+          <>
+            <p>
+              A narrowed list of six Application.People and Application.People_Archive indexes. The filter bar is
+              outside this crop.
+            </p>
+            <ul className="list-disc space-y-1 pl-5">
+              <li>
+                <strong>Action badges:</strong> Update statistics for three indexes with reads, and Review (short
+                window) for three Unnecessary indexes with no reads, because the usage counters cover less than 90
+                days.
+              </li>
+              <li>
+                <strong>Selection:</strong> PK_Application_People is checked, and the footer reads &quot;2 selected (1
+                hidden by filter)&quot;: a row checked earlier stays selected even though the current filter hides it.
+              </li>
+              <li>
+                <strong>Footer:</strong> &quot;Showing 1–6 of 6 results&quot;, Clear selection, and a single page.
+              </li>
+            </ul>
+          </>
+        }
+        image="/docs/index-advisor/006.png"
+        alt="Index Advisor table narrowed to six Application.People indexes with Update statistics and Review (short window) badges, one row checked, and the footer showing 2 selected (1 hidden by filter)"
+        width={1265}
+        height={751}
+        maxWidthClass="max-w-5xl"
+        sizes="(min-width: 1024px) 1024px, 100vw"
+      />
+
       <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
         <div className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">
           Focus Context from Query Statistics
@@ -306,26 +487,17 @@ export default function IndexAdvisorTemplate() {
             <Link href="/docs/modules/query-statistics" className="font-semibold text-primary hover:text-primary-dark">
               Query Statistics
             </Link>
-            , the list is narrowed to indexes on the tables referenced by that query&apos;s Query Store plan. If no
-            referenced tables are found, the object name is used instead. A banner shows the focus context, and the
-            status line reports how many indexes matched.
+            , the list is narrowed to indexes on the tables referenced by that query&apos;s Query Store plan,
+            matched with their schema. If no referenced tables are found, the object name is used instead. A banner
+            names the focus tables (the first three, then a count of the rest) and the query they came from.
           </p>
           <p>
             If the query belongs to a different database than the active connection, the banner says so and no
-            indexes are matched. Use <strong>Clear Focus</strong> to return to the full list.
+            indexes are matched. If the tables cannot be determined at all, the banner says the list is not filtered.
+            Use <strong>Clear Focus</strong> to return to the full list.
           </p>
         </div>
       </div>
-
-      <ScreenshotCard
-        eyebrow="Screen 2"
-        title="Script Tab and Pagination"
-        body="The Script tab shows a best-effort CREATE INDEX statement rebuilt from index metadata: uniqueness, type, key and included columns, filter, fill factor, and an ONLINE option that follows the connected edition (ON for Enterprise, Developer, Evaluation, and Azure, otherwise OFF). Even for a primary key it is a CREATE INDEX statement, not the constraint definition, so use it as a reference for the index shape. Copy Script puts it on the clipboard and Generate Action Script replaces it with a batch maintenance script. This capture also shows Rows per Page set to 10 with the page controls, and the Analyze with AI dock below the table."
-        image="/docs/index-advisor/002.png"
-        alt="Index Advisor with 10 rows per page, the Script tab showing a CREATE UNIQUE CLUSTERED INDEX statement with Copy Script and Generate Action Script buttons, and the Analyze with AI button below the table"
-        width={1632}
-        height={805}
-      />
 
       <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
         <div className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">Index Details Panel</div>
@@ -333,19 +505,34 @@ export default function IndexAdvisorTemplate() {
           <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
             <div className="font-semibold mb-1">Overview</div>
             <ul className="list-disc pl-5 space-y-1">
-              <li>Recommended Action with the deterministic facts behind it.</li>
+              <li>Recommended Action with the deterministic facts behind it (see Screen 2).</li>
               <li>Warnings and Recommendations in plain language.</li>
-              <li>Usage Trend (30d) from Query Store: total reads, latest sample, change, and executions.</li>
+              <li>
+                Usage Trend (30d) from Query Store: Total Reads, Latest Sample, Change, and Executions. Without
+                matching plans, a message says that no Query Store plan referenced the index in the last 30 days.
+              </li>
               <li>Drop Safety with its decision, confidence, and reason.</li>
-              <li>Dependent Queries with executions, average duration, and logical reads. If Query Store has no matching plans or collection fails, a message says so.</li>
+              <li>
+                Dependent Queries (up to five, from the last 30 days) with executions, average duration, and logical reads. The statement
+                text is shown on one line and shortened to 240 characters.
+              </li>
             </ul>
           </div>
           <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
             <div className="font-semibold mb-1">Script</div>
             <ul className="list-disc pl-5 space-y-1">
-              <li>Shows the reconstructed CREATE INDEX statement for the selected index.</li>
+              <li>
+                Shows a CREATE INDEX statement rebuilt from index metadata: uniqueness, type, key and included
+                columns, filter, fill factor, and an ONLINE option that follows the connected edition (ON for Azure,
+                Enterprise, Developer, and Evaluation, otherwise OFF).
+              </li>
+              <li>
+                It starts with a comment marking it as a re-creation draft: compression, partitioning, filegroup, and
+                sort direction are not included, so review it before use. Even for a primary key it is a CREATE INDEX
+                statement, not the constraint definition.
+              </li>
               <li>Copy Script copies the current script to the clipboard.</li>
-              <li>Generate Action Script replaces it with a batch maintenance script (see Action script below).</li>
+              <li>Generate Action Script replaces it with a batch action script (see Screen 4).</li>
             </ul>
           </div>
         </div>
@@ -362,6 +549,43 @@ export default function IndexAdvisorTemplate() {
         </p>
       </div>
 
+      <ScreenshotCard
+        eyebrow="Screen 4"
+        title="Action Script"
+        body={
+          <>
+            <p>
+              Generate Action Script replaced the Script tab content with a batch script for the single checked row
+              from Screen 2. The server line is blurred in this capture.
+            </p>
+            <ul className="list-disc space-y-1 pl-5">
+              <li>
+                <strong>Header:</strong> Index Action Batch, Generated, Server, Database (WideWorldImporters), and
+                Selected Indexes, followed by a USE statement and GO.
+              </li>
+              <li>
+                <strong>Maintenance note:</strong> the keep/drop policy is separate from the maintenance policy, so a
+                mandatory index may still need statistics maintenance.
+              </li>
+              <li>
+                <strong>Keep line:</strong> the index supports referential integrity, and its drop safety is
+                DO_NOT_DROP because it is constraint-backed or supports referential integrity.
+              </li>
+              <li>
+                <strong>Closing note:</strong> no direct maintenance or drop action was generated for the selected
+                rows, so the script contains only comments.
+              </li>
+            </ul>
+          </>
+        }
+        image="/docs/index-advisor/003.png"
+        alt="Index Advisor Script tab showing an Index Action Batch for FK_Sales_InvoiceLines_InvoiceID with a blurred server line, a maintenance note, a keep line with DO_NOT_DROP drop safety, and the Copy Script and Generate Action Script buttons"
+        width={352}
+        height={622}
+        maxWidthClass="max-w-xs"
+        sizes="320px"
+      />
+
       <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
         <div className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">AI Workflow and Exports</div>
         <div className="grid gap-3 md:grid-cols-2 text-sm text-gray-700">
@@ -369,88 +593,125 @@ export default function IndexAdvisorTemplate() {
             <div className="font-semibold mb-1">Single-index AI analysis</div>
             <ul className="list-disc pl-5 space-y-1">
               <li>
-                Analyze with AI in the dock below the table runs for the selected row, or for one checked row; only
-                one index is analyzed at a time.
+                Analyze with AI runs for the selected row, or for one checked row. With several rows checked the app
+                asks you to select a single index; if the checked row differs from the row open in Index Details, it
+                asks whether to analyze the checked one.
               </li>
               <li>
-                The index is packaged with its deterministic evidence, and the AI provider from{' '}
+                The index is packaged with its deterministic evidence, and the AI provider configured in{' '}
                 <Link href="/docs/settings" className="font-semibold text-primary hover:text-primary-dark">
                   Settings
                 </Link>{' '}
                 explains the decision. Every run is a fresh analysis; cached results are not reused.
               </li>
-              <li>A progress bar and status line track the run, and Cancel stops it.</li>
+              <li>
+                A progress bar and status line track the run. Cancel appears only while it runs. When it finishes,
+                the status names the index, the provider and model, and the duration.
+              </li>
+              <li>
+                Leaving the screen cancels a running analysis and clears the last result, so save a report before you
+                move on.
+              </li>
             </ul>
           </div>
           <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
-            <div className="font-semibold mb-1">Decision Cockpit</div>
+            <div className="font-semibold mb-1">Mask names</div>
             <ul className="list-disc pl-5 space-y-1">
-              <li>The result opens as an HTML report in the Decision Cockpit window.</li>
-              <li>A notice marks partial results (fallback report used) or failed analyses.</li>
               <li>
-                Save HTML saves the report; Save LLM JSON saves the request that was sent to the model, for auditing.
-                Both open a native Save dialog and write plain-text files.
+                Checked by default every time the screen opens, and locked while an analysis runs. Database, schema,
+                table, and index names are replaced with aliases such as TBL_001 throughout the request, including the
+                statement text, and put back in the answer you see.
               </li>
-              <li>Re-analyze runs the analysis again for the same index.</li>
-              <li>The app keeps only the most recent result, in memory, so save it if you want to keep it.</li>
+              <li>
+                Common schema and system names (such as dbo and sys), names shorter than three characters, and names
+                with unusual characters are not aliased; the status line warns when some names could not be masked.
+              </li>
+              <li>Column names and literal values in statement text are not masked.</li>
+              <li>Unchecked, real names are sent. Turn it off only for a local model or a provider you trust.</li>
             </ul>
           </div>
           <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
             <div className="font-semibold mb-1">What the AI provider receives</div>
             <ul className="list-disc pl-5 space-y-1">
               <li>
-                Table and index names as they are, the deterministic evidence (score, classification, usage counters,
-                fragmentation, statistics health), the 30-day usage trend, the drop-impact and drop-safety
-                assessments, the CREATE INDEX script, and the decision contract.
+                The deterministic evidence (score, classification, usage counters, fragmentation, statistics health),
+                the 30-day usage trend, the drop-impact and drop-safety assessments, the decision contract, and the
+                CREATE INDEX script.
+              </li>
+              <li>
+                Context from the same table: its other indexes, missing-index suggestions from the DMVs, and a column
+                usage heatmap.
               </li>
               <li>
                 Up to five dependent Query Store statements from the last 30 days, each with the first 400
-                characters of its text (which can contain literal values) plus execution count, duration, CPU, and
-                logical reads. Execution plan XML is not sent.
+                characters of its text (which can contain literal values) plus execution count, duration, CPU, logical
+                reads, and last execution time. Execution plan XML is not sent.
               </li>
               <li>
-                There is no masking and no approval step. Choose a local model if names or statement text must not
-                leave your environment. See{' '}
+                There is no approval step before sending. See{' '}
                 <Link href="/security" className="font-semibold text-primary hover:text-primary-dark">
                   Security
-                </Link>
-                .
+                </Link>{' '}
+                for what each module sends.
               </li>
+            </ul>
+          </div>
+          <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
+            <div className="font-semibold mb-1">Decision Cockpit</div>
+            <ul className="list-disc pl-5 space-y-1">
+              <li>
+                The result opens as an HTML report in the Decision Cockpit window. The report is shown without running
+                scripts.
+              </li>
+              <li>A notice marks partial results (fallback report used) or failed analyses.</li>
+              <li>
+                Re-analyze runs the analysis again for the same index. Copy SQL copies the SQL blocks in the report,
+                or says that there are none.
+              </li>
+              <li>
+                Save LLM JSON saves the request that was sent to the model, for auditing; with Mask names on, this is
+                the masked copy. Save HTML saves the report with real names. Both open a native Save dialog.
+              </li>
+              <li>Close, the × button, or Esc closes the window; Open last report reopens it.</li>
             </ul>
           </div>
           <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
             <div className="font-semibold mb-1">Action script</div>
             <ul className="list-disc pl-5 space-y-1">
               <li>
-                Check the rows you want, or leave all unchecked to cover every Needs Attention row in the current
-                filtered list, including rows on other pages.
+                Check the rows you want, or leave all unchecked to cover every Needs Attention row that matches the
+                current filter, including rows on other pages.
               </li>
               <li>
-                The script opens with an Index Action Batch header (time, number of indexes) and a USE statement.
-                Per index it can contain UPDATE STATISTICS WITH FULLSCAN, ALTER INDEX REBUILD (ONLINE = ON for
-                Enterprise, Developer, Evaluation, and Azure, otherwise OFF), ALTER INDEX REORGANIZE, and fill-factor
-                review notes as comments.
+                The script opens with an Index Action Batch header (generated time, server, database, number of
+                selected indexes) and a USE statement.
               </li>
               <li>
-                DROP INDEX is written only when the index&apos;s action policy allows it and its drop safety is Safe
-                Drop Candidate. Indexes under a validate or keep policy appear as comment lines only. If nothing
-                qualifies, the script says that no direct maintenance or drop action was generated.
+                Per index it can contain UPDATE STATISTICS WITH FULLSCAN, ALTER INDEX REBUILD with the edition&apos;s
+                ONLINE option, ALTER INDEX REORGANIZE, and maintenance notes as comments. Rebuild and reorganize need
+                at least 1,000 pages; disabled indexes get neither, and columnstore indexes get only REORGANIZE and no
+                statistics update.
+              </li>
+              <li>
+                DROP INDEX IF EXISTS is written only when the index&apos;s action policy allows it and its drop safety
+                is Safe Drop Candidate, preceded by a rollback comment to script the CREATE INDEX definition first.
+                Indexes under a validate or keep policy appear as comment lines only.
               </li>
               <li>The app never runs the script. Copy Script and review it before running anything.</li>
             </ul>
           </div>
-          <div className="rounded-xl border border-gray-100 bg-gray-50 p-4 md:col-span-2">
+          <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
             <div className="font-semibold mb-1">Markdown report</div>
             <ul className="list-disc pl-5 space-y-1">
               <li>
-                Export Report covers the checked rows, or every row in the current filtered list when none are
+                Export Report covers the checked rows, or every row that matches the current filter when none are
                 checked, and saves a Markdown file through a native Save dialog (default name{' '}
                 <span className="font-mono">index_advisor_report_&lt;timestamp&gt;.md</span>).
               </li>
               <li>
-                It holds a table of table, index, classification, action policy, maintenance policy, score,
-                read/write ratio, and fragmentation, followed by any index consolidation opportunities (a message and
-                the estimated space in MB).
+                It starts with the generation time, server, database, and row count, followed by a table of table,
+                index, classification, action policy, maintenance policy, score, read/write ratio, and fragmentation,
+                with index consolidation opportunities (a message and the estimated space in MB) where found.
               </li>
               <li>Useful as a compact audit or DBA handoff document.</li>
             </ul>
@@ -459,13 +720,74 @@ export default function IndexAdvisorTemplate() {
       </div>
 
       <ScreenshotCard
-        eyebrow="Screen 3"
+        eyebrow="Screen 5"
+        title="AI Dock After an Analysis"
+        body={
+          <>
+            <p>
+              The AI dock after an analysis of FK_Sales_InvoiceLines_InvoiceID finished. The red frame is an
+              annotation in the original capture, not part of the app.
+            </p>
+            <ul className="list-disc space-y-1 pl-5">
+              <li>
+                <strong>Status:</strong> &quot;AI analysis ready for&quot; the index key, followed by the provider
+                profile, the model, and the run time (103.2 s here).
+              </li>
+              <li>
+                <strong>Mask names:</strong> unchecked in this capture. It is checked again by default the next time
+                the screen opens.
+              </li>
+              <li>
+                <strong>Buttons:</strong> Analyze with AI, Open last report, Save LLM JSON, and Save HTML. Cancel is
+                hidden because no analysis is running.
+              </li>
+              <li>
+                <strong>Table:</strong> page 9 of the list, with Update statistics, Reorganize needed, and Keep (FK
+                support) badges, and one row selected.
+              </li>
+            </ul>
+          </>
+        }
+        image="/docs/index-advisor/004.png"
+        alt="Index Advisor AI dock framed in red with Analyze with AI, an unchecked Mask names box, Open last report, Save LLM JSON and Save HTML, and a status line reporting that the AI analysis is ready"
+        width={1279}
+        height={812}
+        maxWidthClass="max-w-5xl"
+        sizes="(min-width: 1024px) 1024px, 100vw"
+      />
+
+      <ScreenshotCard
+        eyebrow="Screen 6"
         title="Decision Cockpit"
-        body="Analyze with AI opens its result in the Decision Cockpit window. The report is scrolled here to Telemetry Quality, which states what evidence the analysis actually had, and to the Evidence table, where each signal lists its value, weight, what it supports, and a caveat. The footer offers Re-analyze, Save LLM JSON, Save HTML, and Close. The capture comes from the demo database; complete example reports are linked below."
-        image="/docs/index-advisor/003.png"
-        alt="Index Advisor Decision Cockpit window for Sales.Customers PK_Sales_Customers, showing the Telemetry Quality section, the Evidence table, and the Re-analyze, Save LLM JSON, Save HTML and Close buttons"
+        body={
+          <>
+            <p>
+              The result of that analysis in the Decision Cockpit window, titled with the index key and scrolled to
+              the Evidence table. The capture comes from the demo database; complete example reports are linked
+              below.
+            </p>
+            <ul className="list-disc space-y-1 pl-5">
+              <li>
+                <strong>Telemetry note:</strong> Query Store dependent queries are present (21 trend points), but they
+                are not a full runtime baseline, so exact duration or CPU deltas should not be extrapolated.
+              </li>
+              <li>
+                <strong>Evidence table:</strong> each signal with its value, weight, what it supports, and a caveat,
+                for example native_classification EFFECTIVE, drop_safety_decision DO_NOT_DROP, telemetry_quality
+                Partially supported, and computed_recommendations MONITOR_AND_KEEP.
+              </li>
+              <li>
+                <strong>Footer:</strong> Re-analyze, Copy SQL, Save LLM JSON, Save HTML, and Close.
+              </li>
+            </ul>
+          </>
+        }
+        image="/docs/index-advisor/005.png"
+        alt="Index Advisor Decision Cockpit for Sales.InvoiceLines.FK_Sales_InvoiceLines_InvoiceID showing a telemetry note, the Evidence table, and the Re-analyze, Copy SQL, Save LLM JSON, Save HTML and Close buttons"
         width={1118}
-        height={818}
+        height={819}
+        maxWidthClass="max-w-4xl"
+        sizes="(min-width: 1024px) 896px, 100vw"
       />
 
       <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
@@ -473,9 +795,9 @@ export default function IndexAdvisorTemplate() {
         <p className="text-sm text-gray-700">
           The examples below are standalone HTML reports of the kind that <span className="font-medium">Save HTML</span>{' '}
           exports from the Decision Cockpit, for review, approval, or change planning. All three were generated
-          against the WideWorldImporters demo database, not a production system, so read them as examples of the
-          format. Each report&apos;s own Telemetry Quality and Decision Contract Guardrails sections say how much
-          evidence was available.
+          against the WideWorldImporters demo database with an earlier version of the app, not a production system,
+          so read them as examples of the format. Each report&apos;s own Telemetry Quality and Decision Contract
+          Guardrails sections say how much evidence was available.
         </p>
         <div className="mt-4 grid gap-3 md:grid-cols-3">
           {reportDownloads.map((report) => (
@@ -511,6 +833,7 @@ export default function IndexAdvisorTemplate() {
             <div className="text-sm font-semibold text-gray-900 mb-1">Typical workflow</div>
             <ol className="list-decimal pl-5 space-y-1">
               <li>Open Index Advisor for the active database, or refresh it from the top bar.</li>
+              <li>Check the status line for the counter window, Always On, and fallback notes.</li>
               <li>Narrow the list with Search and Show, and sort by Action, Reads, or Writes.</li>
               <li>Select an index and review Overview, Usage Trend, Drop Safety, and Dependent Queries.</li>
               <li>Run Analyze with AI when you want a written explanation for a single index.</li>
@@ -521,20 +844,27 @@ export default function IndexAdvisorTemplate() {
           <div>
             <div className="text-sm font-semibold text-gray-900 mb-1">Interpretation notes</div>
             <ul className="list-disc pl-5 space-y-1">
-              <li>The module does not execute the scripts it generates. When an AI answer contains SQL code blocks, the app submits them to SQL Server in a session with <span className="font-mono">SET PARSEONLY ON</span>, so the server checks the syntax without running them. If parse-only mode cannot be turned on, the check is skipped.</li>
               <li>
-                AI analysis has no masking and no approval step. Table and index names, and up to five dependent Query
-                Store statement excerpts (up to 400 characters each, possibly with literal values), are sent to the
-                selected AI provider. Choose a local model if they must not leave your environment. See{' '}
-                <Link href="/security" className="font-semibold text-primary hover:text-primary-dark">
-                  Security
-                </Link>{' '}
-                for what each module sends.
+                The module does not execute the scripts it generates. When an AI answer contains SQL code blocks, the
+                app submits them to SQL Server in a separate batch with{' '}
+                <span className="font-mono">SET PARSEONLY ON</span>, so the server checks the syntax without running
+                them. If parse-only mode cannot be turned on, the check is skipped.
               </li>
-              <li>Saved files are plain text on your disk. The LLM JSON file holds the full request that was sent to the model, including the statement excerpts.</li>
+              <li>
+                Mask names hides database, schema, table, and index names, but column names and literal values in the
+                dependent statement excerpts (up to 400 characters each) are still sent to the selected AI provider.
+                Choose a local model if they must not leave your environment.
+              </li>
+              <li>
+                Saved files are plain text on your disk. The LLM JSON file holds the request that was sent to the
+                model, including the statement excerpts; the HTML report uses real names.
+              </li>
               <li>Safe Drop Candidate is a recommendation category, not a production guarantee.</li>
               <li>Query Store-dependent sections are only as good as the available workload evidence.</li>
-              <li>Usage DMV counters reset when SQL Server restarts, so a short uptime weakens unused-index evidence.</li>
+              <li>
+                Usage DMV counters reset when SQL Server restarts, so a short uptime weakens unused-index evidence;
+                that is why such indexes show Review (short window) instead of Drop candidate.
+              </li>
               <li>Include low-usage risk pool changes the candidate set only after the next refresh.</li>
             </ul>
           </div>

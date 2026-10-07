@@ -222,10 +222,11 @@ export default function SecurityPage() {
                     <div className="rounded-2xl border border-slate-200/70 bg-white p-5">
                       <h3 className="mb-2 text-sm font-bold text-gray-900">Index Advisor</h3>
                       <p className="text-sm leading-relaxed text-gray-600">
-                        No redaction and no approval step. Table and index names go as they are, together with
-                        up to five dependent Query Store statement excerpts (up to 400 characters each, which can
-                        contain literal values). Execution plan XML is not sent. Use a local model if names or
-                        statement text should not leave your environment.
+                        Mask names is on by default: database, schema, table and index names are replaced with
+                        aliases before sending and restored in the answer. Column names and literal values in up to
+                        five dependent Query Store statement excerpts (up to 400 characters each) still go as they
+                        are, with no approval step, and turning masking off sends real names. Execution plan XML is
+                        not sent. The saved LLM JSON is the masked request; the saved HTML report uses real names.
                       </p>
                     </div>
                   </div>

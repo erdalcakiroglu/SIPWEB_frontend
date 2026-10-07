@@ -38,7 +38,8 @@ const lastModified: Record<string, string> = {
   '/security': '2026-10-07',
   // 2026-09-28: module details re-verified against the v1.1.0 desktop UI.
   '/features': '2026-10-04',
-  '/faq': '2026-10-04',
+  // 2026-10-07: AI data-handling answer updated for Object Explorer and Index Advisor masking.
+  '/faq': '2026-10-07',
   '/contact': '2026-06-01',
   // 2026-10-04: product statements corrected (local-first, no send-policy levels).
   '/privacy': '2026-10-04',
@@ -56,7 +57,9 @@ const lastModified: Record<string, string> = {
   // 2026-10-07: Query Statistics page revisited against the v1.1.0 module (plan selector, batch
   // operations, Query Metrics sidebar, AI analysis limits) with the new cropped screenshot set.
   '/docs/modules/query-statistics': '2026-10-07',
-  '/docs/modules/index-advisor': '2026-10-04',
+  // 2026-10-07: Index Advisor page rewritten against the v1.1.0 module (action labels, Mask names,
+  // action script header and DROP guard, Decision Cockpit) with the new screenshot set.
+  '/docs/modules/index-advisor': '2026-10-07',
   '/docs/modules/blocking-analysis': '2026-10-07',
   '/docs/modules/wait-statistics': '2026-10-07',
   // 2026-10-07: Security Audit page rewritten against the v1.1.0 audit engine (scoring caps,

@@ -95,7 +95,7 @@ const faqs: FAQItem[] = [
     category: 'Security & AI',
     question: 'What happens when I use a cloud AI provider?',
     answer:
-      'Cloud AI is used only after you select a provider and add your own API key. In Query Statistics, literal values are redacted by default; if you turn on Show Sensitive Data while a cloud provider is active, the application asks for your approval for the session before sending unredacted text, and the redacted context is sent without a separate prompt. Other modules have no such approval step: Object Explorer only offers comment removal, and Index Advisor has no redaction. There is no automatic PII masking or payload preview, so review your organization’s data policy before enabling a hosted model, or use the local model.',
+      'Cloud AI is used only after you select a provider and add your own API key. In Query Statistics, literal values are redacted by default; if you turn on Show Sensitive Data while a cloud provider is active, the application asks for your approval for the session before sending unredacted text, and the redacted context is sent without a separate prompt. Other modules have no such approval step: Object Explorer masks credential values such as passwords and tokens in source code and can remove SQL comments, and Index Advisor replaces database, schema, table and index names with aliases by default, while column names and literal values are still sent. There is no automatic PII masking or payload preview, so review your organization’s data policy before enabling a hosted model, or use the local model.',
     link: { href: '/security', label: 'Review data boundaries' },
   },
   {

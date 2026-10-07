@@ -369,7 +369,7 @@ function ScreenshotCard({
 }: {
   eyebrow: string
   title: string
-  body: string
+  body: React.ReactNode
   image: string
   alt: string
   width?: number
@@ -383,7 +383,7 @@ function ScreenshotCard({
       <div className="space-y-6">
         <div className="space-y-3">
           <h2 className="text-2xl font-bold text-gray-900">{title}</h2>
-          <p className="text-sm leading-7 text-gray-700">{body}</p>
+          <div className="space-y-3 text-sm leading-7 text-gray-700">{body}</div>
         </div>
         <LightboxImage
           src={image}
@@ -476,7 +476,31 @@ export default function SecurityAuditTemplate() {
       <ScreenshotCard
         eyebrow="Screen 1"
         title="Security Posture Workbench After an Audit"
-        body="The workbench after Run Audit with Extended Instance Scan selected. The header reads SECURITY POSTURE WORKBENCH and SQL Server Security Audit, and the status line reads Audit completed, 2 check(s) not measurable, followed by the finish time. The left panel is on the Findings tab (Security Findings, 21 of 21 finding(s)) with the search box, All Risks (21), and All Categories (21). The list opens with the only HIGH finding, Risky Extended Procedures Accessible (Execution · SA-014, Found 4 EXECUTE grant(s) on risky extended procedures to non-sysadmin principals), followed by MEDIUM findings: Mixed Mode Authentication Enabled (SA-069), Wide-Read / Recon Server Permissions Granted (SA-004, 5 grants), Weak Password Policies (SA-009, 19 SQL logins), Risky Server Features Enabled (SA-010, 1 feature), Force Encryption Disabled (SA-026), NTLM Authentication Detected (Kerberos Fallback) (SA-028, 9 sessions), Unencrypted TCP Connections Detected (SA-030), and Non-Standard Database Owners (SA-036, 16 databases). Security Context is on the Overview tab. The score card reads STANDARD MATURITY PROFILE, 71, Level 3 · Defined, with the strip CRITICAL 0, HIGH 1, MEDIUM 11, LOW 7, INFO 2. The yellow notice explains the limited scope: TLS version and certificate validity cannot be fully verified via T-SQL alone, and the Empty Password Check and Weak Password Check could not be measured because password_hash is NULL for all 20 SQL logins without CONTROL SERVER, so the score does not cover them. SQL Server Patch Status · Update available compares the current build 15.0.4430.1 (CU32, KB5054833) with the recommended target CU32 + GDR 15.0.4490.9 (KB5122772, September 08, 2026), lists Latest CU, Latest GDR, and Latest CU + GDR, and shows Lag 558 days behind, Source Microsoft Learn, just refreshed, Catalog date 2026-10-07 (today), and the link buttons for the update history and each KB article."
+        body={
+          <>
+            <p>
+              The workbench after Run Audit with Extended Instance Scan selected. The header reads SECURITY POSTURE WORKBENCH and SQL
+              Server Security Audit; the status line reads Audit completed, 2 check(s) not measurable, followed by the finish time.
+            </p>
+            <ul className="list-disc space-y-1 pl-5">
+              <li>
+                <strong>Findings list (left):</strong> Security Findings, 21 of 21 finding(s), with the search box, All Risks (21), and All Categories (21). The only HIGH finding comes first: Risky Extended Procedures Accessible (Execution · SA-014, Found 4 EXECUTE grant(s) on risky extended procedures to non-sysadmin principals).
+              </li>
+              <li>
+                <strong>MEDIUM findings that follow:</strong> Mixed Mode Authentication Enabled (SA-069); Wide-Read / Recon Server Permissions Granted (SA-004, 5 grants); Weak Password Policies (SA-009, 19 SQL logins); Risky Server Features Enabled (SA-010, 1 feature); Force Encryption Disabled (SA-026); NTLM Authentication Detected (Kerberos Fallback) (SA-028, 9 sessions); Unencrypted TCP Connections Detected (SA-030); Non-Standard Database Owners (SA-036, 16 databases).
+              </li>
+              <li>
+                <strong>Score card (Security Context, Overview tab):</strong> STANDARD MATURITY PROFILE, 71, Level 3 · Defined, with the strip CRITICAL 0 · HIGH 1 · MEDIUM 11 · LOW 7 · INFO 2.
+              </li>
+              <li>
+                <strong>Limited-scope notice (yellow):</strong> TLS version and certificate validity cannot be fully verified via T-SQL alone. The Empty Password Check and Weak Password Check were not measured because password_hash is NULL for all 20 SQL logins without CONTROL SERVER, so the score does not cover them.
+              </li>
+              <li>
+                <strong>SQL Server Patch Status · Update available:</strong> current build 15.0.4430.1 (CU32, KB5054833) against the recommended target CU32 + GDR 15.0.4490.9 (KB5122772, September 08, 2026); Latest CU, Latest GDR, and Latest CU + GDR; Lag 558 days behind; Source Microsoft Learn, just refreshed; Catalog date 2026-10-07 (today); link buttons for the update history and each KB article.
+              </li>
+            </ul>
+          </>
+        }
         image="/docs/security-audit/001.png"
         alt="SQL Server Security Audit workbench after an audit: the Findings list with one HIGH and several MEDIUM findings on the left, and the Security Context Overview on the right with the maturity score 71, Level 3 Defined, the severity strip, the limited-scope notice, and the SQL Server Patch Status card"
         width={1625}
@@ -744,7 +768,35 @@ export default function SecurityAuditTemplate() {
       <ScreenshotCard
         eyebrow="Screen 2"
         title="Finding Detail for a HIGH Finding"
-        body="Finding Detail for Risky Extended Procedures Accessible, shown after selecting the row. Below the HIGH badge and the title are the Copy Issue and Copy Query buttons and the summary, Found 4 EXECUTE grant(s) on risky extended procedures to non-sysadmin principals. The sections that follow: Why it matters (extended procedures can access the filesystem or registry), Attack scenario (a non-admin executes xp_regread or xp_dirtree to discover secrets or files), Recommendation (remove EXECUTE grants on xp_regread, xp_regwrite, xp_dirtree, and xp_fileexist for non-admins), Compliance (SA-014 · PCI-DSS; ISO 27001; SOC2; HIPAA · CIS SQL Server 2019 v1.3.0 – Relevant Section · A.9 / A.8 / A.10 (Contextual) · AC / CM / AU / SC (Contextual)), Evidence (4) with one line per grant (xp_dirtree, xp_fileexist, xp_fixeddrives, and xp_regread, each granted to public), and Verification Query, a SELECT against master.sys.all_objects and master.sys.database_permissions shown in the dark code box."
+        body={
+          <>
+            <p>
+              Finding Detail for Risky Extended Procedures Accessible, shown after selecting the row. Below the HIGH badge and the
+              title are the Copy Issue and Copy Query buttons and the summary: Found 4 EXECUTE grant(s) on risky extended
+              procedures to non-sysadmin principals.
+            </p>
+            <ul className="list-disc space-y-1 pl-5">
+              <li>
+                <strong>Why it matters:</strong> extended procedures can access the filesystem or registry and should be tightly controlled.
+              </li>
+              <li>
+                <strong>Attack scenario:</strong> a non-admin executes xp_regread or xp_dirtree to discover secrets or files.
+              </li>
+              <li>
+                <strong>Recommendation:</strong> remove EXECUTE grants on xp_regread, xp_regwrite, xp_dirtree, and xp_fileexist for non-admins.
+              </li>
+              <li>
+                <strong>Compliance:</strong> SA-014 · PCI-DSS; ISO 27001; SOC2; HIPAA · CIS SQL Server 2019 v1.3.0 – Relevant Section · A.9 / A.8 / A.10 (Contextual) · AC / CM / AU / SC (Contextual).
+              </li>
+              <li>
+                <strong>Evidence (4):</strong> one line per grant: xp_dirtree, xp_fileexist, xp_fixeddrives, and xp_regread, each granted to public.
+              </li>
+              <li>
+                <strong>Verification Query:</strong> a SELECT against master.sys.all_objects and master.sys.database_permissions, shown in the dark code box.
+              </li>
+            </ul>
+          </>
+        }
         image="/docs/security-audit/002.png"
         alt="Security Context panel on the Finding Detail tab for Risky Extended Procedures Accessible, showing the HIGH badge, Copy Issue and Copy Query buttons, Why it matters, Attack scenario, Recommendation, Compliance, four evidence lines, and the verification query"
         width={539}
@@ -825,7 +877,24 @@ export default function SecurityAuditTemplate() {
       <ScreenshotCard
         eyebrow="Screen 3"
         title="Logins Tab: Login Inventory"
-        body="The Logins tab after an audit: Login Inventory with the counter 25 of 25 login(s) and the Search logins box. Each row shows the login name, a second line in the form type · default database · created timestamp (SQL_LOGIN or WINDOWS_LOGIN, with master as the default database in all but one visible row), and a status badge on the right: DISABLED for sa and sample_test_usr, ACTIVE for the other visible rows. Login names below the first three rows and one default database name are blurred in this screenshot; the counts and dates are as captured."
+        body={
+          <>
+            <p>
+              The Logins tab after an audit: Login Inventory with the counter 25 of 25 login(s) and the Search logins box.
+            </p>
+            <ul className="list-disc space-y-1 pl-5">
+              <li>
+                <strong>Each row:</strong> the login name, a second line in the form type · default database · created timestamp (SQL_LOGIN or WINDOWS_LOGIN; master is the default database in all but one visible row), and a status badge on the right.
+              </li>
+              <li>
+                <strong>Badges:</strong> DISABLED for sa and sample_test_usr, ACTIVE for the other visible rows.
+              </li>
+              <li>
+                <strong>Blurred in this screenshot:</strong> login names below the first three rows and one default database name. Counts and dates are as captured.
+              </li>
+            </ul>
+          </>
+        }
         image="/docs/security-audit/003.png"
         alt="Login Inventory tab listing 25 server logins with their type, default database, creation timestamp, and DISABLED or ACTIVE badge; most login names are blurred"
         width={1095}
@@ -869,7 +938,33 @@ export default function SecurityAuditTemplate() {
       <ScreenshotCard
         eyebrow="Screen 4"
         title="Access Matrix Tab: Principals, Roles, and Explicit Permissions"
-        body="The Access Matrix tab with 86 matching · 86 total records, the Search principals, roles, and permissions box, the sort controls Principal and Ascending, 50 / page, Reload, and Export XLSX in the header, and Previous, Page 1 of 2, and Next at the bottom. Server-level rows read Server · SQL_LOGIN · SQL_LOGIN with a Server chip and a SERVER LOGIN badge; database rows read database · SQL_USER · INSTANCE with a Database chip and a MAPPED badge. Rows that belong to a sysadmin login carry a red SYSADMIN badge instead of the scope chip. Each row ends with Direct roles (sysadmin, db_owner, or a dash) and Explicit permissions such as CONNECT SQL (GRANT), CONNECT (GRANT), or VIEW ANY DATABASE (DENY). Principal and database names, one role name, and one object name are blurred in this screenshot."
+        body={
+          <>
+            <p>
+              The Access Matrix tab with 86 matching · 86 total records.
+            </p>
+            <ul className="list-disc space-y-1 pl-5">
+              <li>
+                <strong>Toolbar:</strong> the Search principals, roles, and permissions box, the sort controls Principal and Ascending, 50 / page, Reload, and Export XLSX; Previous, Page 1 of 2, and Next at the bottom.
+              </li>
+              <li>
+                <strong>Server rows:</strong> Server · SQL_LOGIN · SQL_LOGIN with a Server chip and a SERVER LOGIN badge.
+              </li>
+              <li>
+                <strong>Database rows:</strong> database · SQL_USER · INSTANCE with a Database chip and a MAPPED badge.
+              </li>
+              <li>
+                <strong>Sysadmin rows:</strong> a red SYSADMIN badge instead of the scope chip.
+              </li>
+              <li>
+                <strong>Right-hand columns:</strong> Direct roles (sysadmin, db_owner, or a dash) and Explicit permissions such as CONNECT SQL (GRANT), CONNECT (GRANT), or VIEW ANY DATABASE (DENY).
+              </li>
+              <li>
+                <strong>Blurred in this screenshot:</strong> principal and database names, one role name, and one object name.
+              </li>
+            </ul>
+          </>
+        }
         image="/docs/security-audit/004.png"
         alt="Access Matrix tab with 86 records sorted by principal, showing server and database rows with scope chips, SYSADMIN and mapping badges, direct roles, and explicit permissions; principal and database names are blurred"
         width={1090}

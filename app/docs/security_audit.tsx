@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import LightboxImage from './LightboxImage'
 
 const mainAreas = [
   'Header: the caption SECURITY POSTURE WORKBENCH, the title SQL Server Security Audit, and a status line that starts as "Ready to audit."',
@@ -346,6 +347,58 @@ const troubleshooting = [
   },
 ]
 
+const reportDownloads = [
+  {
+    name: 'Sample Security Audit Report (HTML)',
+    href: '/docs/security-audit/security_audit_20261007_131752.html',
+    summary:
+      'Saved with Save HTML in version 1.1.0 against a SQL Server 2019 Standard Edition test instance: maturity level L3 / 5 and score 71 / 100 with the per-category breakdown, 22 issues (1 high, 11 medium, 7 low, 3 info), the patch status (558 days behind), the Surface Area table, the Audit Health notes, the Issues and Cross-Mapping tabs, and the server login list with 4 additional sysadmins. Server, domain, login, and database names are fictional.',
+  },
+]
+
+function ScreenshotCard({
+  eyebrow,
+  title,
+  body,
+  image,
+  alt,
+  width = 1600,
+  height = 900,
+  maxWidthClass = 'max-w-6xl',
+  sizes,
+}: {
+  eyebrow: string
+  title: string
+  body: string
+  image: string
+  alt: string
+  width?: number
+  height?: number
+  maxWidthClass?: string
+  sizes?: string
+}) {
+  return (
+    <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+      <div className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">{eyebrow}</div>
+      <div className="space-y-6">
+        <div className="space-y-3">
+          <h2 className="text-2xl font-bold text-gray-900">{title}</h2>
+          <p className="text-sm leading-7 text-gray-700">{body}</p>
+        </div>
+        <LightboxImage
+          src={image}
+          alt={alt}
+          width={width}
+          height={height}
+          sizes={sizes}
+          className={`mx-auto ${maxWidthClass}`}
+          imageClassName="h-auto w-full object-contain transition-transform duration-300 group-hover:scale-[1.01]"
+        />
+      </div>
+    </div>
+  )
+}
+
 function Panel({ title, children, className = '' }: { title: string; children: React.ReactNode; className?: string }) {
   return (
     <div className={`rounded-xl border border-gray-100 bg-gray-50 p-4 ${className}`}>
@@ -419,6 +472,16 @@ export default function SecurityAuditTemplate() {
           </div>
         </div>
       </div>
+
+      <ScreenshotCard
+        eyebrow="Screen 1"
+        title="Security Posture Workbench After an Audit"
+        body="The workbench after Run Audit with Extended Instance Scan selected. The header reads SECURITY POSTURE WORKBENCH and SQL Server Security Audit, and the status line reads Audit completed, 2 check(s) not measurable, followed by the finish time. The left panel is on the Findings tab (Security Findings, 21 of 21 finding(s)) with the search box, All Risks (21), and All Categories (21). The list opens with the only HIGH finding, Risky Extended Procedures Accessible (Execution · SA-014, Found 4 EXECUTE grant(s) on risky extended procedures to non-sysadmin principals), followed by MEDIUM findings: Mixed Mode Authentication Enabled (SA-069), Wide-Read / Recon Server Permissions Granted (SA-004, 5 grants), Weak Password Policies (SA-009, 19 SQL logins), Risky Server Features Enabled (SA-010, 1 feature), Force Encryption Disabled (SA-026), NTLM Authentication Detected (Kerberos Fallback) (SA-028, 9 sessions), Unencrypted TCP Connections Detected (SA-030), and Non-Standard Database Owners (SA-036, 16 databases). Security Context is on the Overview tab. The score card reads STANDARD MATURITY PROFILE, 71, Level 3 · Defined, with the strip CRITICAL 0, HIGH 1, MEDIUM 11, LOW 7, INFO 2. The yellow notice explains the limited scope: TLS version and certificate validity cannot be fully verified via T-SQL alone, and the Empty Password Check and Weak Password Check could not be measured because password_hash is NULL for all 20 SQL logins without CONTROL SERVER, so the score does not cover them. SQL Server Patch Status · Update available compares the current build 15.0.4430.1 (CU32, KB5054833) with the recommended target CU32 + GDR 15.0.4490.9 (KB5122772, September 08, 2026), lists Latest CU, Latest GDR, and Latest CU + GDR, and shows Lag 558 days behind, Source Microsoft Learn, just refreshed, Catalog date 2026-10-07 (today), and the link buttons for the update history and each KB article."
+        image="/docs/security-audit/001.png"
+        alt="SQL Server Security Audit workbench after an audit: the Findings list with one HIGH and several MEDIUM findings on the left, and the Security Context Overview on the right with the maturity score 71, Level 3 Defined, the severity strip, the limited-scope notice, and the SQL Server Patch Status card"
+        width={1625}
+        height={921}
+      />
 
       <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
         <div className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">Requirements and Limits</div>
@@ -678,6 +741,18 @@ export default function SecurityAuditTemplate() {
         </div>
       </div>
 
+      <ScreenshotCard
+        eyebrow="Screen 2"
+        title="Finding Detail for a HIGH Finding"
+        body="Finding Detail for Risky Extended Procedures Accessible, shown after selecting the row. Below the HIGH badge and the title are the Copy Issue and Copy Query buttons and the summary, Found 4 EXECUTE grant(s) on risky extended procedures to non-sysadmin principals. The sections that follow: Why it matters (extended procedures can access the filesystem or registry), Attack scenario (a non-admin executes xp_regread or xp_dirtree to discover secrets or files), Recommendation (remove EXECUTE grants on xp_regread, xp_regwrite, xp_dirtree, and xp_fileexist for non-admins), Compliance (SA-014 · PCI-DSS; ISO 27001; SOC2; HIPAA · CIS SQL Server 2019 v1.3.0 – Relevant Section · A.9 / A.8 / A.10 (Contextual) · AC / CM / AU / SC (Contextual)), Evidence (4) with one line per grant (xp_dirtree, xp_fileexist, xp_fixeddrives, and xp_regread, each granted to public), and Verification Query, a SELECT against master.sys.all_objects and master.sys.database_permissions shown in the dark code box."
+        image="/docs/security-audit/002.png"
+        alt="Security Context panel on the Finding Detail tab for Risky Extended Procedures Accessible, showing the HIGH badge, Copy Issue and Copy Query buttons, Why it matters, Attack scenario, Recommendation, Compliance, four evidence lines, and the verification query"
+        width={539}
+        height={795}
+        maxWidthClass="max-w-[539px]"
+        sizes="(min-width: 640px) 539px, 100vw"
+      />
+
       <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
         <div className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">What the Audit Checks</div>
         <p className="text-sm text-gray-700 mb-4">
@@ -747,6 +822,16 @@ export default function SecurityAuditTemplate() {
         </div>
       </div>
 
+      <ScreenshotCard
+        eyebrow="Screen 3"
+        title="Logins Tab: Login Inventory"
+        body="The Logins tab after an audit: Login Inventory with the counter 25 of 25 login(s) and the Search logins box. Each row shows the login name, a second line in the form type · default database · created timestamp (SQL_LOGIN or WINDOWS_LOGIN, with master as the default database in all but one visible row), and a status badge on the right: DISABLED for sa and sample_test_usr, ACTIVE for the other visible rows. Login names below the first three rows and one default database name are blurred in this screenshot; the counts and dates are as captured."
+        image="/docs/security-audit/003.png"
+        alt="Login Inventory tab listing 25 server logins with their type, default database, creation timestamp, and DISABLED or ACTIVE badge; most login names are blurred"
+        width={1095}
+        height={794}
+      />
+
       <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
         <div className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">Access Matrix Tab</div>
         <p className="text-sm text-gray-700 mb-4">
@@ -780,6 +865,16 @@ export default function SecurityAuditTemplate() {
           </Panel>
         </div>
       </div>
+
+      <ScreenshotCard
+        eyebrow="Screen 4"
+        title="Access Matrix Tab: Principals, Roles, and Explicit Permissions"
+        body="The Access Matrix tab with 86 matching · 86 total records, the Search principals, roles, and permissions box, the sort controls Principal and Ascending, 50 / page, Reload, and Export XLSX in the header, and Previous, Page 1 of 2, and Next at the bottom. Server-level rows read Server · SQL_LOGIN · SQL_LOGIN with a Server chip and a SERVER LOGIN badge; database rows read database · SQL_USER · INSTANCE with a Database chip and a MAPPED badge. Rows that belong to a sysadmin login carry a red SYSADMIN badge instead of the scope chip. Each row ends with Direct roles (sysadmin, db_owner, or a dash) and Explicit permissions such as CONNECT SQL (GRANT), CONNECT (GRANT), or VIEW ANY DATABASE (DENY). Principal and database names, one role name, and one object name are blurred in this screenshot."
+        image="/docs/security-audit/004.png"
+        alt="Access Matrix tab with 86 records sorted by principal, showing server and database rows with scope chips, SYSADMIN and mapping badges, direct roles, and explicit permissions; principal and database names are blurred"
+        width={1090}
+        height={796}
+      />
 
       <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
         <div className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">Saving the HTML Report</div>
@@ -816,6 +911,42 @@ export default function SecurityAuditTemplate() {
               says &quot;Report context is incomplete&quot;.
             </p>
           </Panel>
+        </div>
+      </div>
+
+      <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+        <div className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">Sample Report</div>
+        <p className="text-sm text-gray-700">
+          A report saved with Save HTML in version 1.1.0 on October 7, 2026, from a later audit of the same test
+          instance than the screenshots above, so the counts differ slightly (22 issues and 3 info-level items in the
+          report against 21 findings and 2 on the screen). Open it in a browser to switch between the Summary, Issues,
+          Cross-Mapping, and Logins tabs. The server, machine, domain, login, and database names in the file were
+          replaced with fictional ones; apart from those names, the content is as the app wrote it.
+        </p>
+        <div className="mt-4 grid gap-4 md:grid-cols-2">
+          {reportDownloads.map((report) => (
+            <div key={report.href} className="flex h-full flex-col rounded-xl border border-gray-100 bg-gray-50 p-4">
+              <h3 className="text-lg font-semibold text-gray-900">{report.name}</h3>
+              <p className="mb-4 mt-2 text-sm text-gray-700">{report.summary}</p>
+              <div className="mt-auto flex flex-wrap items-stretch gap-2">
+                <a
+                  href={report.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex min-h-11 flex-1 items-center justify-center rounded-xl border border-gray-200 bg-white px-4 py-2 text-center text-sm font-semibold text-gray-800 transition hover:border-primary hover:text-primary"
+                >
+                  Preview
+                </a>
+                <a
+                  href={report.href}
+                  download
+                  className="inline-flex min-h-11 flex-1 items-center justify-center rounded-xl bg-cta px-4 py-2 text-center text-sm font-semibold text-white shadow-cta transition hover:bg-cta-hover hover:shadow-cta-hover"
+                >
+                  Download
+                </a>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 

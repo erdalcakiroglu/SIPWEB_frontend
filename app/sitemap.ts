@@ -58,7 +58,7 @@ const lastModified: Record<string, string> = {
   '/docs/modules/query-statistics': '2026-10-07',
   '/docs/modules/index-advisor': '2026-10-04',
   '/docs/modules/blocking-analysis': '2026-10-07',
-  '/docs/modules/wait-statistics': '2026-10-04',
+  '/docs/modules/wait-statistics': '2026-10-07',
   // 2026-10-07: Security Audit page rewritten against the v1.1.0 audit engine (scoring caps,
   // measurability, patch status sources, access matrix reload behaviour).
   '/docs/modules/security-audit': '2026-10-07',

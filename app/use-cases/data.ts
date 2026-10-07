@@ -317,8 +317,8 @@ UPDATE STATISTICS dbo.Invoices (IX_Invoices_Status) WITH FULLSCAN;
         image: {
           src: '/docs/wait-statistics/001.png',
           alt: 'Wait Statistics main screen from a demo database (placeholder image, not this case)',
-          width: 1919,
-          height: 969,
+          width: 1616,
+          height: 917,
           caption: 'Wait Statistics main screen. (Placeholder image from a demo database, not this case.)',
         },
       },

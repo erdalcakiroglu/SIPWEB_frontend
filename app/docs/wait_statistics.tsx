@@ -2,18 +2,14 @@ import Link from 'next/link'
 import LightboxImage from './LightboxImage'
 
 const screenAreas = [
-  'Filter panel, with the query-context bar and the Refresh / Set Baseline / Export row',
+  'Filter panel (Trend Window, Database, Application, Minimum Wait, Apply Filter) with the action row under it: ↻ Refresh, Set Baseline, Export, the Mask names and statements checkbox, and the data badge',
   'Wait Analysis panel with the Top Waits and Trend & Blocking tabs',
-  'Summary panel',
-  'Insights panel',
-  'Wait Categories panel (shown with Show Details)',
+  'Summary panel with the health line, four figures, and the status line',
+  'Insights panel with Alerts and Primary Finding, expanded by Show Details',
+  'Wait Categories panel (shown only after Show Details)',
 ]
 
-const mainTabs = [
-  'Top Waits',
-  'Trend & Blocking',
-  'Automation',
-]
+const mainTabs = ['Top Waits', 'Trend & Blocking']
 
 const insightBlocks = [
   'Alerts',
@@ -22,46 +18,36 @@ const insightBlocks = [
   'Next Action (Show Details)',
   'Custom Categories (Show Details)',
   'Wait / Plan (Show Details)',
-  'Outbound target status',
 ]
 
 const buttons = [
-  'Refresh',
+  '↻ Refresh',
   'Set Baseline',
   'Export',
   'Apply Filter',
-  'Clear Context',
+  'Clear Context (on the query-context bar only)',
   'Show Details / Hide Details',
   'Save Before',
   'Save After',
   'Compare',
-  'Add Custom',
-  'Remove Custom',
-  'Save Schedule',
-  'Save Thresholds',
-  'Add Category',
-  'Remove Category',
-  'Clear Wait Stats (Manual Admin)',
-  'Add Server Target',
-  'Remove Target',
-  'Push Metrics Now',
+  'Add Custom (opens the Add Custom Wait Category dialog with Save and Cancel)',
+  'Remove Custom (opens the Remove Custom Wait Category dialog with Remove and Cancel)',
 ]
 
 const checkboxes = [
-  'Scheduled Snapshot Enabled',
-  'Enable 5s Monitor (while view is visible)',
-  'Enable Admin Tools for this session',
+  'Mask names and statements (checked by default): replaces login, host and application names with aliases and redacts literals in the statements of the exported blocking chain',
 ]
 
 const comboboxes = [
-  'Trend Window: 7, 30 or 90 Days',
-  'Database: type a name or pick a suggestion',
-  'Application: type a name or pick a suggestion',
-  'Minimum Wait: None, >100 ms, >1 sec, >5 sec, >30 sec, >1 min',
-  'Display: Daily Summary, Dominant Category, Category Breakdown',
+  'Trend Window: 7 Days, 30 Days, or 90 Days',
+  'Database: free text, placeholder All Databases, with suggestions from the sessions currently waiting',
+  'Application: free text, placeholder All Applications, with suggestions from the sessions currently waiting',
+  'Minimum Wait: None, >100 ms, >1 sec, >5 sec, >30 sec, or >1 min',
+  'Display (Trend & Blocking tab): Daily Summary, Dominant Category, or Category Breakdown',
+  'Rule (Remove Custom Wait Category dialog): one entry per saved rule, written as name :: pattern',
 ]
 
-const reportHref = '/docs/wait-statistics/wait_stats_export_20261004_155427'
+const reportHref = '/docs/wait-statistics/wait_stats_export_20261007_151552'
 
 // The four columns of sys.dm_os_wait_stats that carry the actual diagnostic signal.
 // Average wait is not a column — it has to be derived — which is exactly why it gets
@@ -324,24 +310,36 @@ function ScreenshotCard({
   alt,
   width = 1600,
   height = 900,
+  maxWidthClass = 'max-w-6xl',
+  sizes,
 }: {
   eyebrow: string
   title: string
-  body: string
+  body: React.ReactNode
   image: string
   alt: string
   width?: number
   height?: number
+  maxWidthClass?: string
+  sizes?: string
 }) {
   return (
     <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
       <div className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">{eyebrow}</div>
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start">
-        <div className="min-w-0 space-y-3">
-          <h3 className="text-2xl font-bold text-gray-900">{title}</h3>
-          <p className="text-sm leading-7 text-gray-700">{body}</p>
+      <div className="space-y-6">
+        <div className="space-y-3">
+          <h2 className="text-2xl font-bold text-gray-900">{title}</h2>
+          <div className="space-y-3 text-sm leading-7 text-gray-700">{body}</div>
         </div>
-        <LightboxImage src={image} alt={alt} width={width} height={height} />
+        <LightboxImage
+          src={image}
+          alt={alt}
+          width={width}
+          height={height}
+          sizes={sizes}
+          className={`mx-auto ${maxWidthClass}`}
+          imageClassName="h-auto w-full object-contain transition-transform duration-300 group-hover:scale-[1.01]"
+        />
       </div>
     </div>
   )
@@ -523,9 +521,10 @@ export default function WaitStatisticsTemplate() {
           As a rule of thumb, a signal share above roughly a fifth to a quarter of total wait time is worth
           investigating as CPU pressure — but only once the idle waits have been filtered out. Leave them in and the
           ratio is computed largely over background tasks that sleep on timers, which makes it meaningless. The module
-          excludes the benign idle waits before it computes anything, reports Total Wait, Signal Wait and Resource Wait
-          side by side in its Summary panel, and drives its health line from the signal-wait share: a warning from 20%
-          and critical from 35%, both labelled as CPU pressure.
+          excludes the benign idle waits before it computes anything and reports Total Wait, Signal Wait and Resource
+          Wait side by side in its Summary panel. The Signal Wait row turns amber from 25% and red from 40%, and the
+          same levels raise the Signal Wait Ratio High (CPU Pressure) alert. The health line above the panel carries
+          the most severe active alert; with no alert it reads HEALTHY together with the signal-wait share.
         </p>
       </GuideSection>
 
@@ -691,32 +690,36 @@ export default function WaitStatisticsTemplate() {
       <RefSection id="module" eyebrow="The Module">
         <h3 className="text-2xl font-bold text-gray-900">Wait Statistics in SQLPerformance AI</h3>
         <p className="mt-3 text-sm leading-7 text-gray-700">
-          The Wait Statistics module is the wait-centric diagnostics surface. It combines SQL Server wait counters
-          (as a delta since the previous refresh where possible, otherwise cumulative), active waiting sessions,
-          blocking chains, a 7-, 30- or 90-day wait trend, optional query-level wait correlation, and threshold alerts
-          so you can identify the dominant source of performance pressure quickly. Every query it runs against SQL
-          Server is read-only.
+          The Wait Statistics module is the wait-centric diagnostics surface of version 1.1.0. One refresh reads the
+          wait counters of the instance (as a delta since the previous refresh where possible, otherwise cumulative),
+          the sessions currently waiting, the live blocking chains, and a 7-, 30- or 90-day daily trend, and turns them
+          into ranked wait cards, a Summary, alerts, a Primary Finding, and a Next Action plan. Everything it runs
+          against SQL Server is read-only; the module cannot clear wait statistics, has no scheduler, and sends
+          nothing anywhere.
         </p>
         <p className="mt-3 text-sm leading-7 text-gray-700">
-          This module is most valuable alongside{' '}
+          It is most useful next to{' '}
           <Link href="/docs/modules/query-statistics" className="font-semibold text-primary hover:text-primary-dark">
             Query Statistics
-          </Link>{' '}
-          when you need wait-to-plan correlation, and{' '}
+          </Link>
+          , which can open this page with the waits of a single query, and{' '}
           <Link href="/docs/modules/blocking-analysis" className="font-semibold text-primary hover:text-primary-dark">
             Blocking Analysis
-          </Link>{' '}
-          when waits point to live blockers and chain depth.
+          </Link>
+          , which is where lock waits lead when a live chain is involved.
         </p>
         <div className="mt-4 grid gap-4 md:grid-cols-2 text-sm text-gray-700">
           <div className="min-w-0">
             <div className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">What You Can Do</div>
             <ul className="list-disc pl-5 space-y-1">
-              <li>Inspect dominant wait types and wait-category pressure.</li>
-              <li>Review active waiting sessions and blocking chains.</li>
-              <li>Compare against a saved baseline or explicit before/after snapshots.</li>
-              <li>Configure current-session threshold signals, refresh-driven snapshots, and custom regex categories.</li>
-              <li>Export the current analysis to HTML, JSON, or Markdown.</li>
+              <li>Rank the non-idle wait types of the instance with their category, share, task count, and longest single wait.</li>
+              <li>Narrow the list and the blocking chains to one database or application, or hide small waits with Minimum Wait.</li>
+              <li>Follow the daily wait trend over 7, 30, or 90 days from Query Store or from the module’s own local history.</li>
+              <li>Read fixed-rule alerts, a Primary Finding with a confidence figure, and a Next Action plan.</li>
+              <li>Compare against a saved baseline or against explicit Before / After snapshots.</li>
+              <li>Group wait types with your own regular-expression categories.</li>
+              <li>Open the Query Store waits of one query from Query Statistics and correlate them with its plan.</li>
+              <li>Export the current result as HTML, JSON, or Markdown, with names masked by default.</li>
             </ul>
           </div>
           <div className="min-w-0">
@@ -732,85 +735,265 @@ export default function WaitStatisticsTemplate() {
 
       <ScreenshotCard
         eyebrow="Screen 1"
-        title="Main Wait Diagnostics Layout"
-        body="The opening view puts the filter panel (Trend Window, Database, Application, Minimum Wait) and the Refresh, Set Baseline and Export actions above the Wait Analysis panel, with the Summary and Insights panels alongside. On the Top Waits tab each card shows the wait type, its category, wait time, task count, share and longest wait, a trend line for its category, and a detail line with an impact score, the signal/resource split and a short next-step hint. A badge tells you whether you are looking at a delta since the last refresh, cumulative counters, filtered active waiters, or query waits. In this capture of the WideWorldImporters demo database the badge reads DELTA for a 10,198-second window, lock waits (LCK_M_X, LCK_M_U, LCK_M_S) lead the list, and five alerts are active. The health line still reads HEALTHY because it looks only at the signal-wait percentage (1.6% here), not at which waits dominate. This is the primary screen for deciding whether the dominant pressure is CPU, I/O, lock, latch, memory, or network related."
+        title="Main Layout on the Top Waits Tab"
+        body={
+          <>
+            <p>
+              The whole page as it opens in version 1.1.0 on a SQL Server test instance, captured without the
+              application top bar. The badge at the right of the action row reads CUMULATIVE (STALE): the previous
+              sample for this server was more than six hours old, so the counters are shown as cumulative totals since
+              the last restart or reset rather than as a delta.
+            </p>
+            <ul className="list-disc space-y-1 pl-5">
+              <li>
+                <strong>Heading:</strong> the eyebrow SQL PERFORMANCE AI, the title Wait Statistics, and the subtitle
+                Where the server spends its time.
+              </li>
+              <li>
+                <strong>Filter panel and action row:</strong> Trend Window 7 Days, empty Database and Application fields
+                with the placeholders All Databases and All Applications, Minimum Wait None, and Apply Filter. Below
+                them ↻ Refresh, Set Baseline, Export, and the checked Mask names and statements box.
+              </li>
+              <li>
+                <strong>Top Waits:</strong> nine of the ten cards fit in the capture. LCK_M_X (Lock) leads with Wait
+                2.5h, Tasks 31,233, Share 34.5%, and Max 16.3m, followed by LCK_M_S, WRITELOG (I/O), CXPACKET (CPU),
+                LCK_M_U, SOS_SCHEDULER_YIELD, PREEMPTIVE_OS_AUTHZINITIALIZECONTEXTFROMSID (Other),
+                RESERVED_MEMORY_ALLOCATION_EXT (Memory), and LCK_M_SCH_M. Each detail line gives the Signal/Resource
+                split and a hint: Inspect blockers on the four LCK_ cards, Check disk latency on WRITELOG, Review MAXDOP
+                on CXPACKET, and Correlate with query plan on the rest. SOS_SCHEDULER_YIELD shows the split the guide
+                above describes: 99.1% signal, 0.9% resource.
+              </li>
+              <li>
+                <strong>Category sparklines:</strong> at the right of every card, Lock trend, I/O trend, CPU trend,
+                Other trend, and Memory trend, each marked up. The line is the daily trend of the whole category over
+                the trend window, not of that single wait type.
+              </li>
+              <li>
+                <strong>Summary:</strong> the red health line CRITICAL: Lock Wait Pressure, then Total Wait 7.4 hours,
+                Signal Wait 10.7 %, Resource Wait 89.3 %, Current Waits 0, and the status line Updated in 735 ms |
+                mode=server | basis=cumulative (prior sample too old for delta) | waits=10 | alerts=1.
+              </li>
+              <li>
+                <strong>Insights, collapsed:</strong> Alerts reads 1 active alert(s) and [CRITICAL] Lock Wait Pressure:
+                Lock wait share is 56.7% (threshold 15.0%). Primary Finding reads Lock Contention (92% confidence),
+                Evidence: Lock waits share: 56.7%; Top waits include LCK_* patterns, and Baseline: No baseline
+                configured. Show Details has not been pressed.
+              </li>
+            </ul>
+          </>
+        }
         image="/docs/wait-statistics/001.png"
-        alt="Wait Statistics main screen with the filter panel, Top Waits cards led by LCK_M_X, and the Summary and Insights panels"
-        width={1919}
-        height={969}
+        alt="Wait Statistics main screen in version 1.1.0 with the filter panel, Top Waits cards led by LCK_M_X, the Summary panel reading CRITICAL: Lock Wait Pressure, and the collapsed Insights panel"
+        width={1616}
+        height={917}
       />
 
       <ScreenshotCard
         eyebrow="Screen 2"
-        title="Trend View for Historical Wait Direction"
-        body="The Trend & Blocking tab helps determine whether the dominant wait pattern is new, recurring, or gradually increasing — the question cumulative counters cannot answer on their own. The Display selector switches the chart and the daily table between Daily Summary, Dominant Category (with its share of the day) and Category Breakdown; a chart needs at least two data points. A line above the table names the window and the source. Here it reads Window: 7 days and Source: query store, and total wait per day climbs from under a second on 09-29 to about 750,000 ms on 10-03. When the source is Query Store the trend reflects query-level wait categories, so it can emphasize a different category than the server-wide Top Waits tab. The module prefers Query Store wait history when available and falls back to the aggregate snapshots it stores locally on each refresh when Query Store wait history is missing. The Blocking Chains table is on this tab too (not shown in the capture)."
+        title="Filter Panel and Action Row"
+        body={
+          <>
+            <p>
+              The filter strip on its own, with the Application field focused and still empty. The badge again reads
+              CUMULATIVE (STALE).
+            </p>
+            <ul className="list-disc space-y-1 pl-5">
+              <li>
+                <strong>Trend Window:</strong> 7 Days is selected; the other choices are 30 Days and 90 Days. Changing
+                it refreshes at once, and the same window is used for the trend tab and for query-context waits.
+              </li>
+              <li>
+                <strong>Database and Application:</strong> free-text fields with the placeholders All Databases and
+                All Applications. While you type, suggestions come from the sessions currently waiting (the connected
+                database is always offered); a partial name matches, case does not matter, and Enter applies. Either
+                field switches Top Waits to the matching active waiters and filters the blocking chains.
+              </li>
+              <li>
+                <strong>Minimum Wait:</strong> None here; the options are &gt;100 ms, &gt;1 sec, &gt;5 sec, &gt;30 sec,
+                and &gt;1 min. It only hides cards below the limit from the displayed list and adds view=min-wait&gt;=N
+                ms to the status line; the data source does not change.
+              </li>
+              <li>
+                <strong>Apply Filter:</strong> runs a refresh with the current fields. Filters and the trend window are
+                not remembered between visits.
+              </li>
+              <li>
+                <strong>Action row:</strong> ↻ Refresh, Set Baseline, Export, and the Mask names and statements
+                checkbox, which is checked by default.
+              </li>
+            </ul>
+          </>
+        }
         image="/docs/wait-statistics/002.png"
-        alt="Wait Statistics Trend & Blocking tab showing the Daily Summary chart and table for a 7-day window with Source query store"
-        width={1642}
-        height={924}
+        alt="Wait Statistics filter panel with Trend Window 7 Days, the focused Application field, Minimum Wait None, the Apply Filter button, and the action row with the CUMULATIVE (STALE) badge"
+        width={1620}
+        height={235}
       />
 
       <ScreenshotCard
         eyebrow="Screen 3"
-        title="Insights Panel with Show Details Expanded"
-        body="The Insights panel turns the current evidence into an operational narrative. Alerts and the Primary Finding are always visible; Show Details expands the Before / After comparison, a Next Action plan, Custom Categories, and Wait / Plan correlation, and also reveals the Wait Categories panel. In this capture five alerts are active and the first three are listed (lock wait share 90.4% against a 15.0% threshold, three blocked sessions, blocking chain depth 3), followed by +2 more alert(s). The Primary Finding is Lock Contention at 95% confidence, with its evidence and the baseline status. Before / After reads Insufficient Data until both a Before and an After snapshot are saved. Next Action opens with an alert-detail line and then lists possible root causes, recommended checks and quick fix actions. It is built from its own rules, separate from the Primary Finding, so it can point at a different area: here it suggests checking transaction-log latency because WRITELOG is among the top waits, while the finding is lock contention. Custom Categories reads 0 configured until you add a regex rule."
+        title="Export and Masking"
+        body={
+          <>
+            <p>
+              The same strip a few minutes later, after a second refresh: the badge now reads DELTA ⏱ 176s, so the
+              cards show the growth of the counters over a 176-second window. The red frame around Export and the Mask
+              names and statements checkbox was drawn by the product owner to point at the two controls this screen is
+              about; it is not part of the application.
+            </p>
+            <ul className="list-disc space-y-1 pl-5">
+              <li>
+                <strong>Export:</strong> opens a save dialog in your home folder with a name made of wait_stats_export_
+                and the date and time of the collection, for example wait_stats_export_20261007_151552.html, and the
+                types HTML, JSON, and Markdown. The extension decides the format; any other extension becomes .html.
+                The file holds the result of the last completed refresh, so before the first refresh, or after a failed
+                one, the button answers No data to export. Refresh first.
+              </li>
+              <li>
+                <strong>Mask names and statements:</strong> in the exported blocking chain it replaces login, host, and
+                application names with aliases such as user_1, host_1, and app_1 (the same value always gets the same
+                alias) and replaces string, numeric, and binary literals in the captured statements with [REDACTED]
+                tokens. Database names and wait types are written as they are, and the Blocking Chains table on screen
+                is never masked. Clear the box only when the raw names are needed.
+              </li>
+              <li>
+                <strong>Delta badge:</strong> hover it for the window length. Max on the cards is still the longest
+                single wait since instance start or the last counter reset, because the DMV does not expose a
+                per-window maximum; in delta mode the pill says so in its tooltip.
+              </li>
+            </ul>
+          </>
+        }
         image="/docs/wait-statistics/003.png"
-        alt="Wait Statistics Insights panel expanded with Show Details, showing alerts, primary finding, before-after comparison, next action, and custom categories"
-        width={521}
-        height={894}
+        alt="Wait Statistics action row with a red frame drawn around the Export button and the Mask names and statements checkbox, and the DELTA 176s badge on the right"
+        width={1624}
+        height={153}
       />
 
-      <div className="rounded-2xl border border-amber-200 bg-amber-50 p-6 shadow-sm">
-        <div className="text-xs font-semibold uppercase tracking-wide text-amber-900 mb-2">Automation Screen Note</div>
-        <h3 className="text-2xl font-bold text-amber-950">Current-Session Refresh and Admin Controls</h3>
-        <p className="mt-3 text-sm leading-7 text-amber-950">
-          The current public asset set does not include a clean standalone screenshot for the Automation tab, so this
-          page describes those controls in text instead of showing a mismatched image. The available controls still
-          include refresh-driven snapshots, a 5-second visible-view refresh option, custom wait categories, outbound
-          targets, and the guarded admin-only wait reset flow. These controls do not run as a background service when
-          the application or view is closed.
-        </p>
-      </div>
+      <ScreenshotCard
+        eyebrow="Screen 4"
+        title="Trend & Blocking Tab"
+        body={
+          <>
+            <p>
+              The Wait Analysis panel on its second tab, with Display set to Daily Summary and a seven-day window read
+              from the Query Store of the connected database.
+            </p>
+            <ul className="list-disc space-y-1 pl-5">
+              <li>
+                <strong>Chart:</strong> one Total Wait line with a point per day from 09-30 to 10-07, peaking on 10-04
+                and 10-07 at about 1.6 million ms; the axis is labelled 0, 410k, 819k, 1.2m, and 1.6m.
+              </li>
+              <li>
+                <strong>Meta line and table:</strong> Window: 7 days and Source: query store, then Date and Total Wait
+                rows from 110 ms on 2026-09-30 through 1,601,592 ms on 2026-10-04 to 1,638,472 ms on 2026-10-07. Eight
+                dates appear because the window reaches back seven days from the moment of the refresh and so touches
+                eight calendar days.
+              </li>
+              <li>
+                <strong>Display:</strong> Dominant Category replaces the table columns with Date, Dominant Category,
+                Share %, and Wait; Category Breakdown draws the six largest categories as separate lines and lists
+                share / wait per category. A chart needs at least two days with data; hovering a point shows date,
+                series, and ms.
+              </li>
+              <li>
+                <strong>Blocking Chains:</strong> No active blocking chains at the time of the capture. With live
+                blocking the table lists Session, Wait, Wait ms, Database, and Login per node, marks root blockers as
+                (root), and flags a cycle with Cycle detected.
+              </li>
+            </ul>
+          </>
+        }
+        image="/docs/wait-statistics/004.png"
+        alt="Wait Statistics Trend & Blocking tab with the Daily Summary chart and table for a 7-day window from Query Store, and the Blocking Chains section reading No active blocking chains"
+        width={1097}
+        height={878}
+        maxWidthClass="max-w-4xl"
+        sizes="(min-width: 1024px) 896px, 100vw"
+      />
+
+      <ScreenshotCard
+        eyebrow="Screen 5"
+        title="Insights Panel with Show Details"
+        body={
+          <>
+            <p>
+              The Insights panel after Show Details (the button now reads Hide Details), from the same cumulative
+              refresh as the main layout. The Wait / Plan block, the Add Custom and Remove Custom buttons, and the
+              Wait Categories panel that open with it sit below the captured area.
+            </p>
+            <ul className="list-disc space-y-1 pl-5">
+              <li>
+                <strong>Alerts and Primary Finding:</strong> unchanged from Screen 1: one critical Lock Wait Pressure
+                alert at a 56.7% lock share against the 15.0% threshold, and Lock Contention at 92% confidence with
+                no baseline configured.
+              </li>
+              <li>
+                <strong>Before / After:</strong> Status: Insufficient Data and Capture both BEFORE and AFTER snapshots to
+                compare change impact, with Save Before, Save After, and Compare under it.
+              </li>
+              <li>
+                <strong>Next Action:</strong> [Alert Detail] Active Alerts: 1 (critical=1). [Possible Root Cause] names
+                lock contention (Lock share 56.7%), WRITELOG pressure as a transaction-log latency risk, and a rising
+                trend over the selected window. [Recommended Checks] runs from 1. Open Blocking to see head blockers
+                and the blocking chain through DBCC OPENTRAN, missing indexes on the blocked objects, log-file latency
+                and queue depth, to 5. Check VLF count (DBCC LOGINFO / dm_db_log_info). [Quick Fix Actions] lists
+                short transactions without user input inside them, READ_COMMITTED_SNAPSHOT where readers block
+                writers, and a faster log file or better growth increments.
+              </li>
+              <li>
+                <strong>Custom Categories:</strong> the pill 0 configured, Custom Category Rules: - No custom categories
+                configured, and Current Wait Time by Custom Category: - No waits matched custom categories.
+              </li>
+            </ul>
+          </>
+        }
+        image="/docs/wait-statistics/005.png"
+        alt="Wait Statistics Insights panel expanded with Hide Details, showing the alert, the Lock Contention primary finding, the Before / After block with Save Before, Save After and Compare, the lock-specific Next Action plan, and Custom Categories with 0 configured"
+        width={504}
+        height={883}
+        maxWidthClass="max-w-xl"
+        sizes="(min-width: 1024px) 576px, 100vw"
+      />
 
       <RefSection eyebrow="Data Sources and Analysis Model">
         <div className="grid gap-3 md:grid-cols-2 text-sm text-gray-700">
           <div className="min-w-0 rounded-xl border border-gray-100 bg-gray-50 p-4">
             <div className="font-semibold mb-1">Core Wait Data</div>
             <ul className="list-disc pl-5 space-y-1">
-              <li>Uses SQL Server DMVs such as <span className="font-mono">sys.dm_os_wait_stats</span>, <span className="font-mono">sys.dm_exec_requests</span>, and <span className="font-mono">sys.dm_exec_sessions</span>.</li>
-              <li>Excludes benign idle and background waits before ranking anything.</li>
-              <li>Shows the delta since the previous refresh when one is available and less than six hours old. Otherwise it shows cumulative counters, flagged POST-RESET when the counters went down and CUMULATIVE (STALE) when the previous snapshot is older than six hours.</li>
-              <li>Keeps only the latest previous snapshot, separately per server and database, in a local file that is overwritten on every refresh.</li>
-              <li>Separates total wait, signal wait, resource wait, and active waiting-session evidence.</li>
+              <li>Reads SQL Server DMVs such as <span className="font-mono">sys.dm_os_wait_stats</span>, <span className="font-mono">sys.dm_exec_requests</span>, and <span className="font-mono">sys.dm_exec_sessions</span>, plus Query Store for the trend and for query context.</li>
+              <li>Excludes 96 benign idle and background wait types (SLEEP_TASK, LAZYWRITER_SLEEP, CHECKPOINT_QUEUE, XE_TIMER_EVENT, WAITFOR, and their relatives) before anything is ranked. CXPACKET and CXCONSUMER are not excluded.</li>
+              <li>Shows the delta since the previous refresh of the same server and database when that sample is less than six hours old. The first refresh after opening the application is CUMULATIVE; a previous sample older than six hours gives CUMULATIVE (STALE); counters that went down since the previous sample (restart or clear) give POST-RESET.</li>
+              <li>Keeps only the latest previous sample, separately per server and database, in a local file that is overwritten on every refresh.</li>
+              <li>Separates total wait, signal wait, resource wait, and the sessions currently waiting.</li>
             </ul>
           </div>
           <div className="min-w-0 rounded-xl border border-gray-100 bg-gray-50 p-4">
             <div className="font-semibold mb-1">Historical Trend Source</div>
             <ul className="list-disc pl-5 space-y-1">
-              <li>Prefers Query Store wait history through <span className="font-mono">sys.query_store_wait_stats</span>.</li>
-              <li>Query Store wait history requires SQL Server 2017 or later, Azure SQL Database, or Azure SQL Managed Instance.</li>
-              <li>Falls back to local history: one aggregate row per successful refresh, kept separately per server and database in a local file. The file is trimmed to the newest 4,000 rows, and rows older than 30 days are compacted to hourly. The trend is the per-day growth of the cumulative counters, with counter-reset detection.</li>
-              <li>The first source that works is pinned for that server and database, so the chart does not flip between sources on every refresh; it is re-pinned when Query Store stops answering.</li>
-              <li>The trend panel names its source: query store, local history, or an unavailable note when neither has data.</li>
+              <li>Prefers Query Store wait history through <span className="font-mono">sys.query_store_wait_stats</span> on SQL Server 2017 or later, Azure SQL Database, and Azure SQL Managed Instance. This source is the Query Store of the connected database, so it is database-scoped.</li>
+              <li>Falls back to local history: one aggregate row per successful refresh, kept per server and database in a local file trimmed to the newest 4,000 rows, with rows older than 30 days compacted to hourly. The trend is then the per-day growth of the instance-wide counters, with reset detection, so a day gets a point only after two refreshes with growth between them.</li>
+              <li>The first source that answers is pinned for that server and database and is only re-chosen when it stops returning data; the two sources have different magnitudes, so switching silently would create false jumps.</li>
+              <li>The meta line names the source as query store, local history, local history unavailable, query store unavailable, or none, and the empty state reads No historical trend data for N days.</li>
               <li>Local history holds aggregate wait figures only: no query text and no logins.</li>
             </ul>
           </div>
           <div className="min-w-0 rounded-xl border border-gray-100 bg-gray-50 p-4">
             <div className="font-semibold mb-1">Blocking and Live Chains</div>
             <ul className="list-disc pl-5 space-y-1">
-              <li>Uses the same blocking-chain analysis as the Blocking Analysis module to explain active contention.</li>
-              <li>Shows root blockers and blocked sessions with session, wait, wait ms, database, and login columns.</li>
-              <li>Database, Application, and Minimum Wait filters apply to the chains as well.</li>
-              <li>Reads the chains for display only: viewing them here does not add entries to the Blocking Analysis history.</li>
-              <li>With no active chain the table reads No active blocking chains. A circular chain is flagged, and a very large chain is cut off at 600 nodes.</li>
+              <li>Uses the same chain analysis as the Blocking Analysis module to explain active contention, read for display only: viewing chains here adds nothing to the Blocking Analysis history and never triggers its webhook.</li>
+              <li>Lists Session, Wait, Wait ms, Database, and Login per node. Roots are written as SPID n (root); a root outside any session appears as SPID n (Orphaned distributed transaction) or (Deferred recovery transaction).</li>
+              <li>A Database or Application filter re-derives the chains, the blocked-session count, and the chain depth for the matching sessions only.</li>
+              <li>Cycle detected marks a circular chain; a chain over 600 nodes is cut with Truncated view at N nodes for responsiveness; otherwise No active blocking chains.</li>
             </ul>
           </div>
           <div className="min-w-0 rounded-xl border border-gray-100 bg-gray-50 p-4">
             <div className="font-semibold mb-1">Query Context Mode</div>
             <ul className="list-disc pl-5 space-y-1">
-              <li>Opened from the [ Waits ] link on a query in Query Statistics, Top Waits switches to that query’s Query Store wait categories (when Query Store holds wait data for it) and the badge reads QUERY WAITS.</li>
-              <li>A context bar names the query; Clear Context returns to server-level waits.</li>
-              <li>Wait / Plan correlation, which reads the query’s execution plan, is available only in this mode.</li>
+              <li>The [ Waits ] button on a query in Query Statistics opens this page with that query. A bar reads Query context: database.schema.object (query_id N) — top waits show this query’s Query Store wait categories, with a Clear Context button; ad-hoc query stands in for an unnamed statement.</li>
+              <li>Top Waits then lists up to ten Query Store wait categories of that query over the trend window and the badge reads QUERY WAITS. Query Store carries no task count, maximum, or signal split per category, so those pills read 0 in this mode.</li>
+              <li>Needs SQL Server 2017 or later with Query Store wait data for the query; when Query Store returns nothing, the bar stays but the list shows the server-wide waits with the normal badge.</li>
+              <li>Wait / Plan correlation reads the query’s plan XML and is available only in this mode. The context is dropped when you leave the page.</li>
             </ul>
           </div>
         </div>
@@ -822,19 +1005,21 @@ export default function WaitStatisticsTemplate() {
             <div className="font-semibold mb-1">Actions and Context</div>
             <ul className="list-disc pl-5 space-y-1">
               <li>Query-context bar with Clear Context, shown only when you arrive from Query Statistics</li>
-              <li>Refresh</li>
-              <li>Set Baseline — saves the current result as the baseline and refreshes</li>
-              <li>Export — saves the current result as HTML, JSON, or Markdown</li>
-              <li>Data badge: DELTA, CUMULATIVE, POST-RESET, CUMULATIVE (STALE), ACTIVE (FILTERED), or QUERY WAITS</li>
+              <li>↻ Refresh — the only way to collect new data; there is no timer</li>
+              <li>Set Baseline — saves the last completed result as the baseline for this server and database and refreshes; answers Refresh wait statistics before setting baseline. when there is none</li>
+              <li>Export — saves the last completed result as HTML, JSON, or Markdown; Mask names and statements decides whether the exported blocking chain is aliased</li>
+              <li>Set Baseline, Export, Save Before, Save After, and Compare are disabled while a refresh runs</li>
+              <li>Data badge: DELTA ⏱ Ns, CUMULATIVE, CUMULATIVE (STALE), POST-RESET, ACTIVE (FILTERED), or QUERY WAITS, each with a tooltip; NO DATA before the first refresh</li>
             </ul>
           </div>
           <div className="min-w-0 rounded-xl border border-gray-100 bg-gray-50 p-4">
             <div className="font-semibold mb-1">Filter Panel</div>
             <ul className="list-disc pl-5 space-y-1">
-              <li>Trend Window: 7, 30, or 90 Days (changing it refreshes immediately)</li>
-              <li>Database and Application: free-text fields with suggestions from current waiters; partial names match, and Enter applies</li>
-              <li>Minimum Wait: None, &gt;100 ms, &gt;1 sec, &gt;5 sec, &gt;30 sec, or &gt;1 min</li>
-              <li>Apply Filter; refresh progress appears on the status line in the Summary panel</li>
+              <li>Trend Window: 7, 30, or 90 Days; changing it refreshes immediately</li>
+              <li>Database and Application: free text with suggestions from the sessions currently waiting; partial, case-insensitive match; Enter applies. Either one switches Top Waits to the matching active waiters, grouped into up to 15 wait types, and the badge to ACTIVE (FILTERED)</li>
+              <li>Summary shares, Wait Categories, Primary Finding, and the trend stay instance-wide under a filter and say so with an (instance-wide) note; Current Waits and the session-based alerts (blocked sessions, chain depth, long individual wait) follow the filtered sessions</li>
+              <li>Minimum Wait: None, &gt;100 ms, &gt;1 sec, &gt;5 sec, &gt;30 sec, or &gt;1 min; a view filter on the displayed list only</li>
+              <li>Apply Filter; refresh progress appears as NN% · message on the status line of the Summary panel</li>
             </ul>
           </div>
           <div className="min-w-0 rounded-xl border border-gray-100 bg-gray-50 p-4">
@@ -844,51 +1029,15 @@ export default function WaitStatisticsTemplate() {
                 <li key={item}>{item}</li>
               ))}
             </ol>
+            <p className="mt-2">Top Waits is the default tab. Trend &amp; Blocking holds the Display selector, the chart, the daily table, and the Blocking Chains table.</p>
           </div>
           <div className="min-w-0 rounded-xl border border-gray-100 bg-gray-50 p-4">
             <div className="font-semibold mb-1">Top Waits Behavior</div>
             <ul className="list-disc pl-5 space-y-1">
-              <li>Cards show wait type, category, Wait, Tasks, Share, and Max, a trend sparkline for the whole category, and a detail line with an impact score, the signal/resource split, and, once a baseline is set, the category’s change against it.</li>
-              <li>Up to 10 server-level wait types; with any filter active, up to 15 wait types grouped from the matching active waiters; from Query Statistics, the query’s Query Store wait categories.</li>
-              <li>Each card ends with a heuristic hint such as Check disk latency, Inspect blockers, Review MAXDOP, Check hot pages/TempDB, Review memory grants, or Correlate with query plan.</li>
-            </ul>
-          </div>
-        </div>
-      </RefSection>
-
-      <RefSection eyebrow="Automation and Admin Controls">
-        <div className="grid gap-3 md:grid-cols-2 text-sm text-gray-700">
-          <div className="min-w-0 rounded-xl border border-gray-100 bg-gray-50 p-4">
-            <div className="font-semibold mb-1">Scheduled Snapshot</div>
-            <ul className="list-disc pl-5 space-y-1">
-              <li>Supports periodic snapshot and report generation.</li>
-              <li>Current UI exposes enabled state, interval, and Save Schedule.</li>
-              <li>Snapshot generation runs when refresh occurs and the configured interval is due.</li>
-            </ul>
-          </div>
-          <div className="min-w-0 rounded-xl border border-gray-100 bg-gray-50 p-4">
-            <div className="font-semibold mb-1">5s Visible-View Refresh</div>
-            <ul className="list-disc pl-5 space-y-1">
-              <li>Refreshes every 5 seconds only while this view remains open and visible.</li>
-              <li>It is not a background collector and stops when the view or desktop application is closed.</li>
-              <li>Exposes visible thresholds for total wait, lock wait, and blocked sessions.</li>
-              <li>The underlying service supports more alert fields than the main UI currently edits.</li>
-            </ul>
-          </div>
-          <div className="min-w-0 rounded-xl border border-gray-100 bg-gray-50 p-4">
-            <div className="font-semibold mb-1">Custom Categories</div>
-            <ul className="list-disc pl-5 space-y-1">
-              <li>Supports operator-defined regex-based wait groups.</li>
-              <li>Only enabled rules contribute to current custom-category totals.</li>
-              <li>Rules can be added or removed from both the Automation tab and the Actions panel.</li>
-            </ul>
-          </div>
-          <div className="min-w-0 rounded-xl border border-gray-100 bg-gray-50 p-4">
-            <div className="font-semibold mb-1">Admin Clear Safety</div>
-            <ul className="list-disc pl-5 space-y-1">
-              <li>Clear Wait Stats is the only destructive action in the module.</li>
-              <li>It requires an armed admin session, active connection, warning confirmation, and exact phrase entry.</li>
-              <li>The action runs server-wide counter reset behavior and is audit-logged.</li>
+              <li>Each card shows the wait type, its category, the pills Wait, Tasks, Share, and Max in compact form (2.5h, 49.4m, 3.1s, 74ms), a sparkline of the whole category’s daily trend (last eight points, [n/a] under two, ending in up, down, or flat), and a detail line with the Signal/Resource split and a hint.</li>
+              <li>Up to 10 server-level wait types; up to 15 with a Database or Application filter; up to 10 Query Store categories in query context.</li>
+              <li>Hints by wait-type prefix: Check disk latency (PAGEIOLATCH, WRITELOG, IO_COMPLETION, BACKUP, ASYNC_IO_COMPLETION), Inspect blockers (LCK_), Review MAXDOP (CXPACKET, CXCONSUMER, CXSYNC), Check hot pages/TempDB (PAGELATCH, LATCH_), Review memory grants (RESOURCE_SEMAPHORE, CMEMTHREAD), otherwise Correlate with query plan.</li>
+              <li>With nothing to show the tab reads No significant waits detected and suggests a wider trend window, a lower minimum wait, or relaxed database and application filters.</li>
             </ul>
           </div>
         </div>
@@ -899,10 +1048,11 @@ export default function WaitStatisticsTemplate() {
           <div className="min-w-0 rounded-xl border border-gray-100 bg-gray-50 p-4">
             <div className="font-semibold mb-1">Summary and Categories</div>
             <ul className="list-disc pl-5 space-y-1">
-              <li>Summary shows Total Wait (with a ms-per-second rate in delta mode), Signal Wait, Resource Wait, and Current Waits.</li>
-              <li>The health line is driven by signal-wait percentage: HEALTHY below 20%, WARNING from 20%, CRITICAL from 35%.</li>
-              <li>A status line reports refresh time, mode (server, filtered, or query), the data basis, and wait and alert counts.</li>
-              <li>Wait Categories, revealed by Show Details, shows share bars for CPU, I/O, Lock, Latch, Memory, Network, Buffer, CLR, and Other — only categories with wait time appear.</li>
+              <li>Total Wait is written in days, hours, min, sec, or ms. In delta mode without a filter it adds the rate in ms per second, coloured amber from 1,000 and red from 5,000 ms/s.</li>
+              <li>Signal Wait is coloured from 25% (amber) and 40% (red); Current Waits from 5 and 12 sessions; Resource Wait is never coloured.</li>
+              <li>The health line shows the title of the most severe active alert as CRITICAL: … or WARNING: …; with no alert it reads HEALTHY: Signal Wait x.x%.</li>
+              <li>The status line reads Updated in N ms | mode=server, filtered, or query | basis=delta/Ns, cumulative warm-up, since-reset cumulative, cumulative (prior sample too old for delta), or point-in-time active waiters | waits=N | alerts=N.</li>
+              <li>Wait Categories, revealed by Show Details, shows share tiles for CPU, I/O, Lock, Latch, Memory, Network, Buffer, CLR, and Other; tiles with no wait time are hidden. Amber and red start at 15/30% for CPU, 20/40% for I/O, 12/25% for Lock and Latch, 10/20% for Memory and Other, 25/50% for Network, 15/30% for Buffer, and 20/40% for CLR.</li>
             </ul>
           </div>
           <div className="min-w-0 rounded-xl border border-gray-100 bg-gray-50 p-4">
@@ -912,37 +1062,68 @@ export default function WaitStatisticsTemplate() {
                 <li key={item}>{item}</li>
               ))}
             </ul>
+            <p className="mt-2">Show Details also reveals the Wait Categories panel below the Insights panel.</p>
           </div>
           <div className="min-w-0 rounded-xl border border-gray-100 bg-gray-50 p-4">
             <div className="font-semibold mb-1">Alerts and Primary Finding</div>
             <ul className="list-disc pl-5 space-y-1">
-              <li>Alerts are sorted by severity and the panel lists up to three, followed by +N more alert(s). They cover total wait time or growth, lock and I/O wait share, signal-wait ratio, PAGEIOLATCH dominance, backup I/O spikes, parallelism combined with latch waits, blocked sessions, chain depth, and long individual waits. Each alert names the threshold it crossed. With none active, the thresholds in effect are shown.</li>
-              <li>Primary Finding names the dominant wait signature with a confidence percentage, its evidence, and the baseline status.</li>
-              <li>Signature families include CPU pressure, I/O bottleneck, lock contention, latch contention, memory grant pressure, network throughput, buffer pool, CLR execution, and a balanced profile.</li>
+              <li>Ten fixed rules: Total Wait Rate High (1,000 ms/s, critical from 5,000; needs a delta window of at least 10 seconds, or growth since a saved baseline in cumulative mode), Lock Wait Pressure (15% of wait time, critical from 25%), I/O Wait Pressure (30%, critical from 54%), Signal Wait Ratio High (CPU Pressure) (25%, critical from 40%), PAGEIOLATCH Dominance (30%), ASYNC/BACKUP I/O Spike (20%), Parallelism + Latch Combo (both at least 10%), Blocked Session Count High (3), Blocking Chain Depth High (3), and Long Individual Wait Detected (60,000 ms). The share rules need at least 10,000 ms of wait in the window.</li>
+              <li>The panel lists up to three alerts sorted by severity, then +N more alert(s); each message names the value and the threshold. With none active it reads No active wait alerts. and prints the thresholds in effect.</li>
+              <li>There is no threshold editor in the module. The defaults above apply unless a wait_stats_alert_thresholds.json file in the application’s data folder overrides them.</li>
+              <li>Primary Finding names the strongest wait signature with a confidence from 30% to 95%, its evidence, and the baseline status. The signatures are CPU Pressure, I/O Bottleneck, Lock Contention, Memory Grant Pressure, Latch Contention, Network Throughput Pressure, Buffer Pool Pressure, and CLR Execution Pressure; each fires on a category share or on a matching top wait type, and when none crosses its line the finding is Balanced Wait Profile at 60%.</li>
             </ul>
           </div>
           <div className="min-w-0 rounded-xl border border-gray-100 bg-gray-50 p-4">
-            <div className="font-semibold mb-1">Details: Next Action, Custom Categories, Wait / Plan</div>
+            <div className="font-semibold mb-1">Details: Before / After, Next Action, Custom Categories, Wait / Plan</div>
             <ul className="list-disc pl-5 space-y-1">
-              <li>Before / After captures snapshots with Save Before and Save After and runs the comparison automatically once both exist; Compare re-runs it. The result is Improved, Degraded, Stable, or Insufficient Data, which is also reported when the two snapshots use different bases, such as delta against cumulative.</li>
-              <li>Next Action opens with an alert-detail line (active and critical alert counts), then lists up to five possible root causes, five numbered recommended checks, and five quick fix actions. It is driven by its own rules for I/O share, backup waits, WRITELOG, parallelism with page latches, baseline degradation or reset, and trend direction, with generic fallbacks, and it is separate from the Primary Finding, so the two can point at different areas.</li>
-              <li>Custom Categories groups waits by your own regex rules (Add Custom, Remove Custom) and shows current wait time per rule, with an active-rule counter.</li>
-              <li>Wait / Plan explains correlations such as lock waits with scans or I/O waits with spills and lookups, and needs query context from Query Statistics. Its profile line shows the analysis profile, the bottleneck, and a confidence level; hover it for the reasoning, priority, risk, and evidence gaps.</li>
-              <li>Outbound target status summarizes configured destinations; delivery depends on the active desktop session.</li>
+              <li>Before / After: Save Before and Save After capture the last completed result and run the comparison as soon as both exist; Compare re-runs it. The result is Improved, Degraded, Stable (a change under 10% or under 50,000 ms), or Insufficient Data, which is also the answer when the two snapshots have different bases, such as delta against cumulative.</li>
+              <li>Baseline: in delta mode the comparison is rate-normalized and reports Degraded above +10% and Improved below −5%, withholding the verdict when either window is shorter than 60 seconds; in cumulative mode it reports the growth since capture and judges by a shift of five points in the signal share. A restart or a counter clear after the capture is reported as Baseline reset with a request to re-capture.</li>
+              <li>Next Action opens with [Alert Detail] and the active and critical alert counts, then up to five [Possible Root Cause] lines, five numbered [Recommended Checks], and five [Quick Fix Actions]. Its rules cover I/O share, backup waits, lock waits (Open Blocking to see head blockers and the blocking chain, READ_COMMITTED_SNAPSHOT), WRITELOG, parallelism with page latches, baseline degradation or reset, and trend direction, with generic fallbacks. It is separate from the Primary Finding, so the two can point at different areas.</li>
+              <li>Custom Categories: Add Custom opens the Add Custom Wait Category dialog with Name and Pattern; the pattern is a case-insensitive regular expression, the first matching rule wins, an invalid pattern is refused with Failed to save custom category rule (check regex)., and the block opens on its own after a save. The list reads Custom Category Rules: with - name [ON] =&gt; /pattern/ lines and Current Wait Time by Custom Category: with - name: N ms, and the pill counts active rules. Remove Custom picks a rule from a list. Rules are stored locally and never change the built-in category tiles.</li>
+              <li>Wait / Plan reads Wait/Plan correlation requires query context. Navigate from Query Statistics. until a query is opened from there; then it shows Query N (confidence), its wait categories, findings such as lock waits with a table scan or I/O waits with a key lookup or a spill, and one action. Its meta line gives the analysis profile, the bottleneck, and the confidence level; hover it for the reasoning, priority, risk, and evidence gaps.</li>
             </ul>
           </div>
         </div>
       </RefSection>
 
       <RefSection eyebrow="Sample Exported Report">
-        <p className="text-sm text-gray-700">
-          This sample is a Wait Statistics report saved with the Export button in HTML format, taken from the
-          WideWorldImporters demo database with a 7-day trend window. Lock contention is its primary bottleneck. The
-          report includes Summary, Analysis Transparency, Top Waits, Signatures, Alerts, Trend, Baseline, Before / After,
-          Alert Thresholds, and Filters sections. Plan correlation is marked unavailable because it was exported
-          without query context. Export can also save the same analysis as JSON or Markdown, chosen by the file
-          extension. Open it in the browser or download it for offline review, handoff, or ticket attachment.
+        <p className="text-sm leading-7 text-gray-700">
+          A report saved with Export in HTML format in version 1.1.0 on October 7, 2026, from the same SQL Server test
+          instance as the screenshots, with the 7-day trend window and no filter. The file name carries the collection
+          time (15:15:52) and the Generated at line the time of the save (15:17:15). It is published exactly as the
+          application wrote it: a wait-statistics export contains no server, database, login, or host names unless a
+          blocking chain or a filter is present, and this one has neither.
         </p>
+        <ul className="mt-3 list-disc space-y-1 pl-5 text-sm leading-7 text-gray-700">
+          <li>
+            <strong>Summary and Analysis Transparency:</strong> 33 wait types, 226,515 waiting tasks, and 6,647 ms of wait
+            in the window, 10.23% of it signal wait; the deterministic analysis names PARALLELISM as the primary
+            bottleneck at priority P2, risk MEDIUM, and confidence low, with Query context, Plan XML, and Plan insights
+            listed as evidence gaps because no query was attached.
+          </li>
+          <li>
+            <strong>Category Wait Time, Top Waits, and Signatures:</strong> CPU holds 5,441 of the 6,647 ms; CXPACKET leads
+            the ten top waits with 65.97%, followed by CXCONSUMER and RESERVED_MEMORY_ALLOCATION_EXT; CPU Pressure is
+            the signature at 0.95 confidence, with I/O Bottleneck, Latch Contention, and Network Throughput Pressure at
+            the 0.3 floor.
+          </li>
+          <li>
+            <strong>Trend:</strong> eight days from 2026-09-30 with total wait, dominant category, and dominant wait per
+            day; CPU dominates every day except 2026-10-04, where Lock leads.
+          </li>
+          <li>
+            <strong>Baseline, Before / After, Wait Chain Summary, Alert Thresholds, Plan Correlation, Filters:</strong>
+            no-baseline, insufficient-data, No active blocking chains., the ten thresholds in effect (including the
+            legacy total_wait_time_ms value that is still written but no longer decides an alert), query_id 0 with
+            plan_available False, and the empty filter set.
+          </li>
+          <li>
+            <strong>Not in this file:</strong> the HTML writer drops empty sections, so there is no Alerts, Custom
+            Category, Plan Findings, or Plan Recommendations section here; they appear when the refresh had alerts,
+            rules, or a query plan. Only the JSON format carries the blocking-chain nodes and edges, and with them the
+            masked flag.
+          </li>
+        </ul>
         <div className="mt-4 flex flex-wrap gap-3">
           <a
             href={reportHref}
@@ -959,6 +1140,43 @@ export default function WaitStatisticsTemplate() {
           >
             Download HTML Report
           </a>
+        </div>
+      </RefSection>
+
+      <RefSection eyebrow="Refresh Behavior, Messages, and Local Files">
+        <div className="grid gap-3 md:grid-cols-2 text-sm text-gray-700">
+          <div className="min-w-0 rounded-xl border border-gray-100 bg-gray-50 p-4">
+            <div className="font-semibold mb-1">When a Refresh Runs</div>
+            <ul className="list-disc pl-5 space-y-1">
+              <li>On opening the page while connected, on ↻ Refresh, Apply Filter, or Enter in the Database or Application field, on a Trend Window change, on Clear Context, after Set Baseline, after adding or removing a custom rule, and when the application connects or switches server or database.</li>
+              <li>There is no timer and no background collection: nothing is read while the page or the application is closed.</li>
+              <li>Leaving the page cancels a running refresh at its next checkpoint; a statement already executing on the server runs to completion.</li>
+              <li>A refresh started on another server or database does not feed Set Baseline, Save Before / After, or Export; those answer Refresh … first until the current target has a completed result.</li>
+            </ul>
+          </div>
+          <div className="min-w-0 rounded-xl border border-gray-100 bg-gray-50 p-4">
+            <div className="font-semibold mb-1">Status and Error Messages</div>
+            <ul className="list-disc pl-5 space-y-1">
+              <li>Progress on the status line: Preparing background refresh..., Loading wait snapshot..., Loading active waiters..., Wait data collected; running analysis..., Analyzing wait signatures..., Comparing against baseline..., Analyzing wait chains..., Evaluating alert thresholds..., Loading N-day trend..., Refresh completed.</li>
+              <li>When the counters were read but a later step failed: Completed with partial data in N ms (rows=N). Failed step: …</li>
+              <li>Failures: Please connect to a database first., Refresh already in progress... (retried after 0.7 s), Database connection lost during wait stats refresh., Wait stats refresh timed out. Please try again., Insufficient permission to read wait statistics., Wait counters could not be read: …, Wait statistics could not be collected: …, and Unexpected error while refreshing wait statistics.; the page then shows Wait statistics unavailable with the reason.</li>
+            </ul>
+          </div>
+          <div className="min-w-0 rounded-xl border border-gray-100 bg-gray-50 p-4">
+            <div className="font-semibold mb-1">Permissions</div>
+            <ul className="list-disc pl-5 space-y-1">
+              <li>The wait counters and the active waiters need VIEW SERVER STATE; the trend and query context need read access to the Query Store of the connected database.</li>
+              <li>Every statement is a SELECT against DMVs or Query Store views. The module never issues DBCC SQLPERF, and there is no reset control in the user interface.</li>
+            </ul>
+          </div>
+          <div className="min-w-0 rounded-xl border border-gray-100 bg-gray-50 p-4">
+            <div className="font-semibold mb-1">Local Files</div>
+            <ul className="list-disc pl-5 space-y-1">
+              <li>In the application’s data folder: the last sample per target (wait_stats_last_snapshot.json), the baseline (wait_stats_baseline.json), the Before / After snapshots (wait_stats_before_after.json), the custom categories (wait_stats_custom_categories.json), the alert thresholds (wait_stats_alert_thresholds.json), and the alert cooldown state (wait_stats_alert_state.json).</li>
+              <li>In the logs folder: the local trend history (wait_stats_history.jsonl) and a refresh log (wait_stats_telemetry.jsonl) with timings and errors for one refresh in ten and for every failed one, trimmed above 8 MB. The same line is written once to the application log.</li>
+              <li>All of these stay on the machine; the module has no outbound target.</li>
+            </ul>
+          </div>
         </div>
       </RefSection>
 
@@ -996,21 +1214,23 @@ export default function WaitStatisticsTemplate() {
           <div>
             <div className="text-sm font-semibold text-gray-900 mb-1">Important Behavior Notes</div>
             <ul className="list-disc pl-5 space-y-1">
-              <li>Database, Application, and Minimum Wait filters switch Top Waits to currently waiting sessions and filter the blocking chains; server-level summary percentages are not recalculated for the filter.</li>
-              <li>Set Baseline is separate from explicit Save Before / Save After comparison.</li>
-              <li>Trend source can switch between Query Store, local history, and none.</li>
-              <li>Some alert and schedule fields exist in the service model but are not fully editable in the visible UI.</li>
+              <li>Database and Application switch Top Waits to the sessions currently waiting and filter the blocking chains; Summary shares, categories, the Primary Finding, and the trend stay instance-wide. Minimum Wait only hides cards.</li>
+              <li>A delta needs two refreshes of the same server and database less than six hours apart; the first refresh, a stale previous sample, or reset counters give cumulative totals, and the badge says which.</li>
+              <li>Set Baseline is separate from the explicit Save Before / Save After comparison, and both need a completed refresh on the current target.</li>
+              <li>The Primary Finding and the Next Action plan use different rule sets and can point at different areas; the Lock Wait Pressure alert and the Lock Contention signature are also computed separately, so one can appear without the other.</li>
+              <li>The trend source is pinned per server and database after the first successful refresh and can read query store, local history, local history unavailable, query store unavailable, or none.</li>
             </ul>
           </div>
           <div>
             <div className="text-sm font-semibold text-gray-900 mb-1">Typical Workflow</div>
             <ol className="list-decimal pl-5 space-y-1">
-              <li>Click Refresh and review Summary, Alerts, and Primary Finding; use Show Details for Wait Categories and Next Action.</li>
-              <li>Inspect Top Waits to identify the dominant wait profile and the hint on each card.</li>
-              <li>Use Trend &amp; Blocking to determine whether the issue is persistent or tied to live blockers.</li>
-              <li>Capture a baseline or explicit before/after snapshots when measuring change impact.</li>
-              <li>Use Automation for current-session thresholds, refresh-driven snapshots, and outbound targets.</li>
-              <li>When opened from the [ Waits ] link in Query Statistics, use Wait / Plan to connect waits with a specific plan shape.</li>
+              <li>Click ↻ Refresh twice a few minutes apart so the badge reads DELTA, then read the health line, Alerts, and Primary Finding.</li>
+              <li>Inspect Top Waits for the dominant category and the hint on each card; press Show Details for Wait Categories and Next Action.</li>
+              <li>Use Trend &amp; Blocking to see whether the pattern is new or recurring and whether live blockers are involved.</li>
+              <li>Narrow with a Database or Application filter when one workload is suspected.</li>
+              <li>Set a baseline or save Before / After snapshots around a change to measure its effect.</li>
+              <li>When the question is one query, open it from the [ Waits ] button in Query Statistics and read Wait / Plan.</li>
+              <li>Export the result as HTML for a hand-over, keeping Mask names and statements checked.</li>
             </ol>
           </div>
         </div>

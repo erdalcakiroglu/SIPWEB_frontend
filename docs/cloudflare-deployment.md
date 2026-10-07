@@ -133,8 +133,9 @@ Also verify that image popup behavior, mobile navigation, and static assets stil
 As of **October 7, 2026**, the latest confirmed production deployment is:
 
 - **Worker:** `dbperfstudio-website`
-- **Version ID:** `31992811-687a-4aa3-a1ef-2b42063d3663` (deployed October 7, 2026, serving 100% of traffic — Dashboard docs page rewritten against the v1.1.0 Overview screen with five new screenshots and the sanitized Configuration Audit sample report; git commit `c4d75ce`)
-- **Previous version:** `bba1a8a5-51d7-44d6-bc04-24536cf83057` (deployed October 7, 2026 — Scheduled Jobs docs page rewritten against the v1.1.0 Jobs module with seven screenshots; git commit `37216d1`). This is the rollback target if the Dashboard page, its screenshots, or the sample report must be pulled.
+- **Version ID:** `de3f2dc2-7ee9-4d21-afbe-0ca3ded7f799` (deployed October 7, 2026, serving 100% of traffic — Query Statistics docs page revisited against the v1.1.0 module with the plan selector, batch operations, and six new screenshots; git commit `35078fa`)
+- **Previous version:** `31992811-687a-4aa3-a1ef-2b42063d3663` (deployed October 7, 2026 — Dashboard docs page rewritten against the v1.1.0 Overview screen with five new screenshots and the sanitized Configuration Audit sample report; git commit `c4d75ce`). This is the rollback target if the Query Statistics page or its screenshots must be pulled.
+- **Scheduled Jobs version:** `bba1a8a5-51d7-44d6-bc04-24536cf83057` (deployed October 7, 2026 — Scheduled Jobs docs page rewritten against the v1.1.0 Jobs module with seven screenshots; git commit `37216d1`).
 - **Security Audit captions version:** `361e74a2-3b09-4a89-aa39-cde406bc6d3a` (deployed October 7, 2026 — Security Audit screenshot captions restructured into a lead sentence plus a bulleted list; git commit `34ea138`).
 - **Security Audit version:** `2b59b76c-c486-4c84-b157-7574fbaf5b85` (deployed October 7, 2026 — Security Audit docs page gained the v1.1.0 screenshot set and the sanitized sample HTML report; git commit `87c71a4`).
 - **Rebrand version:** `0bbcd788-0992-41ee-b00e-faf993209947` (deployed October 7, 2026 — product renamed to SQLPerformance AI, docs pages realigned with the v1.1.0 desktop app, Blocking Analysis screenshot set added; git commit `4d7c395`). Roll back to it only if the Security Audit assets must be pulled as well.

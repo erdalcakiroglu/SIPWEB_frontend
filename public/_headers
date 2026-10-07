@@ -31,6 +31,9 @@
 /docs/security-audit/security_audit_*
   X-Robots-Tag: noindex, nofollow, noarchive
 
+/docs/dashboard/config_audit_*
+  X-Robots-Tag: noindex, nofollow, noarchive
+
 /docs/wait-statistics/wait_stats_export_*
   X-Robots-Tag: noindex, nofollow, noarchive
 

@@ -50,7 +50,9 @@ const lastModified: Record<string, string> = {
   '/docs/installation': '2026-09-28',
   '/docs/quickstart': '2026-10-04',
   '/docs/settings': '2026-09-28',
-  '/docs/modules/dashboard': '2026-10-04',
+  // 2026-10-07: Dashboard page rewritten against the v1.1.0 Overview screen (28 metrics, refresh
+  // model, panel badges, Run Audit flow) with the new screenshot set and a sanitized sample report.
+  '/docs/modules/dashboard': '2026-10-07',
   '/docs/modules/query-statistics': '2026-10-04',
   '/docs/modules/index-advisor': '2026-10-04',
   '/docs/modules/blocking-analysis': '2026-10-07',

@@ -133,8 +133,9 @@ Also verify that image popup behavior, mobile navigation, and static assets stil
 As of **October 7, 2026**, the latest confirmed production deployment is:
 
 - **Worker:** `dbperfstudio-website`
-- **Version ID:** `2b59b76c-c486-4c84-b157-7574fbaf5b85` (deployed October 7, 2026, serving 100% of traffic — Security Audit docs page gained the v1.1.0 screenshot set and the sanitized sample HTML report; git commit `87c71a4`)
-- **Previous version:** `0bbcd788-0992-41ee-b00e-faf993209947` (deployed October 7, 2026 — product renamed to SQLPerformance AI, docs pages realigned with the v1.1.0 desktop app, Blocking Analysis screenshot set added; git commit `4d7c395`). This is the rollback target if the Security Audit assets must be pulled.
+- **Version ID:** `361e74a2-3b09-4a89-aa39-cde406bc6d3a` (deployed October 7, 2026, serving 100% of traffic — Security Audit screenshot captions restructured into a lead sentence plus a bulleted list; git commit `34ea138`)
+- **Previous version:** `2b59b76c-c486-4c84-b157-7574fbaf5b85` (deployed October 7, 2026 — Security Audit docs page gained the v1.1.0 screenshot set and the sanitized sample HTML report; git commit `87c71a4`). This is the rollback target if the caption layout must be reverted.
+- **Rebrand version:** `0bbcd788-0992-41ee-b00e-faf993209947` (deployed October 7, 2026 — product renamed to SQLPerformance AI, docs pages realigned with the v1.1.0 desktop app, Blocking Analysis screenshot set added; git commit `4d7c395`). Roll back to it only if the Security Audit assets must be pulled as well.
 - **Pre-rebrand version:** `95f41276-f54c-4cf7-96d2-04af449c4346` (deployed August 15, 2026 — wait statistics docs page rescoped to the module so it stops competing with the guide). Use it only if the October rebrand must be reverted wholesale.
 
 > **When a guide ships, the docs page on the same subject has to give way.**

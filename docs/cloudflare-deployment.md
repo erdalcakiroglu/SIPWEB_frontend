@@ -130,10 +130,11 @@ Also verify that image popup behavior, mobile navigation, and static assets stil
 
 ## Current Known-Good Production Version
 
-As of **August 15, 2026**, the latest confirmed production deployment is:
+As of **October 7, 2026**, the latest confirmed production deployment is:
 
 - **Worker:** `dbperfstudio-website`
-- **Version ID:** `95f41276-f54c-4cf7-96d2-04af449c4346` (deployed August 15, 2026, serving 100% of traffic — wait statistics docs page rescoped to the module so it stops competing with the guide)
+- **Version ID:** `0bbcd788-0992-41ee-b00e-faf993209947` (deployed October 7, 2026, serving 100% of traffic — product renamed to SQLPerformance AI, docs pages realigned with the v1.1.0 desktop app, Blocking Analysis screenshot set added; git commit `4d7c395`)
+- **Previous version:** `95f41276-f54c-4cf7-96d2-04af449c4346` (deployed August 15, 2026 — wait statistics docs page rescoped to the module so it stops competing with the guide). Use it as the rollback target only if the October rebrand must be reverted wholesale.
 
 > **When a guide ships, the docs page on the same subject has to give way.**
 > `/docs/modules/wait-statistics` was retitled "SQL Server Wait Statistics —

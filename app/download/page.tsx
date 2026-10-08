@@ -135,7 +135,7 @@ export default async function DownloadPage() {
                   </td>
                   <td className="px-5 py-4 align-middle">
                     <Link
-                      href="/docs"
+                      href="/docs/installation"
                       className="inline-flex items-center gap-1.5 font-semibold text-primary transition-colors hover:text-primary-dark"
                     >
                       Installation Guide

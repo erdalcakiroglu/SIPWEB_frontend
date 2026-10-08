@@ -30,7 +30,7 @@ const lastModified: Record<string, string> = {
   // FAQ and security copy corrected against the shipping v1.1.0 application.
   // 2026-10-08: home AI report image replaced (old one showed the former name), local-AI and report claims re-verified.
   '': '2026-10-08',
-  '/download': '2026-10-04',
+  '/download': '2026-10-08', // 2026-10-08: Edge/SmartScreen steps for the unsigned MSI, guide link to /docs/installation.
   '/docs': '2026-10-04',
   '/pricing': '2026-10-08', // 2026-10-08: per-device licensing, Enterprise extras on request.
   '/use-cases': '2026-10-08', // 2026-10-08: example scenarios labeled, "measured outcome" claim removed.

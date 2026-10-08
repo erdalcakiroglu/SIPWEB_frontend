@@ -93,9 +93,7 @@ export default function DownloadReleaseDetails({ initialRelease }: Props) {
           </>
         ) : (
           <p className="text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-4 py-3">
-            Hash not yet generated. After placing the installer in{' '}
-            <code className="bg-amber-100 px-1 rounded">public/downloads/</code>, run{' '}
-            <code className="bg-amber-100 px-1 rounded">npm run download:hash</code> and rebuild.
+            The SHA-256 hash for this release has not been published yet.
           </p>
         )}
 
@@ -131,12 +129,15 @@ export default function DownloadReleaseDetails({ initialRelease }: Props) {
         {/* "Installer is digitally signed." stood here until 2026-10-04. Both MSIs
             are Authenticode "NotSigned" (verified with Get-AuthenticodeSignature),
             so the claim was false and Windows SmartScreen shows an unknown-publisher
-            prompt. Do not restore it unless the installer is actually signed. */}
+            prompt. Do not restore it unless the installer is actually signed. The Edge and SmartScreen
+            steps below match the prompts seen on 2026-10-08. */}
         <div className="flex items-start gap-2 mt-4 text-sm text-gray-700">
           <Info className="w-5 h-5 text-gray-500 shrink-0" />
           <span>
-            The installer is not code-signed, so Windows SmartScreen may show an &quot;unknown publisher&quot; prompt.
-            Compare the SHA-256 hash above with your download before you run it.
+            The installer is not code-signed yet, so Windows shows it with an unknown publisher. Microsoft Edge may
+            warn that the file isn&apos;t commonly downloaded; to keep it, open the menu next to Delete and choose
+            Keep. When you run it, Windows SmartScreen may show &quot;Windows protected your PC&quot;; choose More info,
+            then Run anyway. Compare the SHA-256 hash above with your download first.
           </span>
         </div>
       </div>

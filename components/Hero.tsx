@@ -72,10 +72,10 @@ export default function Hero() {
               <span className="text-[11px] font-medium text-gray-400">Dashboard · Overview</span>
             </div>
             <Image
-              src="/docs/dashboard/003.png"
-              alt="SQLPerformance AI Dashboard Overview with Server Health, Memory Health, Workload, Storage & I/O and TempDB panels for a SQL Server instance"
-              width={1661}
-              height={1001}
+              src="/main/home-overview.png"
+              alt="SQLPerformance AI Overview screen with the module sidebar and Server Health, Memory Health, Workload, Storage & I/O and TempDB panels for a SQL Server instance"
+              width={1919}
+              height={1011}
               priority
               sizes="(min-width: 1024px) 620px, 100vw"
               className="w-full rounded-b-xl"

@@ -536,7 +536,7 @@ export default function SettingsTemplate() {
               </li>
               <li>
                 <strong>Advanced:</strong> Device ID with Copy ID, Server URL, Installed License, Imported .lic File,
-                Installed PEM File, App Config Folder, Refresh After, and Offline Grace Until.
+                App Config Folder, Refresh After, and Offline Grace Until.
               </li>
               <li>
                 <strong>Buttons:</strong> View License Agreement and Remove License From This Device.
@@ -567,7 +567,7 @@ export default function SettingsTemplate() {
               </li>
               <li>
                 <strong>Manual (.lic file):</strong> for offline installations, import a .lic file issued for this
-                device. A .pem key file is requested only if the file needs it.
+                device.
               </li>
             </ul>
           </>

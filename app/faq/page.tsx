@@ -115,14 +115,14 @@ const faqs: FAQItem[] = [
     category: 'Licensing',
     question: 'How are licenses counted?',
     answer:
-      'Licensing is per user, not per SQL Server. A licensed user can connect to multiple SQL Server environments. Team and enterprise options provide multiple user licenses for broader rollout.',
+      'Per device, not per SQL Server. Each license activates SQLPerformance AI on one device, and that device can connect to as many SQL Server instances as you need. Team and Enterprise plans bundle several licenses for a wider rollout.',
     link: { href: '/pricing', label: 'Compare plans' },
   },
   {
     category: 'Licensing',
     question: 'Can I evaluate the product for an enterprise rollout?',
     answer:
-      'Yes. Use the trial for technical validation and contact us for procurement, multi-user rollout, or enterprise requirements. We recommend validating permissions, AI policy, and representative workloads as part of the evaluation.',
+      'Yes. Use the trial for technical validation and contact us for procurement, a multi-device rollout, or enterprise requirements. We recommend validating permissions, AI policy, and representative workloads as part of the evaluation.',
     link: { href: '/contact', label: 'Discuss an evaluation' },
   },
   {

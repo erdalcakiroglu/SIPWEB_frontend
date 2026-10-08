@@ -4,6 +4,10 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { Check, X } from 'lucide-react'
 
+// Licenses activate per device (Licenses.allowed_devices, default 1); nothing in
+// the app or the license API limits how many SQL Servers a device connects to.
+// The Enterprise extras have no code behind them, so they are offered on request
+// rather than listed as included. Checked against the API on 2026-10-08.
 const plans = [
   {
     name: 'Developer',
@@ -12,51 +16,46 @@ const plans = [
     annualPrice: 402,
     annualMonthly: 33.50,
     features: [
-      { text: '1 user license', included: true },
-      { text: 'Connect to multiple SQL Servers per user license.', included: true, bold: true },
+      { text: '1 license, activated on one device', included: true },
+      { text: 'No limit on the number of SQL Servers you connect to', included: true, bold: true },
       { text: 'All core modules', included: true },
       { text: 'Evidence reports with optional AI interpretation', included: true },
       { text: 'Local AI via Ollama (no cloud needed)', included: true },
       { text: 'Optional cloud LLM (user-controlled)', included: true },
-      { text: 'Cancel anytime', included: true },
-      { text: 'No credit card required (trial)', included: true },
+      { text: 'Customer portal: view licenses, download license files, manage billing, open support tickets', included: true },
+      { text: 'Manage or cancel your subscription in the billing portal', included: true },
     ],
     cta: 'Start 30-Day Free Trial',
     popular: false,
   },
   {
     name: 'Team',
-    description: 'For development teams (5 users)',
+    description: 'For development teams (5 devices)',
     monthlyPrice: 119,
     annualPrice: 1199,
     annualMonthly: 99.90,
     savings: 811,
     features: [
-      { text: '5 user licenses', included: true, bold: true },
-      { text: 'Connect to multiple SQL Servers per user license.', included: true, bold: true },
+      { text: '5 licenses, each activated on one device', included: true, bold: true },
+      { text: 'No limit on the number of SQL Servers you connect to', included: true, bold: true },
       { text: 'All core modules', included: true },
       { text: 'Evidence reports with optional AI interpretation', included: true },
-      { text: 'Priority email support', included: true },
-      { text: 'License management portal', included: true },
       { text: 'Local AI via Ollama (no cloud needed)', included: true },
       { text: 'Optional cloud LLM (user-controlled)', included: true },
+      { text: 'Customer portal: view licenses, download license files, manage billing, open support tickets', included: true },
+      { text: 'Manage or cancel your subscription in the billing portal', included: true },
     ],
     cta: 'Start 30-Day Free Trial',
     popular: true,
   },
   {
     name: 'Enterprise',
-    description: 'For large teams (20+ users)',
+    description: 'For large teams (20+ devices)',
     customPricing: true,
     features: [
-      { text: '20+ user licenses', included: true, bold: true },
+      { text: '20+ licenses, each activated on one device', included: true, bold: true },
       { text: 'Everything in Team', included: true },
-      { text: 'Volume discounts', included: true },
-      { text: 'Security review support (questionnaire + docs)', included: true },
-      { text: 'Offline license files for air-gapped sites', included: true },
-      { text: 'Dedicated onboarding', included: true },
-      { text: 'Optional support SLA', included: true },
-      { text: 'Invoice billing (NET 30)', included: true },
+      { text: 'Available on request: security review questionnaire, onboarding session, support SLA, invoice billing', included: true },
     ],
     cta: 'Contact Sales',
     popular: false,
@@ -168,7 +167,7 @@ export default function Pricing() {
               {/* Savings badge */}
               {plan.savings && isAnnual && (
                 <div className="mb-6 rounded-lg bg-emerald-50 px-4 py-2 text-center text-sm font-semibold text-emerald-700 ring-1 ring-emerald-200/70">
-                  Save ${plan.savings}/year vs individual licenses
+                  Save ${plan.savings}/year vs 5 Developer licenses
                 </div>
               )}
 
@@ -216,7 +215,7 @@ export default function Pricing() {
         {/* Note */}
         <div className="mt-12 text-center p-6 bg-white rounded-xl border border-gray-100">
           <p className="text-gray-600">
-            All plans include a <span className="font-semibold text-primary">30-day free trial</span> with full features. No credit card required.
+            Every plan starts with a <span className="font-semibold text-primary">30-day free trial</span> with full features. No credit card required; the trial needs an email address and runs once per machine.
           </p>
         </div>
       </div>

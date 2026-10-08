@@ -26,7 +26,7 @@ const securityControls = [
   'Local AI by default; cloud AI is optional and your choice',
   'Saved SQL passwords and AI API keys go to Windows Credential Manager',
   'Scratch data only in session-scoped tempdb tables',
-  'Signed offline license files (.lic) are supported',
+  'Offline license files (.lic) for machines without internet access',
 ]
 
 const evidencePoints = [
@@ -273,7 +273,7 @@ export default function SecurityPage() {
                   <div className="rounded-2xl border border-slate-200/70 bg-white p-5">
                     <h3 className="mb-2 text-sm font-bold text-gray-900">Deployment Model</h3>
                     <p className="text-sm leading-relaxed text-gray-600">
-                      A Windows desktop application. Nothing is installed on your SQL Server hosts. A signed offline
+                      A Windows desktop application. Nothing is installed on your SQL Server hosts. An offline
                       license file (.lic) lets it run without contacting the license server. The 30-day trial normally
                       registers online (email address and a device identifier); if the license server cannot be
                       reached, the trial starts locally and is registered when a connection is available. See the{' '}

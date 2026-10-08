@@ -32,15 +32,15 @@ const lastModified: Record<string, string> = {
   '': '2026-10-08',
   '/download': '2026-10-04',
   '/docs': '2026-10-04',
-  '/pricing': '2026-10-04',
+  '/pricing': '2026-10-08', // 2026-10-08: per-device licensing, Enterprise extras on request.
   '/use-cases': '2026-10-08', // 2026-10-08: example scenarios labeled, "measured outcome" claim removed.
   '/guides': '2026-08-15',
   // 2026-10-07: blocking-history retention corrected (30 days / 50,000 rows per server).
-  '/security': '2026-10-07',
+  '/security': '2026-10-08', // 2026-10-08: offline .lic line no longer says "signed".
   // 2026-09-28: module details re-verified against the v1.1.0 desktop UI.
   '/features': '2026-10-04',
   // 2026-10-07: AI data-handling answer updated for Object Explorer and Index Advisor masking.
-  '/faq': '2026-10-07',
+  '/faq': '2026-10-08', // 2026-10-08: license counting answer is per device.
   '/contact': '2026-06-01',
   // 2026-10-04: product statements corrected (local-first, no send-policy levels).
   '/privacy': '2026-10-04',

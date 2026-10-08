@@ -7,7 +7,7 @@ import Footer from '@/components/Footer'
 export const metadata: Metadata = {
   title: 'Pricing - SQLPerformance AI',
   description:
-    'View SQLPerformance AI pricing plans for individual DBAs, teams, and enterprise SQL Server environments.',
+    'SQLPerformance AI pricing for individual DBAs, teams and enterprises. Each license activates on one device, with no limit on SQL Servers. 30-day free trial.',
   alternates: {
     canonical: '/pricing',
   },
@@ -18,8 +18,8 @@ export default function PricingPage() {
     <main className="bg-gray-50">
       <Header />
       <PageHero
-        title="Simple Per-User Pricing. No Server Limits."
-        description="One license per user. Connect to multiple SQL Servers per user license — every plan includes a 30-day free trial with full features."
+        title="Simple Per-Device Pricing. No Server Limits."
+        description="Each license activates on one device and connects to as many SQL Servers as you need. Every plan starts with a 30-day free trial with full features."
       />
       <Pricing />
       <Footer />

@@ -112,7 +112,7 @@ export default function RootLayout({
         downloadUrl: `${SITE_URL}/download`,
         publisher: { '@id': `${SITE_URL}/#organization` },
         author: { '@id': `${SITE_URL}/#organization` },
-        // Per-user subscription. Enterprise is quote-only, so it carries no price here.
+        // Subscription licensed per device. Enterprise is quote-only, so it carries no price here.
         offers: {
           '@type': 'AggregateOffer',
           priceCurrency: 'USD',

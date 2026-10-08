@@ -6,25 +6,29 @@ import PolicyPageShell from '@/components/PolicyPageShell'
 export const metadata: Metadata = {
   title: 'Cookie Policy — SQLPerformance AI',
   description:
-    'Cookie Policy for the SQLPerformance AI website, including consent storage and optional analytics cookies.',
+    'Cookie Policy for the SQLPerformance AI website: how your consent choice is stored and when Google Analytics cookies are set.',
   alternates: {
     canonical: '/cookie-policy',
   },
 }
 
+// Checked against components/CookieConsent.tsx and app/layout.tsx on 2026-10-08.
+// The consent choice lives in localStorage (key cookie_consent), not in a cookie.
+// The Google tag loads on every page with all storage denied; Accept grants
+// analytics_storage only, and the ad signals stay denied in both choices.
 export default function CookiePolicyPage() {
   return (
     <PolicyPageShell
       eyebrow="Cookies"
       title="Cookie Policy"
-      description="Which website cookies are used, why they exist, and how consent choices control optional analytics."
-      lastUpdated="June 2026"
+      description="Which cookies the website sets, when it sets them, and how your choice controls them."
+      lastUpdated="October 2026"
       summaryTitle="Cookie Scope"
       summaryItems={[
-        'Consent preference storage',
-        'Optional analytics cookies only after consent',
-        'No analytics cookies before acceptance',
-        'Cookie choices can be reopened and changed',
+        'Google Analytics cookies only after you accept',
+        'No advertising cookies',
+        'Your choice is kept in local storage, not a cookie',
+        'You can change your choice at any time',
       ]}
       relatedLinks={[
         { href: '/privacy', label: 'Privacy Policy' },
@@ -34,22 +38,24 @@ export default function CookiePolicyPage() {
       <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
         <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">What Cookies Mean Here</div>
         <p className="text-sm leading-relaxed text-gray-700">
-          Cookies are small browser-side data records used to remember state across visits. On this website, they are
-          used narrowly: to remember your consent decision and, only if consent is granted, to support anonymous usage
-          analytics.
+          Cookies are small records a website stores in your browser to remember information between visits. This
+          website sets cookies for one purpose only: Google Analytics, and only after you accept it in the cookie
+          banner.
         </p>
       </div>
 
       <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-        <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">Cookie Categories</div>
+        <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">What The Site Stores</div>
         <ul className="space-y-3 text-sm text-gray-700">
           <li>
-            <span className="font-semibold text-gray-900">Strictly necessary:</span> used to store your cookie consent
-            choice so the site does not prompt you on every page load.
+            <span className="font-semibold text-gray-900">Your consent choice:</span> stored in your browser&apos;s
+            local storage, not in a cookie, so the banner does not appear on every page. It stays on your device and is
+            not sent to us.
           </li>
           <li>
-            <span className="font-semibold text-gray-900">Analytics:</span> used only after consent to understand
-            website usage patterns in aggregate form. More detail is available in the{' '}
+            <span className="font-semibold text-gray-900">Google Analytics cookies:</span> _ga and _ga_*, set only
+            after you choose Accept, to tell visits and returning visitors apart in usage reports. More detail is in
+            the{' '}
             <Link href="/analytics-disclosure" className="font-semibold text-primary hover:text-primary-dark">
               Analytics Disclosure
             </Link>
@@ -61,8 +67,9 @@ export default function CookiePolicyPage() {
       <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
         <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">Consent Behavior</div>
         <p className="text-sm leading-relaxed text-gray-700">
-          Analytics are disabled by default. They become active only when a visitor explicitly accepts the relevant
-          cookie option. Rejecting optional cookies does not block access to the public website.
+          Until you choose, analytics storage is denied and no analytics cookies are set. Accept allows Google
+          Analytics cookies; Reject keeps them off. Advertising storage and advertising signals stay denied whichever
+          you choose, because the site runs no ads. Rejecting does not limit access to any part of the website.
         </p>
       </div>
 

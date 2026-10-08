@@ -43,10 +43,13 @@ const lastModified: Record<string, string> = {
   '/faq': '2026-10-08', // 2026-10-08: license counting answer is per device; module list, first steps, trial registration and troubleshooting re-checked against v1.1.0.
   '/contact': '2026-06-01',
   // 2026-10-04: product statements corrected (local-first, no send-policy levels).
-  '/privacy': '2026-10-04',
+  // 2026-10-08: website, contact, portal, payment and license-server data added; desktop network calls listed.
+  '/privacy': '2026-10-08',
   '/terms': '2026-06-01',
-  '/cookie-policy': '2026-06-01',
-  '/analytics-disclosure': '2026-06-01',
+  // 2026-10-08: consent choice is in localStorage, not a cookie; ad signals always denied.
+  '/cookie-policy': '2026-10-08',
+  // 2026-10-08: Consent Mode cookieless signals before a choice described.
+  '/analytics-disclosure': '2026-10-08',
   // 2026-09-28: all docs pages rewritten for the v1.1.0 desktop UI.
   // 2026-10-07: Getting Started pages (overview, installation, quickstart) re-verified against v1.1.0.
   // 2026-10-08: Installation trial-refusal note matches the rebuilt 1.1.0 MSI.

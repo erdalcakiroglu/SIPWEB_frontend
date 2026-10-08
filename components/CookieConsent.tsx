@@ -16,11 +16,15 @@ declare global {
   }
 }
 
-function updateConsent(analyticsStorage: 'granted' | 'denied', adStorage: 'granted' | 'denied') {
+// Accepting grants analytics storage only. The site runs no ads, and the banner
+// promises analytics cookies only, so the ad signals stay denied either way.
+function updateConsent(analyticsStorage: 'granted' | 'denied') {
   if (typeof window === 'undefined' || !window.gtag) return
   window.gtag('consent', 'update', {
     analytics_storage: analyticsStorage,
-    ad_storage: adStorage,
+    ad_storage: 'denied',
+    ad_user_data: 'denied',
+    ad_personalization: 'denied',
   })
   window.gtag('config', GA_MEASUREMENT_ID)
 }
@@ -42,20 +46,20 @@ export default function CookieConsent() {
 
   useEffect(() => {
     if (status === 'granted') {
-      updateConsent('granted', 'granted')
+      updateConsent('granted')
     }
   }, [status])
 
   const accept = () => {
     localStorage.setItem(STORAGE_KEY, 'granted')
     setStatusOverride('granted')
-    updateConsent('granted', 'granted')
+    updateConsent('granted')
   }
 
   const reject = () => {
     localStorage.setItem(STORAGE_KEY, 'denied')
     setStatusOverride('denied')
-    updateConsent('denied', 'denied')
+    updateConsent('denied')
   }
 
   if (!hydrated || status !== null) return null
@@ -68,7 +72,7 @@ export default function CookieConsent() {
     >
       <div className="mx-auto flex max-w-4xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-sm text-gray-700">
-          This website uses anonymous analytics to improve the product experience. We use cookies only for analytics when you consent. By continuing, you accept our use of cookies as described in our{' '}
+          This website uses Google Analytics to see which pages are used. Its cookies are set only if you choose Accept; Reject keeps them off. Details are in our{' '}
           <Link href="/cookie-policy" className="font-medium text-primary underline hover:text-primary-dark">
             Cookie Policy
           </Link>
@@ -83,14 +87,14 @@ export default function CookieConsent() {
             onClick={reject}
             className="rounded-xl border-2 border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 transition-colors hover:border-gray-300 hover:bg-gray-50"
           >
-            Reject non-essential
+            Reject
           </button>
           <button
             type="button"
             onClick={accept}
             className="rounded-xl bg-cta px-4 py-2.5 text-sm font-semibold text-white shadow-cta transition-colors hover:bg-cta-hover hover:shadow-cta-hover"
           >
-            Accept all
+            Accept
           </button>
         </div>
       </div>

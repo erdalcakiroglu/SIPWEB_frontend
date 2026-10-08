@@ -37,7 +37,8 @@ const lastModified: Record<string, string> = {
   '/guides': '2026-08-15',
   // 2026-10-07: blocking-history retention corrected (30 days / 50,000 rows per server).
   // 2026-10-08: offline .lic line no longer says "signed"; Wait Statistics export-masking card added.
-  '/security': '2026-10-08',
+  // 2026-10-09: Encryption card says Encrypt is on and the certificate is validated by default.
+  '/security': '2026-10-09',
   // 2026-09-28: module details re-verified against the v1.1.0 desktop UI.
   '/features': '2026-10-04',
   // 2026-10-07: AI data-handling answer updated for Object Explorer and Index Advisor masking.
@@ -83,7 +84,7 @@ const lastModified: Record<string, string> = {
   '/use-cases/blocking-storm-head-blocker': '2026-10-08',
   '/use-cases/query-regression-after-plan-change': '2026-10-08',
   '/use-cases/pageiolatch-waits-missing-index': '2026-10-08',
-  '/use-cases/optional-filter-non-sargable-procedure': '2026-10-08',
+  '/use-cases/optional-filter-non-sargable-procedure': '2026-10-09', // 2026-10-09: note that v1.1.0 quotes each name part.
   // 2026-09-15: /features backlink added to both guides' Related Reading.
   '/guides/diagnose-sql-server-performance-problems': '2026-09-15',
   '/guides/sql-server-wait-statistics': '2026-09-15',

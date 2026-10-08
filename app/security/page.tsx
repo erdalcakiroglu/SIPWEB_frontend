@@ -260,10 +260,10 @@ export default function SecurityPage() {
                   <div className="rounded-2xl border border-slate-200/70 bg-white p-5">
                     <h3 className="mb-2 text-sm font-bold text-gray-900">Encryption</h3>
                     <p className="text-sm leading-relaxed text-gray-600">
-                      Requests to cloud AI providers and to the license server use HTTPS. SQL Server connection
-                      encryption follows the connection profile (Encrypt on, Trust server certificate off by default)
-                      and your server&apos;s configuration. With ODBC Driver 18 the client requests encryption as
-                      &ldquo;optional&rdquo;, so enable Force Encryption on the server if you need it guaranteed.
+                      Requests to cloud AI providers and to the license server use HTTPS. SQL Server connections
+                      follow the connection profile: Encrypt is on and Trust server certificate is off by default, so
+                      the connection is encrypted and the server certificate is validated. The Encrypt setting is
+                      passed to the ODBC driver explicitly, so it works the same with every driver version.
                     </p>
                   </div>
                   <div className="rounded-2xl border border-slate-200/70 bg-white p-5">

@@ -553,7 +553,7 @@ WITH (ONLINE = ON, DATA_COMPRESSION = PAGE);`,
       },
       {
         kind: 'warning',
-        body: 'The tool’s maintenance DDL had a bug — it emitted ALTER INDEX [...] ON [Sales.Customers] (schema and table in one bracket pair), which SQL Server rejects. The index choices were sound once corrected to [Sales].[Customers].',
+        body: 'The tool’s maintenance DDL had a bug — it emitted ALTER INDEX [...] ON [Sales.Customers] (schema and table in one bracket pair), which SQL Server rejects. The index choices were sound once corrected to [Sales].[Customers]. The current v1.1.0 installer quotes each part separately ([Sales].[Customers]).',
       },
     ],
     screenshots: [

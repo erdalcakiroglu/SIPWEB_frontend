@@ -195,7 +195,7 @@ export default function SettingsTemplate() {
           <>
             <p>
               The lower half of the General page in version 1.1.0, with every value at its default. Navigation Menu and
-              Query Analysis sit above this part; the local folder paths are blurred.
+              Query Analysis sit above this part; the local folder path is blurred.
             </p>
             <ul className="list-disc space-y-1 pl-5">
               <li>
@@ -209,8 +209,8 @@ export default function SettingsTemplate() {
                 60 s of blocked wait time.
               </li>
               <li>
-                <strong>Application Info:</strong> Version 1.1.0, Build, Author, App Data Folder, Log File, and Database
-                File, with View License Agreement and Show Application Logs.
+                <strong>Application Info:</strong> Version 1.1.0, Build, Author, and App Data Folder. Scrolling further
+                shows Log File, Database File, View License Agreement, and Show Application Logs.
               </li>
               <li>
                 <strong>Status line:</strong> Changes are saved automatically.
@@ -219,9 +219,9 @@ export default function SettingsTemplate() {
           </>
         }
         image="/docs/settings/general.png"
-        alt="Settings General page showing Backup Encryption Window, the Blocking Analysis monitor switches and severity thresholds, and Application Info with blurred local paths"
-        width={1214}
-        height={897}
+        alt="Settings General page showing Backup Encryption Window, the Blocking Analysis monitor switches and severity thresholds, and the top of Application Info with the folder path blurred"
+        width={1215}
+        height={751}
       />
 
       <InfoCard eyebrow="General Page">

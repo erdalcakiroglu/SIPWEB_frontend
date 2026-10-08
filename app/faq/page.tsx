@@ -30,7 +30,7 @@ const faqs: FAQItem[] = [
     category: 'Product',
     question: 'Which SQL Server workflows are supported?',
     answer:
-      'The application includes Dashboard, Query Statistics, Index Advisor, Blocking Analysis, Wait Statistics, Security Audit, Scheduled Jobs, and Object Explorer workflows. Each module focuses on a specific operational question and can export evidence for review.',
+      'The sidebar lists Overview, Query Statistics, Object Explorer, Wait Statistics, Index Advisor, Blocking, Jobs, and Security, plus Settings. Each module focuses on a specific operational question and can export its results for review, as HTML, Markdown, CSV, or Excel depending on the module.',
   },
   {
     category: 'Product',
@@ -68,7 +68,7 @@ const faqs: FAQItem[] = [
     category: 'Installation',
     question: 'Where should I start after installation?',
     answer:
-      'Follow Quickstart to configure a SQL connection and AI provider, confirm the active server, database, and LLM in the top bar, then open Dashboard to check that top-level health metrics load correctly. From there, choose the module that matches the issue you are investigating.',
+      'Follow Quickstart to configure a SQL connection and AI provider, confirm the active server and database in the top bar, then open Overview to check that the health panels load correctly. From there, choose the module that matches the issue you are investigating.',
     link: { href: '/docs/quickstart', label: 'Open the quickstart guide' },
   },
   {
@@ -108,7 +108,7 @@ const faqs: FAQItem[] = [
     category: 'Licensing',
     question: 'How does the free trial work?',
     answer:
-      'Every plan includes a 30-day full-feature trial, and no credit card is required to start. Download the application and complete first-run setup; the trial normally registers with your email address, which contacts the license server online and sends a device identifier with it. If the license server cannot be reached, the trial starts locally and is registered when a connection is available.',
+      'Every plan includes a 30-day full-feature trial, and no credit card is required to start. Download the application and complete first-run setup; the trial normally registers with your email address, which contacts the license server online and sends a device identifier with it. If the license server cannot be reached, the trial starts locally and is registered the next time the application starts, or the license is refreshed, with the server reachable.',
     link: { href: '/download', label: 'Download the trial' },
   },
   {
@@ -129,13 +129,13 @@ const faqs: FAQItem[] = [
     category: 'Troubleshooting',
     question: 'Why do I see limited or no historical query data?',
     answer:
-      'First check the Query Store Health notification and the warning line above the list, your permissions, the selected server and database, and whether the workload has executed during the available retention period. If Query Store is unavailable, the module may use live DMV data with less historical depth.',
+      'First check the Query Store Health notice shown when the module loads and any warning line above the list, your permissions, the selected server and database, and whether the workload has executed during the available retention period. If Query Store is unavailable, the module may use live DMV data with less historical depth.',
   },
   {
     category: 'Troubleshooting',
     question: 'Why is my local AI model unavailable?',
     answer:
-      'Confirm that Ollama is running, the selected model is installed, and the configured host URL is reachable from the desktop application. Then use the provider test in Settings before retrying the analysis.',
+      'Confirm that Ollama is running, the selected model is installed, and the configured host URL is reachable from the desktop application. Then use the Test button in the provider dialog in Settings before retrying the analysis.',
     link: { href: '/docs/settings', label: 'Troubleshoot provider settings' },
   },
   {

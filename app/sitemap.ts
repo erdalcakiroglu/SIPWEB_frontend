@@ -31,7 +31,7 @@ const lastModified: Record<string, string> = {
   // 2026-10-08: home AI report image replaced (old one showed the former name), local-AI and report claims re-verified.
   '': '2026-10-08',
   '/download': '2026-10-08', // 2026-10-08: Edge/SmartScreen steps for the unsigned MSI, guide link to /docs/installation.
-  '/docs': '2026-10-04',
+  '/docs': '2026-10-08', // 2026-10-08: top-bar text names only the server and database selectors.
   '/pricing': '2026-10-08', // 2026-10-08: per-device licensing, Enterprise extras on request.
   '/use-cases': '2026-10-08', // 2026-10-08: example scenarios labeled, "measured outcome" claim removed.
   '/guides': '2026-08-15',
@@ -40,7 +40,7 @@ const lastModified: Record<string, string> = {
   // 2026-09-28: module details re-verified against the v1.1.0 desktop UI.
   '/features': '2026-10-04',
   // 2026-10-07: AI data-handling answer updated for Object Explorer and Index Advisor masking.
-  '/faq': '2026-10-08', // 2026-10-08: license counting answer is per device.
+  '/faq': '2026-10-08', // 2026-10-08: license counting answer is per device; module list, first steps, trial registration and troubleshooting re-checked against v1.1.0.
   '/contact': '2026-06-01',
   // 2026-10-04: product statements corrected (local-first, no send-policy levels).
   '/privacy': '2026-10-04',

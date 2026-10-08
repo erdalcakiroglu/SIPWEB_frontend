@@ -247,7 +247,7 @@ msiexec /i "path\\to\\installer.msi" /quiet /norestart`}
                     className="rounded-lg border border-gray-200 bg-white p-4 hover:border-primary hover:shadow-md transition-all"
                   >
                     <div className="font-semibold mb-1">Settings &amp; Top Bar</div>
-                    <p>Manage database, AI / LLM, and license settings, and switch the active server, database, and LLM from the top bar.</p>
+                    <p>Manage database, AI / LLM, and license settings, and switch the active server and database from the top bar.</p>
                   </Link>
                 </div>
               </section>
@@ -256,7 +256,7 @@ msiexec /i "path\\to\\installer.msi" /quiet /norestart`}
                 <h2 className="text-2xl font-bold">Standard Analysis Workflow</h2>
                 <div className="rounded-xl border border-gray-200 bg-white p-5">
                   <ol className="list-decimal pl-5 space-y-2 text-sm text-gray-700">
-                    <li>Connect and verify the active server, database, and LLM in the top bar.</li>
+                    <li>Connect and verify the active server and database in the top bar.</li>
                     <li>Run module-specific analysis (query, index, blocking, waits, or security).</li>
                     <li>Validate evidence and confidence before applying changes.</li>
                     <li>Export report/script outputs for review and audit traceability.</li>

@@ -4,7 +4,7 @@ const badges = [
   {
     icon: Cpu,
     text: 'Local AI by default',
-    description: 'Ollama, running locally by default',
+    description: 'Defaults to your local Ollama host',
   },
   {
     icon: CloudOff,

@@ -28,7 +28,7 @@ const workflow = [
     icon: FileCheck2,
     number: '03',
     title: 'Share a review-ready result',
-    description: 'Export AI analysis reports as HTML with findings, recommendations, confidence, and a validation plan for your team.',
+    description: 'Export AI analysis reports as HTML with findings, recommendations, confidence, and a verification plan for your team.',
   },
 ]
 
@@ -89,17 +89,21 @@ export default function HomeOverview() {
               <span className="h-2.5 w-2.5 rounded-full bg-gray-300" />
               <span className="h-2.5 w-2.5 rounded-full bg-gray-300" />
               <span className="h-2.5 w-2.5 rounded-full bg-gray-300" />
-              <span className="ml-2 text-[11px] font-medium text-gray-400">AI Performance Analysis Report</span>
+              <span className="ml-2 text-[11px] font-medium text-gray-400">Query Statistics · AI Report</span>
             </div>
-            <Image src="/main/0006a-AI_Report-01.png" alt="Exported AI performance analysis report with prioritized findings" width={1538} height={736} sizes="(min-width: 1024px) 560px, 100vw" className="w-full rounded-b-xl" />
+            {/* A Save Report export from v1.1.0 (October 4, 2026, WideWorldImporters-based
+                test database), the same file offered under Sample Reports on the Query
+                Statistics docs page. It replaced a June capture that still carried the
+                old product name. */}
+            <Image src="/main/home-ai-report-query-analysis.png" alt="Saved AI report for a query: context quality, overall confidence, bottleneck, priority, risk and plan stability, with an analysis transparency box and the executive summary" width={1160} height={990} sizes="(min-width: 1024px) 560px, 100vw" className="w-full rounded-b-xl" />
           </div>
 
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.16em] text-primary">Built for review</p>
             <h2 className="mt-3 text-3xl font-bold tracking-tight text-gray-900">Recommendations your team can inspect.</h2>
-            <p className="mt-4 text-base leading-relaxed text-gray-600">Move beyond isolated metrics. Bring the problem, supporting evidence, recommended action, confidence, and test plan into the same report.</p>
+            <p className="mt-4 text-base leading-relaxed text-gray-600">Move beyond isolated metrics. Bring the problem, supporting evidence, recommended actions, confidence, and verification plan into the same report.</p>
             <ul className="mt-7 space-y-4">
-              {['Prioritized findings with operational context', 'Evidence and confidence shown with each recommendation', 'Review-only scripts and validation guidance', 'HTML exports you can share with your team'].map((item) => (
+              {['Prioritized recommendations, each linked to its evidence with priority and risk', 'Overall confidence and context quality shown up front', 'Verification queries you run yourself; the app never executes them', 'Standalone HTML reports you can share with your team'].map((item) => (
                 <li key={item} className="flex items-start gap-3 text-sm text-gray-700">
                   <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary-light"><Check className="h-3 w-3 text-primary-dark" strokeWidth={3} /></span>
                   {item}

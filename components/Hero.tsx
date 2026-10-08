@@ -30,7 +30,7 @@ export default function Hero() {
           </h1>
 
           <p className="mt-6 max-w-xl text-lg leading-relaxed text-white/85">
-            A read-only SQL Server performance tuning workbench for Windows. AI analysis runs on a local model by default; cloud AI providers are optional and chosen by you.
+            A read-only SQL Server performance tuning workbench for Windows. AI analysis defaults to your own local Ollama model; cloud AI providers are optional and chosen by you.
           </p>
 
           <div className="mt-8 flex flex-wrap gap-3">

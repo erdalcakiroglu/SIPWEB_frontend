@@ -28,7 +28,8 @@ const DEFAULT_LASTMOD = '2026-08-15'
 const lastModified: Record<string, string> = {
   // 2026-10-04: product renamed to SQLPerformance AI; home, download, features, pricing,
   // FAQ and security copy corrected against the shipping v1.1.0 application.
-  '': '2026-10-04',
+  // 2026-10-08: home AI report image replaced (old one showed the former name), local-AI and report claims re-verified.
+  '': '2026-10-08',
   '/download': '2026-10-04',
   '/docs': '2026-10-04',
   '/pricing': '2026-10-04',

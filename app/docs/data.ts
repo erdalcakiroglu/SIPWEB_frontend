@@ -46,7 +46,7 @@ export const gettingStartedPages: DocsPage[] = [
     slug: 'settings',
     title: 'Settings',
     summary:
-      'Configure SQL Server connections, AI providers and prompt rules, licensing, local app lock, analysis thresholds, and visual preferences; changes save automatically.',
+      'Configure SQL Server connections, AI providers and prompt rules, tuning memory, licensing, the local app lock, and analysis thresholds; changes save automatically.',
   },
 ]
 

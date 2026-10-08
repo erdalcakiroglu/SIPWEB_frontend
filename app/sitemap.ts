@@ -57,7 +57,9 @@ const lastModified: Record<string, string> = {
   '/docs/overview': '2026-10-07',
   '/docs/installation': '2026-10-08',
   '/docs/quickstart': '2026-10-07',
-  '/docs/settings': '2026-09-28',
+  // 2026-10-08: Settings page rewritten against the v1.1.0 settings tree (auto-save, General thresholds,
+  // AI / LLM, Tuning Memory, License wizard, Security) with the new screenshot set.
+  '/docs/settings': '2026-10-08',
   // 2026-10-07: Dashboard page rewritten against the v1.1.0 Overview screen (28 metrics, refresh
   // model, panel badges, Run Audit flow) with the new screenshot set and a sanitized sample report.
   '/docs/modules/dashboard': '2026-10-07',

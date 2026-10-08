@@ -550,8 +550,8 @@ export default function SettingsTemplate() {
         }
         image="/docs/settings/license.png"
         alt="Settings License page showing an active license with expiry, last validated, and device count cards, and the Advanced section with blurred device and folder details"
-        width={1211}
-        height={668}
+        width={1210}
+        height={653}
       />
 
       <ScreenshotCard

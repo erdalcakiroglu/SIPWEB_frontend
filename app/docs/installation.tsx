@@ -291,8 +291,9 @@ msiexec /i "path\\to\\installer.msi" /quiet /norestart`}
             server automatically when a connection is available.&quot;
           </li>
           <li>
-            <strong>Trial not available:</strong> each device gets one trial. If the license server declines it, no
-            notification appears and you activate a license in Settings &gt; License instead.
+            <strong>Trial not available:</strong> each device gets one trial. If the license server declines it, a
+            &quot;Trial Not Started&quot; warning shows the reason, for example &quot;Trial has already been used on this
+            machine.&quot;, and points you to Settings &gt; License to activate with a license.
           </li>
         </ul>
       </StepCard>

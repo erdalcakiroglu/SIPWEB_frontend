@@ -48,8 +48,9 @@ const lastModified: Record<string, string> = {
   '/analytics-disclosure': '2026-06-01',
   // 2026-09-28: all docs pages rewritten for the v1.1.0 desktop UI.
   // 2026-10-07: Getting Started pages (overview, installation, quickstart) re-verified against v1.1.0.
+  // 2026-10-08: Installation trial-refusal note matches the rebuilt 1.1.0 MSI.
   '/docs/overview': '2026-10-07',
-  '/docs/installation': '2026-10-07',
+  '/docs/installation': '2026-10-08',
   '/docs/quickstart': '2026-10-07',
   '/docs/settings': '2026-09-28',
   // 2026-10-07: Dashboard page rewritten against the v1.1.0 Overview screen (28 metrics, refresh

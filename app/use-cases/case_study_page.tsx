@@ -118,6 +118,11 @@ export default function CaseStudyPage({ slug }: { slug: string }) {
           <p className="max-w-3xl text-lg leading-relaxed text-white/85">{study.summary}</p>
 
           <div className="mt-6 flex flex-wrap items-center gap-2">
+            {study.isExample && (
+              <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-primary">
+                Example scenario
+              </span>
+            )}
             <span className="rounded-full bg-white/15 px-3 py-1 text-xs font-semibold text-white">
               {study.readingTime}
             </span>
@@ -145,6 +150,17 @@ export default function CaseStudyPage({ slug }: { slug: string }) {
                 whole page into horizontal scroll and leaving the <pre>'s own
                 overflow-x-auto with nothing to scroll against. */}
             <article className="min-w-0 break-words space-y-10">
+              {study.isExample && (
+                <div className="rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-900">
+                  <div className="mb-1 text-xs font-semibold uppercase tracking-wide text-blue-700">
+                    Example scenario
+                  </div>
+                  The situation and findings below are illustrative, not a measured customer case.
+                  The steps and screen labels match SQLPerformance AI v1.1.0, and the screenshots
+                  come from the WideWorldImporters demo database.
+                </div>
+              )}
+
               {/* Scenario */}
               <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
                 <h2 className="mb-3 text-2xl font-bold">Scenario</h2>
@@ -165,8 +181,8 @@ export default function CaseStudyPage({ slug }: { slug: string }) {
               <section className="space-y-4">
                 <h2 className="text-2xl font-bold">How We Analyzed It</h2>
                 <p className="text-sm text-gray-600">
-                  Each step maps a concrete question to the module and signal used to answer it —
-                  all read-only against production.
+                  Each step maps a concrete question to the module and signal used to answer it.
+                  The application only reads; it makes no changes to the database.
                 </p>
                 <ol className="space-y-4">
                   {study.analysis.map((step, index) => (
@@ -247,8 +263,16 @@ export default function CaseStudyPage({ slug }: { slug: string }) {
 
               {/* Outcome */}
               <section className="space-y-4">
-                <h2 className="text-2xl font-bold">Outcome</h2>
+                <h2 className="text-2xl font-bold">{study.isExample ? 'What to Verify' : 'Outcome'}</h2>
                 <p className="text-sm leading-relaxed text-gray-700">{study.outcome.summary}</p>
+                {study.outcome.checks && study.outcome.checks.length > 0 && (
+                  <ul className="list-disc space-y-2 rounded-2xl border border-gray-200 bg-white p-6 pl-10 text-sm text-gray-700">
+                    {study.outcome.checks.map((check) => (
+                      <li key={check}>{check}</li>
+                    ))}
+                  </ul>
+                )}
+                {study.outcome.metrics && study.outcome.metrics.length > 0 && (
                 <div className="grid gap-4 sm:grid-cols-3">
                   {study.outcome.metrics.map((metric) => (
                     <div
@@ -266,6 +290,7 @@ export default function CaseStudyPage({ slug }: { slug: string }) {
                     </div>
                   ))}
                 </div>
+                )}
               </section>
 
               {/* Related modules */}

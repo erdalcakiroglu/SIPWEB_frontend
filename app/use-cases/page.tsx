@@ -8,7 +8,7 @@ import { caseStudies } from './data'
 export const metadata = {
   title: 'Use Cases — SQLPerformance AI',
   description:
-    'Real SQL Server problems analyzed step by step — how each issue was diagnosed with evidence and resolved with safe, read-only recommendations.',
+    'SQL Server performance problems analyzed step by step — how each issue is diagnosed with evidence and resolved with safe, read-only recommendations.',
   alternates: {
     canonical: '/use-cases',
   },
@@ -21,8 +21,8 @@ export default function UseCasesIndexPage() {
 
       {/* Hero */}
       <PageHero
-        title="How Real SQL Server Problems Get Solved"
-        description="Each use case walks through a real performance problem the same way the application does: symptom, evidence-backed analysis, a safe recommendation, and the measured outcome — all read-only, with no automatic changes."
+        title="How SQL Server Performance Problems Get Solved"
+        description="Each use case walks through a performance problem the same way the application does: symptom, evidence-backed analysis, a safe recommendation, and how to verify the fix — all read-only, with no automatic changes."
       />
 
       {/* Body */}
@@ -37,7 +37,9 @@ export default function UseCasesIndexPage() {
                 <p className="text-sm text-gray-700">
                   Scenario → Symptoms → How we analyzed → Evidence → Recommendation → Outcome. This
                   is the analysis discipline the product encourages: never guess, always tie a fix to
-                  a signal.
+                  a signal. Cases marked Example scenario are illustrative walkthroughs on the
+                  WideWorldImporters demo database; their last section lists what to verify instead
+                  of measured results.
                 </p>
               </div>
 
@@ -52,7 +54,9 @@ export default function UseCasesIndexPage() {
                       <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
                         {study.category}
                       </span>
-                      <span className="text-xs text-gray-400">{study.readingTime}</span>
+                      <span className="text-xs text-gray-400">
+                        {study.isExample ? `Example scenario · ${study.readingTime}` : study.readingTime}
+                      </span>
                     </div>
                     <h3 className="mb-2 text-lg font-bold text-gray-900">{study.title}</h3>
                     <p className="text-sm text-gray-600">{study.summary}</p>

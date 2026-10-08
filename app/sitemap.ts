@@ -33,7 +33,7 @@ const lastModified: Record<string, string> = {
   '/download': '2026-10-04',
   '/docs': '2026-10-04',
   '/pricing': '2026-10-04',
-  '/use-cases': '2026-09-28',
+  '/use-cases': '2026-10-08', // 2026-10-08: example scenarios labeled, "measured outcome" claim removed.
   '/guides': '2026-08-15',
   // 2026-10-07: blocking-history retention corrected (30 days / 50,000 rows per server).
   '/security': '2026-10-07',
@@ -72,11 +72,12 @@ const lastModified: Record<string, string> = {
   // status and next-run values, failure grouping, mail health) with the new screenshot set.
   '/docs/modules/scheduled-jobs': '2026-10-07',
   '/docs/modules/object-explorer': '2026-10-07',
-  // 2026-09-28: analysis steps corrected to match what the v1.1.0 app shows.
-  '/use-cases/blocking-storm-head-blocker': '2026-09-28',
-  '/use-cases/query-regression-after-plan-change': '2026-09-28',
-  '/use-cases/pageiolatch-waits-missing-index': '2026-09-28',
-  '/use-cases/optional-filter-non-sargable-procedure': '2026-08-26',
+  // 2026-10-08: cases 1-3 rewritten as labeled example scenarios (no invented numbers, What to Verify,
+  // current v1.1.0 screenshots); case 4 images/captions re-checked against the June 26 report files.
+  '/use-cases/blocking-storm-head-blocker': '2026-10-08',
+  '/use-cases/query-regression-after-plan-change': '2026-10-08',
+  '/use-cases/pageiolatch-waits-missing-index': '2026-10-08',
+  '/use-cases/optional-filter-non-sargable-procedure': '2026-10-08',
   // 2026-09-15: /features backlink added to both guides' Related Reading.
   '/guides/diagnose-sql-server-performance-problems': '2026-09-15',
   '/guides/sql-server-wait-statistics': '2026-09-15',

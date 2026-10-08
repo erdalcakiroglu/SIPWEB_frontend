@@ -182,12 +182,12 @@ const diagnosableProblems: DiagnosableProblem[] = [
   {
     label: 'Query Store plan regressions',
     href: '/use-cases/query-regression-after-plan-change',
-    linkText: 'a regression traced end to end',
+    linkText: 'an example regression, traced end to end',
   },
   {
     label: 'Blocking chains and head blockers',
     href: '/use-cases/blocking-storm-head-blocker',
-    linkText: 'a blocking storm case',
+    linkText: 'a blocking storm example',
   },
   {
     label: 'PAGEIOLATCH, CXPACKET, SOS_SCHEDULER_YIELD and other waits',
@@ -197,7 +197,7 @@ const diagnosableProblems: DiagnosableProblem[] = [
   {
     label: 'Missing, redundant, or risky indexes',
     href: '/use-cases/pageiolatch-waits-missing-index',
-    linkText: 'a missing-index case',
+    linkText: 'a missing-index example',
   },
   {
     label: 'Stored procedure performance problems',

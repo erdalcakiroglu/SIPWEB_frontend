@@ -937,7 +937,7 @@ export default function DiagnosePerformanceGuidePage() {
                   >
                     this worked example
                   </Link>{' '}
-                  follows a real regression from symptom to resolution.
+                  follows an example regression from symptom to resolution.
                 </p>
               </Section>
 

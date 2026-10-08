@@ -2,7 +2,9 @@
 //
 // Every article follows the same shape so each one reads as a consistent
 // narrative: Scenario → Symptoms → How we analyzed → Evidence →
-// Recommendation → Outcome. Add a new case study by appending an object to
+// Recommendation → Outcome (or, for an example scenario, What to Verify).
+// A study marked `isExample` is illustrative: it must not quote invented
+// measurements, so its outcome lists checks instead of before/after metrics. Add a new case study by appending an object to
 // `caseStudies`; routing, the sidebar, and the sitemap pick it up automatically.
 
 export type CaseStudyCategory =
@@ -59,6 +61,11 @@ export type CaseStudy = {
    */
   metaTitle?: string
   category: CaseStudyCategory
+  /**
+   * True for an illustrative walkthrough rather than a measured case. The page
+   * then shows an "Example scenario" label and a "What to Verify" section.
+   */
+  isExample?: boolean
   /** Short list-card / hero summary. */
   summary: string
   /** Rough reading time, e.g. "6 min read". */
@@ -86,89 +93,109 @@ export type CaseStudy = {
   }
   outcome: {
     summary: string
-    metrics: OutcomeMetric[]
+    /** Measured before/after values. Only for real, measured cases. */
+    metrics?: OutcomeMetric[]
+    /** What to check after the fix. Used by example scenarios. */
+    checks?: string[]
   }
   /** Cross-links into the relevant docs modules. */
   relatedModules: { label: string; href: string }[]
 }
 
 export const caseStudies: CaseStudy[] = [
+  // Cases 1-3 are example scenarios (owner decision, 2026-10-08): the situation
+  // is illustrative, no numbers are invented, and every module step uses the
+  // exact v1.1.0 labels (checked in SPStudioPro-v2 app/webui). Screenshots are
+  // the current docs captures from the WideWorldImporters demo database.
   {
     slug: 'blocking-storm-head-blocker',
     title: 'Tracing a Blocking Storm Back to a Single Head Blocker',
     metaTitle: 'SQL Server Blocking Storm: Finding the Head Blocker',
     category: 'Blocking',
+    isExample: true,
     summary:
-      'An OLTP system froze for seconds at a time during peak hours. We followed the blocking chain to one long-running transaction and resolved the contention without touching the schema.',
+      'Example scenario: an OLTP system freezes for seconds at a time during peak hours. This walkthrough shows how to follow the blocking chain to one idle session holding an open transaction, using the Blocking module of SQLPerformance AI.',
     readingTime: '6 min read',
-    environment: ['SQL Server 2019', 'OLTP workload', 'Query Store ON', 'Read Committed'],
+    environment: ['OLTP workload', 'Read Committed'],
     scenario:
-      'During the morning peak, order entry would intermittently freeze for 5–15 seconds. Users saw timeouts on checkout, but CPU and memory looked healthy on the host, so the on-call DBA could not explain the stalls from infrastructure metrics alone.',
+      'A common pattern: during the morning peak, order entry freezes for several seconds at a time. Users see timeouts at checkout, but CPU and memory look healthy on the host, so infrastructure metrics alone do not explain the stalls.',
     symptoms: [
-      'Application timeouts clustered between 09:00 and 10:30 local time.',
+      'Application timeouts cluster in the busiest hours of the day.',
       'No sustained CPU, memory, or disk pressure on the instance.',
-      'Wait time spiked even though throughput dropped — a classic contention signature.',
+      'Wait time rises while throughput falls, a typical contention signature.',
     ],
     analysis: [
       {
-        module: 'Dashboard',
-        action: 'Confirmed the host was not resource-bound during the stalls.',
-        signal: 'CPU, memory, and storage I/O stayed within normal ranges during the stalls.',
-      },
-      {
-        module: 'Blocking Analysis',
-        action: 'Captured a live snapshot during a stall and expanded the blocking chain.',
-        signal: 'A single head blocker holding key locks while 40+ sessions queued behind it.',
-        // PLACEHOLDER image (reused from /docs) — replace with a real case screenshot.
-        // Illustrative screenshot from the WideWorldImporters demo database, not data from this scenario.
+        module: 'Overview',
+        action: 'Opened the Overview screen while a stall was happening and read the Server Health, Memory Health, and Storage & I/O panels.',
+        signal:
+          'CPU, memory, and I/O latency look normal. The Overview shows live values for the current refresh interval, not history, so it has to be open during the stall.',
         image: {
-          src: '/docs/blocking-analysis/001.png',
-          alt: 'Blocking Analysis main screen with the live blocking topology graph and the session SQL panel (placeholder image from a demo database, not this case)',
-          width: 1913,
-          height: 946,
-          caption: 'Blocking Analysis: live blocking topology graph with the session SQL panel. (Placeholder image from a demo database, not this case.)',
+          src: '/docs/dashboard/003.png',
+          alt: 'Overview screen with the Server Health, Memory Health, Workload, Storage and I/O, and TempDB panels filled with live values (demo database)',
+          width: 1661,
+          height: 1001,
+          caption: 'Overview: live Server Health, Memory Health, Workload, Storage & I/O, and TempDB panels. Screenshot from the WideWorldImporters demo database, not from this scenario.',
         },
       },
       {
-        module: 'Query Statistics',
-        action: 'Looked up the head blocker statement in Query Store.',
-        signal: 'A reporting query running inside the same transaction as a small update.',
+        module: 'Blocking',
+        action: 'Opened Blocking during a stall, pressed Refresh Now (or left AUTO 5s on), and switched to the Tree tab.',
+        signal:
+          'One HEAD row with many sessions indented beneath it, each waiting on a lock (LCK_M_X, LCK_M_U, LCK_M_S). The Blocked Sessions and Maximum Depth tiles show how wide and deep the chain is.',
+        image: {
+          src: '/docs/blocking-analysis/003.png',
+          alt: 'Blocking Tree tab with the head blocker row HEAD · 125 and five indented blocked sessions, and the Blocking Context panel on the SQL tab for the idle head blocker (demo database)',
+          width: 1622,
+          height: 908,
+          caption: 'Tree tab: one head blocker with five blocked sessions, and the SQL tab of the idle head blocker. Screenshot from the WideWorldImporters demo database, not from this scenario.',
+        },
+      },
+      {
+        module: 'Blocking · SQL and Locks tabs',
+        action: 'Selected the head blocker and read the SQL tab of the Blocking Context panel, then the Locks tab.',
+        signal:
+          'The head blocker is idle, yet Open Transactions reads 1 with an oldest age that keeps growing. Its last batch is a report query sent on the same connection after a small update, so the exclusive locks come from a transaction the application never committed.',
+      },
+      {
+        module: 'Blocking · Timeline',
+        action: 'Checked the Timeline tab after several stalls.',
+        signal:
+          'The blocked-sessions chart spikes in the same hours every day. Blocking records this history only while the application is open and connected; nothing is collected on the server.',
       },
     ],
     evidence: [
       {
         kind: 'evidence',
         title: 'Head blocker',
-        body: 'One session (SPID 73) held LCK_M_X on the orders clustered index for ~12 seconds inside an explicit transaction that also ran an ad-hoc report.',
+        body: 'The Tree tab shows a single HEAD row. Every other session in the chain waits on a lock behind it, which points at one root cause rather than general overload.',
       },
       {
         kind: 'evidence',
-        title: 'Blast radius',
-        body: 'The blocking snapshot showed 41 dependent sessions, all waiting on the same key range — confirming a single root cause rather than general overload.',
+        title: 'Idle session, open transaction',
+        body: 'The SQL tab shows the head blocker idle with an open transaction whose age keeps growing. No query is running; the locks are held by a transaction left open.',
       },
       {
         kind: 'note',
-        body: 'Because the analysis is read-only, the snapshot was safe to capture against production during the incident.',
+        body: 'Blocking only reads. It never kills a session; the Kill Safety section on the Impact tab is advice only.',
       },
     ],
-    // PLACEHOLDER gallery (reused from /docs) — swap for real case screenshots in
-    // web/public/use-cases/blocking-storm-head-blocker/ when available.
     screenshots: [
       {
-        src: '/docs/blocking-analysis/002.png',
-        alt: 'Blocking Analysis Tree view listing blocked sessions under their head blocker (placeholder image from a demo database, not this case)',
-        width: 1084,
-        height: 576,
-        caption: 'Tree view: blocked sessions grouped under their head blocker. (Placeholder image from a demo database, not this case.)',
+        src: '/docs/blocking-analysis/004.png',
+        alt: 'Blocking Sessions tab listing five blocked sessions, with the Blocking Context panel showing a waiting session, its lock resource, and the statement that is waiting (demo database)',
+        width: 1616,
+        height: 695,
+        caption: 'Sessions tab: a waiting session with its lock resource and the statement that is waiting. Screenshot from the WideWorldImporters demo database, not from this scenario.',
       },
     ],
     recommendation: {
       summary:
-        'Split the long-lived reporting read out of the write transaction and shorten the transaction scope so locks release immediately after the update.',
+        'Move the long-running report read out of the write transaction and shorten the transaction so locks are released right after the update.',
       actions: [
-        'Move the ad-hoc report read outside the explicit transaction (separate connection / after COMMIT).',
+        'Move the report read outside the explicit transaction (separate connection, or after COMMIT).',
         'Wrap only the update in the transaction so exclusive locks are held for milliseconds, not seconds.',
-        'For the report path, evaluate READ COMMITTED SNAPSHOT to remove reader/writer blocking entirely.',
+        'For the report path, evaluate READ COMMITTED SNAPSHOT to remove reader/writer blocking.',
       ],
       script: `-- Investigation only — review before applying any isolation change.
 -- 1) Confirm the head blocker pattern (read-only):
@@ -180,17 +207,16 @@ WHERE   blocking_session_id <> 0;
 -- ALTER DATABASE [Sales] SET READ_COMMITTED_SNAPSHOT ON;`,
     },
     outcome: {
-      summary:
-        'After scoping the transaction and moving the report read out, the morning stalls disappeared. Follow-up reviews over the next two weeks found no recurrence of the blocking chain.',
-      metrics: [
-        { label: 'Peak blocking chain depth', before: '41 sessions', after: '0–2 sessions' },
-        { label: 'Max lock hold time', before: '~12 s', after: '< 50 ms' },
-        { label: 'Checkout timeouts / day', before: '~120', after: '0' },
+      summary: 'After the transaction is shortened, check the result with the same modules:',
+      checks: [
+        'Blocking › Tree during the next peak: no long chain under a single head blocker, and the Blocked Sessions tile stays low.',
+        'Blocking › SQL tab: no idle head blocker with a growing open-transaction age.',
+        'Blocking › Timeline: the blocked-sessions chart stays flat through the busy hours (keep the application open and connected so it records).',
+        'Your application logs: checkout timeouts drop.',
       ],
     },
     relatedModules: [
       { label: 'Blocking Analysis', href: '/docs/modules/blocking-analysis' },
-      { label: 'Query Statistics', href: '/docs/modules/query-statistics' },
       { label: 'Dashboard', href: '/docs/modules/dashboard' },
     ],
   },
@@ -199,77 +225,75 @@ WHERE   blocking_session_id <> 0;
     title: 'Diagnosing a Sudden Query Regression After a Plan Change',
     metaTitle: 'Diagnosing a SQL Server Query Regression After a Plan Change',
     category: 'Query Tuning',
+    isExample: true,
     summary:
-      'A nightly report that always finished in under a minute started running for 20+ minutes. Query Store evidence showed a plan flip — and the fix did not require rewriting the query.',
+      'Example scenario: a nightly report that used to finish quickly suddenly runs many times longer, with no code change. This walkthrough shows how Query Statistics surfaces the plan change and how to confirm the trigger before you fix it.',
     readingTime: '7 min read',
-    environment: ['SQL Server 2022', 'Mixed OLTP + reporting', 'Query Store ON', 'Auto-update stats ON'],
+    environment: ['Mixed OLTP + reporting', 'Query Store ON', 'Auto-update stats ON'],
     scenario:
-      'A finance reporting procedure that had run for months in ~45 seconds suddenly began taking 20–30 minutes, delaying the morning numbers. No deployment had changed the procedure, and the data volume had grown only modestly.',
+      'A finance reporting procedure has run in well under a minute for months. One night it starts taking many times longer and delays the morning numbers. No deployment changed the procedure, and the data volume grew only modestly.',
     symptoms: [
-      'Same procedure, same parameters, dramatically longer runtime starting one specific night.',
+      'Same procedure, same parameters, much longer runtime starting on one specific night.',
       'No code change in source control for the affected object.',
-      'Duration variance was bimodal: fast on some runs, very slow on others.',
+      'Durations are bimodal: some runs are fast, others very slow.',
     ],
     analysis: [
       {
         module: 'Query Statistics',
-        action: 'Opened the query in Query Statistics, then confirmed its plan history in Query Store.',
-        signal: 'The card flagged multiple plans and a sharply worse trend; Query Store held a fast seek plan and a slow scan plan for the same query_id.',
-        // Illustrative screenshot from the WideWorldImporters demo database, not data from this scenario.
+        action: 'Set Duration to Last 7 Days and Order By to Average Duration, then opened the procedure.',
+        signal:
+          'The header counts the execution plans detected. With more than one plan, Plan Stability changes from Stable to Attention (plan changes detected) or, with many plans, Problem (possible parameter sniffing).',
         image: {
-          src: '/docs/querystatistics/002.png',
-          alt: 'Query Statistics detail view showing the Problem badge, 2 execution plans detected, and Plan Stability marked Problem',
-          width: 1682,
-          height: 915,
-          caption: 'Query Statistics detail view for a query with two execution plans. Screenshot from the demo database, not from this scenario.',
+          src: '/docs/querystatistics/006.png',
+          alt: 'Query Statistics detail view on the Execution Plan tab with the plans-detected count in the header, the Missing Indexes and Warnings sub-tabs, and the Plan Stability panel (demo database)',
+          width: 1623,
+          height: 917,
+          caption: 'Execution Plan tab: the header counts the plans detected and the Plan Stability panel rates them. This demo query has one plan, so it reads Stable. Screenshot from the WideWorldImporters demo database, not from this scenario.',
         },
       },
       {
+        module: 'Query Statistics · Execution Plan',
+        action: 'Switched between the plans with the plan picker (most executed, slowest, newest) and compared the operators.',
+        signal:
+          'The fast plan seeks on a supporting index. The slow plan scans the table with a hash join, and the Warnings sub-tab lists its operator warnings.',
+      },
+      {
         module: 'Statistics check (SSMS, read-only)',
-        action: 'Correlated the plan flip timestamp with STATS_DATE on the tables involved.',
-        signal: 'The slow plan first appeared right after an auto-stats update on a skewed column.',
+        action: 'Compared the time the slow plan first appeared with STATS_DATE on the tables involved.',
+        signal: 'The slow plan first appeared right after an automatic statistics update on a skewed column.',
       },
       {
         module: 'Index Advisor',
-        action: 'Checked whether a supporting index would make the good plan stable.',
-        signal: 'An existing index was usable but not chosen under the new cardinality estimate.',
+        action: 'Opened Index Details for the supporting index the fast plan used.',
+        signal:
+          'The index exists and has reads (seeks + scans + lookups). It is usable; the optimizer stopped choosing it under the new cardinality estimate.',
       },
     ],
     evidence: [
       {
         kind: 'evidence',
-        title: 'Plan flip',
-        body: 'Query Store recorded plan_id 7 (45s, index seek) and plan_id 19 (24 min, full scan with a large hash spill) for the same query_id.',
+        title: 'Plan change',
+        body: 'Query Store holds two plans for the same query: a fast seek plan and a slow scan plan. The slow one appears from the night the runtime jumped.',
       },
       {
         kind: 'evidence',
         title: 'Trigger',
-        body: 'The regression timestamp lined up with an auto-stats update on a heavily skewed status column, which pushed the optimizer toward the scan plan.',
+        body: 'The time of the change matches an automatic statistics update on a skewed status column, which pushed the optimizer toward the scan plan.',
       },
       {
         kind: 'tip',
-        body: 'When two plans exist for one query, the fastest non-destructive fix is often forcing the known-good plan while you address the root cause.',
-      },
-    ],
-    // Illustrative screenshot from the WideWorldImporters demo database, not data from this scenario.
-    screenshots: [
-      {
-        src: '/docs/querystatistics/003.png',
-        alt: 'Query Statistics Execution Plan tab showing the Multiple plans detected - possible parameter sniffing notice',
-        width: 1678,
-        height: 914,
-        caption: 'Execution Plan tab with the multiple-plans notice. Screenshot from the demo database, not from this scenario.',
+        body: 'When one query has two plans, forcing the known-good plan is often the quickest non-destructive mitigation while you fix the root cause. You force it yourself in SSMS or with T-SQL; SQLPerformance AI does not force or unforce plans.',
       },
     ],
     recommendation: {
       summary:
-        'Force the known-good plan from Query Store to stop the bleeding immediately, then address the cardinality misestimate so the good plan wins on its own.',
+        'Force the known-good plan from Query Store to stop the slowdown, then fix the cardinality misestimate so the good plan wins on its own.',
       actions: [
-        'Force the fast plan (plan_id 7) for the affected query via Query Store.',
-        'Refresh statistics on the skewed column with a fuller sample so estimates improve.',
-        'Re-evaluate after the next data cycle and unforce once the optimizer reliably picks the seek plan.',
+        'Force the fast plan for the affected query through Query Store (in SSMS or with T-SQL).',
+        'Update statistics on the skewed column with a fuller sample so the estimates improve.',
+        'Re-check after the next data cycle and unforce the plan once the optimizer picks the seek plan reliably.',
       ],
-      script: `-- Stop-the-bleeding: force the known-good plan (review IDs from Query Store first).
+      script: `-- Example IDs — take the real query_id and plan_id from Query Store first.
 EXEC sp_query_store_force_plan @query_id = 42, @plan_id = 7;
 
 -- Root cause: improve estimates on the skewed column.
@@ -279,12 +303,11 @@ UPDATE STATISTICS dbo.Invoices (IX_Invoices_Status) WITH FULLSCAN;
 -- EXEC sp_query_store_unforce_plan @query_id = 42, @plan_id = 7;`,
     },
     outcome: {
-      summary:
-        'Forcing the plan restored runtime within minutes of being applied. After refreshing statistics, the optimizer chose the seek plan on its own and the forced plan was removed.',
-      metrics: [
-        { label: 'Report runtime', before: '20–30 min', after: '~45 s' },
-        { label: 'Hash spills to tempdb', before: 'Large', after: 'None' },
-        { label: 'Time to mitigate', before: '—', after: '< 10 min (plan force)' },
+      summary: 'After forcing the plan and updating statistics, check the result with the same modules:',
+      checks: [
+        'Query Statistics › Last 24 Hours: the average duration of the procedure is back to its usual level.',
+        'Query Statistics › Execution Plan: the most executed plan is the seek plan.',
+        'After you unforce the plan, the slow plan does not come back over the next data cycles.',
       ],
     },
     relatedModules: [
@@ -297,47 +320,61 @@ UPDATE STATISTICS dbo.Invoices (IX_Invoices_Status) WITH FULLSCAN;
     title: 'From PAGEIOLATCH Waits to a Targeted Index Fix',
     metaTitle: 'From PAGEIOLATCH Waits to a Targeted SQL Server Index Fix',
     category: 'Waits',
+    isExample: true,
     summary:
-      'A growing dashboard query pushed IO waits to the top of the instance. Wait analysis pointed at storage reads, and the query’s missing-index evidence, checked against existing indexes in Index Advisor, turned that signal into one focused, low-risk index.',
+      'Example scenario: a growing dashboard query pushes I/O waits to the top of the instance. This walkthrough goes from Wait Statistics to the query’s missing-index evidence, checked against the existing indexes in Index Advisor, to one focused index.',
     readingTime: '6 min read',
-    environment: ['SQL Server 2019', 'Reporting-heavy workload', 'Query Store ON', 'SSD storage'],
+    environment: ['Reporting-heavy workload', 'Query Store ON'],
     scenario:
-      'A customer-facing dashboard got slower every week as data grew. The instance was not CPU-bound, but query latency kept climbing and users complained the dashboard "felt heavy" by mid-quarter.',
+      'A customer-facing dashboard gets slower every week as data grows. The instance is not CPU-bound, but query latency keeps climbing and users complain that the dashboard feels heavy.',
     symptoms: [
-      'Dashboard latency rising steadily with data volume, not with user count.',
-      'CPU comfortable; the bottleneck was clearly elsewhere.',
-      'A handful of read-heavy queries dominated logical and physical reads.',
+      'Dashboard latency rises with data volume, not with user count.',
+      'CPU is comfortable; the bottleneck is elsewhere.',
+      'A handful of read-heavy queries dominate logical and physical reads.',
     ],
     analysis: [
       {
         module: 'Wait Statistics',
-        action: 'Set a baseline and reviewed the daily wait trend over the last 30 days.',
-        signal: 'PAGEIOLATCH_SH dominated total wait time and was trending upward.',
-        // PLACEHOLDER image (reused from /docs) — replace with a real case screenshot.
+        action: 'Pressed Set Baseline, then opened the Trend & Blocking tab with Trend Window 30 Days and Display set to Daily Summary.',
+        signal:
+          'PAGEIOLATCH_SH leads the Top Waits cards and rises in the daily trend. The Source line shows where the trend comes from: Query Store, or the application’s own history when Query Store wait data is not available.',
         image: {
-          src: '/docs/wait-statistics/001.png',
-          alt: 'Wait Statistics main screen from a demo database (placeholder image, not this case)',
-          width: 1616,
-          height: 917,
-          caption: 'Wait Statistics main screen. (Placeholder image from a demo database, not this case.)',
+          src: '/docs/wait-statistics/004.png',
+          alt: 'Wait Statistics Trend & Blocking tab with the Daily Summary chart and table for a 7-day window from Query Store (demo database)',
+          width: 1097,
+          height: 878,
+          caption: 'Trend & Blocking tab: Daily Summary with its window and source. Screenshot from the WideWorldImporters demo database, not from this scenario.',
         },
       },
       {
         module: 'Query Statistics',
-        action: 'Ordered queries by Logical Reads to find the statements reading the most pages.',
-        signal: 'One dashboard aggregation query scanned a large fact table on every load.',
+        action: 'Set Order By to Logical Reads, which ranks queries by average reads per execution.',
+        signal: 'One dashboard aggregation query reads far more pages per run than anything else and scans a large fact table on every load.',
+        image: {
+          src: '/docs/querystatistics/001.png',
+          alt: 'Query Statistics list screen with the filter panel, ranked query cards, and the Selected Query inspector (demo database)',
+          width: 1633,
+          height: 930,
+          caption: 'Query Statistics: ranked query cards with the Order By filter. Screenshot from the WideWorldImporters demo database, not from this scenario.',
+        },
+      },
+      {
+        module: 'Query Statistics · Missing Indexes',
+        action: 'Opened the query, went to the Execution Plan tab, and read the Missing Indexes sub-tab.',
+        signal:
+          'The plan carries a missing-index hint: the card lists its impact, the equality, inequality, and include columns, and a CREATE INDEX statement to copy.',
       },
       {
         module: 'Index Advisor',
-        action: 'Took the covering index suggested in the query’s Missing Indexes view and reviewed the existing indexes on the table for duplicates and overlap.',
-        signal: 'No existing index covered the predicate, so a narrow covering index would turn the scan into a seek without duplicating an index.',
-        // PLACEHOLDER image (reused from /docs) — replace with a real case screenshot.
+        action: 'Reviewed the existing indexes on the same table: key and include columns, reads, writes, and the read/write ratio in Index Details.',
+        signal:
+          'No existing index covers the predicate, so the suggested index would not duplicate one. Index Advisor reviews existing indexes; it does not list missing ones in its grid.',
         image: {
-          src: '/docs/index-advisor/001.png',
-          alt: 'Index Advisor reviewing existing indexes on a table with duplicate and drop-safety signals',
-          width: 1917,
-          height: 981,
-          caption: 'Index Advisor: existing indexes reviewed before adding a covering index. (Placeholder image.)',
+          src: '/docs/index-advisor/002.png',
+          alt: 'Index Advisor with one index checked and its Index Details Overview showing usage, statistics, fragmentation, and data confidence (demo database)',
+          width: 1613,
+          height: 939,
+          caption: 'Index Advisor: Index Details for an existing index. Screenshot from the WideWorldImporters demo database, not from this scenario.',
         },
       },
     ],
@@ -345,45 +382,44 @@ UPDATE STATISTICS dbo.Invoices (IX_Invoices_Status) WITH FULLSCAN;
       {
         kind: 'evidence',
         title: 'Dominant wait',
-        body: 'PAGEIOLATCH_SH accounted for the majority of accumulated wait time and grew ~18% week over week — pointing at data-page reads from storage, not locking or CPU.',
+        body: 'PAGEIOLATCH_SH holds the largest share of wait time and keeps growing, which points at data-page reads from storage, not at locking or CPU.',
       },
       {
         kind: 'evidence',
         title: 'Hot statement',
-        body: 'A single aggregation query produced the bulk of physical reads, repeatedly scanning the fact table because no supporting index covered its predicate and output columns.',
+        body: 'One aggregation query causes most of the reads. It scans the fact table on every run because no index covers its predicate and output columns.',
       },
       {
         kind: 'warning',
-        body: 'Index Advisor flags overlap and write-amplification risk before you add an index — review the impact on insert-heavy tables.',
+        body: 'Check the write side before adding an index: Index Advisor shows the writes and read/write ratio of each existing index on the table. On insert-heavy tables, one more index has a cost.',
       },
     ],
     recommendation: {
       summary:
-        'Add one narrow covering index that matches the dashboard query predicate and included columns, eliminating the repeated table scan and the IO waits it generated.',
+        'Add one narrow covering index that matches the dashboard query’s predicate and output columns, removing the repeated table scan and the I/O waits it causes.',
       actions: [
-        'Create the covering index suggested in the query’s Missing Indexes view (predicate keys + included output columns) after confirming in Index Advisor that it duplicates no existing index.',
-        'Validate the new seek plan in Query Statistics after the next dashboard load.',
-        'Re-baseline Wait Statistics to confirm PAGEIOLATCH falls and stays down.',
+        'Create the index from the query’s Missing Indexes card (predicate keys + included output columns) after confirming in Index Advisor that it duplicates no existing index.',
+        'Check the new seek plan in Query Statistics after the next dashboard load.',
+        'Compare Wait Statistics with the baseline to confirm PAGEIOLATCH falls and stays down.',
       ],
-      script: `-- Review Index Advisor output before applying; size and write impact matter.
+      script: `-- Review the Missing Indexes card and Index Advisor before applying; size and write cost matter.
 CREATE NONCLUSTERED INDEX IX_FactSales_DashboardCover
 ON dbo.FactSales (ProductKey, OrderDateKey)
 INCLUDE (SalesAmount, Quantity)
 WITH (ONLINE = ON, DATA_COMPRESSION = PAGE);`,
     },
     outcome: {
-      summary:
-        'The covering index turned the scan into a seek. PAGEIOLATCH waits dropped sharply and dashboard latency stabilized even as data kept growing.',
-      metrics: [
-        { label: 'PAGEIOLATCH_SH share of waits', before: 'Top wait', after: 'Negligible' },
-        { label: 'Dashboard query logical reads', before: '~2.1 M', after: '~3.4 K' },
-        { label: 'p95 dashboard load', before: '8.4 s', after: '1.1 s' },
+      summary: 'After the index is in place, check the result with the same modules:',
+      checks: [
+        'Query Statistics: the average logical reads of the dashboard query drop, and its Execution Plan shows a seek instead of the scan.',
+        'Query Statistics › Missing Indexes: the new plan no longer carries the hint.',
+        'Wait Statistics: PAGEIOLATCH_SH falls back in the Top Waits cards and in the daily trend. For a direct comparison, press Save Before before the change and Save After and Compare after it.',
       ],
     },
     relatedModules: [
       { label: 'Wait Statistics', href: '/docs/modules/wait-statistics' },
-      { label: 'Index Advisor', href: '/docs/modules/index-advisor' },
       { label: 'Query Statistics', href: '/docs/modules/query-statistics' },
+      { label: 'Index Advisor', href: '/docs/modules/index-advisor' },
     ],
   },
   {
@@ -415,25 +451,27 @@ WITH (ONLINE = ON, DATA_COMPRESSION = PAGE);`,
           'Ran the procedure with randomized parameters (~25% NULL @CustomerID to exercise the "all customers" path) at 1000 iterations × 4/8/16/32 threads, capturing STATISTICS IO/TIME for a selective and a NULL call.',
         signal:
           'Selective path ~149 logical reads, tens of ms. NULL path: OrderLines scan count 23,347, 306,471 logical reads, 1,542 physical reads; Customers 46,694 reads; 625 ms CPU / 1,640 ms elapsed. The optional filter, not data volume, drove the blowup.',
+        // The captured window is the later v2 run (same harness, same parameter
+        // generator); the counters in it belong to v2, not to the baseline above.
         image: {
           src: '/use-cases/optional-filter-non-sargable-procedure/01-sqlquerystress-window.png',
-          alt: 'SQLQueryStress window running Demo.usp_test_0004 at 1000 iterations × 32 threads',
+          alt: 'SQLQueryStress window running Demo.usp_test_0004_v2 with randomized parameters at 1000 iterations × 32 threads',
           width: 1289,
           height: 533,
-          caption: 'SQLQueryStress — 1000 iterations × 32 threads; avg logical reads / CPU sec / client sec per iteration.',
+          caption: 'SQLQueryStress harness with the randomized parameter generator, 1000 iterations × 32 threads. This capture is from the later v2 run; the same harness drove every measurement.',
         },
       },
       {
-        module: 'AI Tune (Object Analysis)',
-        action: 'Ran AI Performance Analysis on Demo.usp_test_0004 directly from Object Explorer.',
+        module: 'Object Explorer · AI Tune',
+        action: 'Selected Demo.usp_test_0004 in Object Explorer and ran Start Analysis on the AI Tune tab (AI Performance Analysis).',
         signal:
           'Baseline 102.8 ms avg, 19.5 ms CPU, 8,392 logical reads across 32,000 executions. Canonical: POOR_QUERY_DESIGN, OVER_INDEXED, risk HIGH, CPU_BOUND. Primary pathology COMPUTED_PREDICATE_NON_SARGABLE, with warnings for an implicit conversion and a key lookup. Parameter-sniffing rated LOW from a single compiled-plan snapshot.',
         image: {
-          src: '/use-cases/optional-filter-non-sargable-procedure/02-ai-tune-report-header.png',
-          alt: 'AI Tune object analysis report header for Demo.usp_test_0004, risk HIGH / CPU bound',
+          src: '/use-cases/optional-filter-non-sargable-procedure/02-report-header-v1.png',
+          alt: 'Object analysis report for Demo.usp_test_0004 with 1 Critical · 3 Total Actions and the What’s Wrong summary naming COMPUTED PREDICATE NON SARGABLE at 99% diagnosis confidence',
           width: 1464,
-          height: 697,
-          caption: 'AI Tune report header — risk HIGH / CPU bound, 1 Critical / 3 Total Actions, diagnosis confidence 99%.',
+          height: 645,
+          caption: 'Object analysis report: 1 Critical · 3 Total Actions, and What’s Wrong naming the primary pathology at 99% diagnosis confidence.',
         },
       },
       {
@@ -456,16 +494,16 @@ WITH (ONLINE = ON, DATA_COMPRESSION = PAGE);`,
           'OrderLines 13 indexes, Customers 10, Orders 8. Several never serve reads but carry heavy write cost. Average fragmentation 28.65% matched the tool — but inflated by tiny 2-page indexes; the genuinely fragmented object is PK_Sales_Orders (92.8% over 13,734 pages).',
       },
       {
-        module: 'AI Tune (re-analysis)',
+        module: 'AI Tune (Re-run Analysis)',
         action: "Applied the tool's P1 (OPTION RECOMPILE) unchanged, re-ran the workload, and re-ran AI Performance Analysis to validate before/after.",
         signal:
           'Workload avg logical reads fell from 8,392 to 415 (60,004 executions), but avg duration rose 102.8 → 144.9 ms and CPU 19.5 → 27.5 ms from per-call recompile cost. Risk stayed HIGH, pathology unchanged, and plan-variance signals climbed (plan count 3 → 10, reads-ratio 0.6 → 188.8).',
         image: {
-          src: '/use-cases/optional-filter-non-sargable-procedure/04-ai-tune-recompile-actions.png',
-          alt: 'AI Tune actions panel on the OPTION (RECOMPILE) version showing root cause and baseline metrics',
+          src: '/use-cases/optional-filter-non-sargable-procedure/04-report-actions-recompile.png',
+          alt: 'Actions (P1) card on the OPTION (RECOMPILE) version with Root Cause, Change and Expected Impact quoting the current baseline',
           width: 1159,
           height: 530,
-          caption: 'AI Tune Actions (P1) on the RECOMPILE version — root cause (Key Lookup + CONVERT_IMPLICIT), baseline avg 415 reads / 145 ms.',
+          caption: 'Actions (P1) on the RECOMPILE version: Root Cause names the key lookup and CONVERT_IMPLICIT; Expected Impact quotes the current baseline of 415 reads / 145 ms per execution.',
         },
       },
       {
@@ -473,13 +511,13 @@ WITH (ONLINE = ON, DATA_COMPRESSION = PAGE);`,
         action:
           "Implemented the tool's deeper P1 option as usp_test_0004_v2: parameterized dynamic SQL that adds the @CustomerID predicate only when supplied and skips the LineAmount filter when @MinLineAmount = 0, removing the CAST wrapper from the predicate.",
         signal:
-          'Reads stayed low (420), but every instability signal collapsed — duration/CPU variance 126% → 0%, plan-count variance 10 → 0, implicit-conversion signal gone, index health OVER_INDEXED → BALANCED. Warmed plans reused with 0 ms compile. Risk stayed HIGH / POOR_QUERY_DESIGN — the broad scan-and-sort cost is structural.',
+          'Reads stayed low (420), but every instability signal collapsed — duration/CPU variance 126% → 0%, plan-count variance 10 → 0, implicit-conversion signal gone, index health OVER_INDEXED → BALANCED. In SSMS (STATISTICS TIME), warmed plans were reused with 0 ms compile. Risk stayed HIGH / POOR_QUERY_DESIGN — the broad scan-and-sort cost is structural.',
         image: {
-          src: '/use-cases/optional-filter-non-sargable-procedure/05-ai-tune-v2-test-plan.png',
-          alt: 'AI Tune test plan baseline for the v2 sargable rewrite showing stable reads and duration',
-          width: 1449,
-          height: 694,
-          caption: 'AI Tune v2 — Test Plan baseline 130.5 ms / 420 reads / 60,006 executions, plans reused with 0 ms compile.',
+          src: '/use-cases/optional-filter-non-sargable-procedure/06-report-test-plan-v2.png',
+          alt: 'Test Plan section of the v2 report with the current baseline snapshot of 130.53 ms duration, 27.77 ms CPU, 420 reads and 60006 executions',
+          width: 1169,
+          height: 260,
+          caption: 'Test Plan for v2: current baseline snapshot of 130.53 ms, 27.77 ms CPU, 420 reads, 60,006 executions.',
         },
       },
     ],
@@ -509,17 +547,22 @@ WITH (ONLINE = ON, DATA_COMPRESSION = PAGE);`,
         body: 'The tool rated parameter sniffing LOW because it saw a single compiled snapshot — its own report flags the caveat. Empirically the risk was real: the heavy path was trapped on a sniffing-victim plan.',
       },
       {
+        kind: 'note',
+        title: 'Which build',
+        body: 'These analyses were run on June 26, 2026 with an earlier build of SQLPerformance AI against a WideWorldImporters demo database. Object analysis reports in v1.1.0 have the same sections (What’s Wrong, Canonical Classification, Actions, Test Plan); a re-run today can produce different numbers and wording.',
+      },
+      {
         kind: 'warning',
         body: 'The tool’s maintenance DDL had a bug — it emitted ALTER INDEX [...] ON [Sales.Customers] (schema and table in one bracket pair), which SQL Server rejects. The index choices were sound once corrected to [Sales].[Customers].',
       },
     ],
     screenshots: [
       {
-        src: '/use-cases/optional-filter-non-sargable-procedure/06-ai-tune-v2-canonical.png',
-        alt: 'AI Tune v2 canonical classification showing index health BALANCED and risk HIGH',
-        width: 1169,
-        height: 260,
-        caption: 'AI Tune v2 — Canonical Classification: Index Health BALANCED, Stability STABLE, Risk HIGH.',
+        src: '/use-cases/optional-filter-non-sargable-procedure/05-report-header-v2.png',
+        alt: 'Object analysis report for Demo.usp_test_0004_v2 with 1 Critical · 2 Total Actions, DMV Available and Query Store Missing badges, and the same primary pathology at 88% diagnosis confidence',
+        width: 1449,
+        height: 644,
+        caption: 'Re-analysis of v2: 1 Critical · 2 Total Actions, and the same primary pathology, now at 88% diagnosis confidence.',
       },
     ],
     recommendation: {

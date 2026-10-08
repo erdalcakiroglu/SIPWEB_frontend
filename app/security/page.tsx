@@ -198,9 +198,9 @@ export default function SecurityPage() {
                 <div className="mt-5 space-y-4">
                   <p className="text-sm leading-relaxed text-gray-600">
                     Redaction and approval before cloud AI are not uniform across the application. This is what each
-                    module does today.
+                    module does today, including masking in exported files.
                   </p>
-                  <div className="grid gap-4 md:grid-cols-3">
+                  <div className="grid gap-4 md:grid-cols-2">
                     <div className="rounded-2xl border border-slate-200/70 bg-white p-5">
                       <h3 className="mb-2 text-sm font-bold text-gray-900">Query Statistics</h3>
                       <p className="text-sm leading-relaxed text-gray-600">
@@ -227,6 +227,20 @@ export default function SecurityPage() {
                         five dependent Query Store statement excerpts (up to 400 characters each) still go as they
                         are, with no approval step, and turning masking off sends real names. Execution plan XML is
                         not sent. The saved LLM JSON is the masked request; the saved HTML report uses real names.
+                      </p>
+                    </div>
+                    {/* Checked 2026-10-08: wait_stats_api.py export() defaults to masked; wait_stats_service.py
+                        _mask_chain_nodes aliases login/host/program names and redacts statement literals.
+                        Wait Statistics makes no AI provider call. */}
+                    <div className="rounded-2xl border border-slate-200/70 bg-white p-5">
+                      <h3 className="mb-2 text-sm font-bold text-gray-900">Wait Statistics</h3>
+                      <p className="text-sm leading-relaxed text-gray-600">
+                        Nothing in this module is sent to an AI provider. Mask names and statements is on by default
+                        and applies to the HTML, JSON and Markdown export: in the exported blocking chain, login, host
+                        and application names become aliases such as user_1, and literals in the captured statements
+                        become [REDACTED]. Database names and wait types are written as they are, and the Blocking
+                        Chains table on screen is never masked. Clearing the box writes the raw names and statements
+                        into the file.
                       </p>
                     </div>
                   </div>
@@ -276,7 +290,7 @@ export default function SecurityPage() {
                       A Windows desktop application. Nothing is installed on your SQL Server hosts. An offline
                       license file (.lic) lets it run without contacting the license server. The 30-day trial normally
                       registers online (email address and a device identifier); if the license server cannot be
-                      reached, the trial starts locally and is registered when a connection is available. See the{' '}
+                      reached, the trial starts locally and is registered the next time the application starts, or the license is refreshed, with the server reachable. See the{' '}
                       <Link href="/download" className="font-semibold text-primary hover:underline">
                         download page
                       </Link>{' '}

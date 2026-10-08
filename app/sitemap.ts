@@ -36,7 +36,8 @@ const lastModified: Record<string, string> = {
   '/use-cases': '2026-10-08', // 2026-10-08: example scenarios labeled, "measured outcome" claim removed.
   '/guides': '2026-08-15',
   // 2026-10-07: blocking-history retention corrected (30 days / 50,000 rows per server).
-  '/security': '2026-10-08', // 2026-10-08: offline .lic line no longer says "signed".
+  // 2026-10-08: offline .lic line no longer says "signed"; Wait Statistics export-masking card added.
+  '/security': '2026-10-08',
   // 2026-09-28: module details re-verified against the v1.1.0 desktop UI.
   '/features': '2026-10-04',
   // 2026-10-07: AI data-handling answer updated for Object Explorer and Index Advisor masking.

@@ -102,7 +102,8 @@ export default function PrivacyPage() {
           </li>
           <li>
             <span className="font-semibold text-gray-900">Blocking alert webhook:</span> off by default. If you turn it
-            on, only numeric alert counts are sent to the URL you enter; server names, logins and SQL text are not.
+            on, the alert summary is sent to the URL you enter: alert counts and up to eight alert titles, each with
+            its measured value (session count, chain depth or wait time) and threshold. Server names, logins and SQL text are not sent.
           </li>
         </ul>
         <p className="mt-3 text-sm leading-relaxed text-gray-700">

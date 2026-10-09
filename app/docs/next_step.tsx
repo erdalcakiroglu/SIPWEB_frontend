@@ -83,10 +83,21 @@ const nextSteps: Record<string, ReactNode> = {
   ),
 
   // Getting started
+  discover: (
+    <>
+      Every module named above is described on the {featureLink('feature overview')}. To run the same analyses on
+      your own server, {downloadLink('download the Windows desktop app')}; the trial lasts 30 days.
+    </>
+  ),
   overview: (
     <>
       This page covers the approach; the {featureLink('feature overview')} covers what each of the eight modules
-      actually analyzes. When you are ready, {downloadLink('download the Windows desktop app')} and connect a server.
+      actually analyzes, and{' '}
+      <Link href="/docs/discover" className="font-medium text-primary underline-offset-2 hover:underline">
+        Discover
+      </Link>{' '}
+      links to reports the app exported. When you are ready, {downloadLink('download the Windows desktop app')} and
+      connect a server.
     </>
   ),
   installation: (

@@ -12,6 +12,11 @@ export default function DocsRightMenu() {
               <Link className="hover:text-gray-900" href={`/docs/${page.slug}`}>
                 {page.title}
               </Link>
+              {page.badge ? (
+                <span className="ml-2 rounded-full bg-primary-light px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary-dark">
+                  {page.badge}
+                </span>
+              ) : null}
             </li>
           ))}
         </ul>

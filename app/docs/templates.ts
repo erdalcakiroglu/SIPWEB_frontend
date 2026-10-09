@@ -1,3 +1,4 @@
+import DiscoverTemplate from './discover'
 import OverviewTemplate from './overview'
 import InstallationTemplate from './installation'
 import QuickstartTemplate from './quickstart'
@@ -14,6 +15,7 @@ import ObjectExplorerTemplate from './object_explorer'
 export type DocsTemplateComponent = () => JSX.Element
 
 export const gettingStartedTemplates: Record<string, DocsTemplateComponent> = {
+  discover: DiscoverTemplate,
   overview: OverviewTemplate,
   installation: InstallationTemplate,
   quickstart: QuickstartTemplate,

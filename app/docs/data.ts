@@ -21,9 +21,23 @@ export type DocsPage = {
    * informational query the words after the truncation point are wasted.
    */
   metaTitle?: string
+  /** Short label shown next to the title in the docs sidebar, e.g. "New". */
+  badge?: string
 }
 
 export const gettingStartedPages: DocsPage[] = [
+  {
+    // Listed above Overview on purpose: it is the "why" page a first-time visitor
+    // reads before the "what it needs" page. The h1 carries the search phrase;
+    // the sidebar keeps the short title.
+    slug: 'discover',
+    title: 'Discover',
+    h1: 'SQL Server Performance Tuning for DBAs and Developers',
+    metaTitle: 'SQL Server Performance Tuning for DBAs & Developers — SQLPerformance AI',
+    summary:
+      'What SQLPerformance AI does for a DBA and for a developer, one finding traced from evidence to action, and real analysis reports exported from the app.',
+    badge: 'New',
+  },
   {
     slug: 'overview',
     title: 'Overview',

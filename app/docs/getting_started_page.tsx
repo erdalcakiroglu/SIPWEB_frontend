@@ -29,7 +29,7 @@ export function getGettingStartedMetadata(slug: string) {
   }
 
   return {
-    title: `${page.title} — Docs — SQLPerformance AI`,
+    title: page.metaTitle ?? `${page.title} — Docs — SQLPerformance AI`,
     description: page.summary,
     alternates: {
       canonical: `/docs/${page.slug}`,
@@ -44,6 +44,8 @@ export default function GettingStartedPage({ slug }: GettingStartedPageProps) {
     notFound()
   }
 
+  const heading = page.h1 ?? page.title
+
   const Template =
     gettingStartedTemplates[page.slug] ?? gettingStartedTemplates[normalizedSlug] ?? DefaultGettingStartedTemplate
 
@@ -56,7 +58,7 @@ export default function GettingStartedPage({ slug }: GettingStartedPageProps) {
         ]}
       />
       <TechArticleSchema
-        headline={page.title}
+        headline={heading}
         description={page.summary}
         path={`/docs/${page.slug}`}
       />
@@ -72,7 +74,7 @@ export default function GettingStartedPage({ slug }: GettingStartedPageProps) {
             <span className="font-semibold text-white">{page.title}</span>
           </>
         }
-        title={page.title}
+        title={heading}
         description={page.summary}
       />
 

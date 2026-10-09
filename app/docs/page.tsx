@@ -50,6 +50,10 @@ export default function DocsPage() {
                   <p className="text-sm text-gray-700">
                     Use this page as the navigation hub. For the best user and SEO structure, each guide below has a
                     distinct job:{' '}
+                    <Link className="font-semibold text-primary hover:text-primary-dark" href="/docs/discover">
+                      Discover
+                    </Link>{' '}
+                    shows what the app does for DBAs and developers, with real exported reports,{' '}
                     <Link className="font-semibold text-primary hover:text-primary-dark" href="/docs/overview">
                       Overview
                     </Link>{' '}
@@ -69,6 +73,18 @@ export default function DocsPage() {
                   </p>
                 </div>
 
+                <div id="discover" className="space-y-3">
+                  <h3 className="text-xl font-semibold">Discover</h3>
+                  <p className="text-sm text-gray-700">
+                    Start here if you are deciding whether the app fits your work: scenarios for DBAs and developers,
+                    one finding traced from raw evidence to the decision left to you, and analysis reports exported
+                    from the app.
+                  </p>
+                  <Link className="text-sm font-semibold text-primary hover:text-primary-dark" href="/docs/discover">
+                    Read Discover
+                  </Link>
+                </div>
+
                 <div id="overview" className="space-y-3">
                   <h3 className="text-xl font-semibold">Overview</h3>
                   <p className="text-sm text-gray-700">
@@ -83,7 +99,7 @@ export default function DocsPage() {
                       <ul className="space-y-2">
                         <li>Analyzes SQL Server objects, plans, and query signals.</li>
                         <li>Generates evidence-backed, audit-ready reports.</li>
-                        <li>Runs offline by default with Local LLM support.</li>
+                        <li>Uses a local Ollama model by default; a cloud AI provider is optional.</li>
                       </ul>
                     </div>
                     <div className="rounded-xl border border-gray-200 bg-white p-4">

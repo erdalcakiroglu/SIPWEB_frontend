@@ -341,6 +341,13 @@ export default function ModuleDetails() {
               agent to install and nothing is collected while the application is closed; the eight modules above are the analyzer&apos;s
               investigation surfaces, and optional AI interpretation turns their evidence into an exportable report.
             </p>
+            <p>
+              To see that output before you install anything,{' '}
+              <Link href="/docs/discover#reports" className="font-semibold text-primary hover:text-primary-dark">
+                open the sample reports on the Discover page
+              </Link>
+              .
+            </p>
           </div>
         </div>
       </section>

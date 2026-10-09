@@ -31,7 +31,7 @@ const lastModified: Record<string, string> = {
   // 2026-10-08: home AI report image replaced (old one showed the former name), local-AI and report claims re-verified.
   '': '2026-10-08',
   '/download': '2026-10-08', // 2026-10-08: Edge/SmartScreen steps for the unsigned MSI, guide link to /docs/installation.
-  '/docs': '2026-10-08', // 2026-10-08: top-bar text names only the server and database selectors.
+  '/docs': '2026-10-10', // 2026-10-10: Discover added to the hub; Overview card says local Ollama model instead of "offline".
   '/pricing': '2026-10-08', // 2026-10-08: per-device licensing, Enterprise extras on request.
   '/use-cases': '2026-10-08', // 2026-10-08: example scenarios labeled, "measured outcome" claim removed.
   '/guides': '2026-08-15',
@@ -55,6 +55,8 @@ const lastModified: Record<string, string> = {
   // 2026-09-28: all docs pages rewritten for the v1.1.0 desktop UI.
   // 2026-10-07: Getting Started pages (overview, installation, quickstart) re-verified against v1.1.0.
   // 2026-10-08: Installation trial-refusal note matches the rebuilt 1.1.0 MSI.
+  // 2026-10-10: new Discover page (role scenarios, evidence trace, report gallery).
+  '/docs/discover': '2026-10-10',
   '/docs/overview': '2026-10-07',
   '/docs/installation': '2026-10-08',
   '/docs/quickstart': '2026-10-07',

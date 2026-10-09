@@ -25,6 +25,11 @@ export default function DocsMobileMenu() {
               className="block px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors"
             >
               {page.title}
+              {page.badge ? (
+                <span className="ml-2 rounded-full bg-primary-light px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary-dark">
+                  {page.badge}
+                </span>
+              ) : null}
             </Link>
           ))}
         </div>
